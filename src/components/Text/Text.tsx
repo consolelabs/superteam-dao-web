@@ -7,7 +7,7 @@ export interface TextProps extends HTMLAttributes<HTMLElement> {
 }
 
 export const Text: React.FC<TextProps> = (props) => {
-  const { className = 'text-gray-900', truncate, as = 'p', ...rest } = props
+  const { className = 'text-white', truncate, as = 'p', ...rest } = props
   const classNames = []
   if (truncate) {
     classNames.push('truncate')
