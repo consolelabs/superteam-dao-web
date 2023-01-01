@@ -48,7 +48,6 @@ export const useTokenAccounts = () => {
       if (document.visibilityState === 'hidden') return
       if (!connection || !publicKey) return
 
-      console.log('useGlobalRefresh')
       startTransition(() => {
         fetchTokenAccounts(connection, publicKey)
       })
