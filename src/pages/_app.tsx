@@ -5,6 +5,8 @@ import NProgressHandler from 'components/NProgressHandler'
 import Head from 'next/head'
 import { AuthContextProvider } from 'context/auth'
 import { Toaster } from 'components/Toast'
+import { SolanaWalletProvider } from 'context/solana-wallet'
+import { SolanaTokenProvider } from 'context/solana-token'
 
 class MyApp extends App {
   render() {
@@ -34,8 +36,12 @@ class MyApp extends App {
           <meta name="twitter:image" content="/thumbnail.jpeg" />
         </Head>
         <AuthContextProvider>
-          <NProgressHandler />
-          <Component {...pageProps} />
+          <SolanaWalletProvider>
+            <SolanaTokenProvider>
+              <NProgressHandler />
+              <Component {...pageProps} />
+            </SolanaTokenProvider>
+          </SolanaWalletProvider>
         </AuthContextProvider>
         <Toaster />
       </>
