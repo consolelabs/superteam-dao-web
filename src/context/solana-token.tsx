@@ -18,6 +18,7 @@ interface TokenValues {
   pureBalances: Record<string, TokenAmount>
   balances: Record<string, TokenAmount>
   allSelectableTokens: SplToken[]
+  allValuableTokens: SplToken[]
 }
 
 const [Provider, useToken] = createContext<TokenValues>({
@@ -30,13 +31,17 @@ const SolanaTokenProvider = ({ children }: WithChildren) => {
   const { solBalance, allWsolBalance, pureBalances, balances } =
     parseBalanceFromTokenAccount({ tokens, allTokenAccounts })
 
-  const allSelectableTokens: SplToken[] = [
+  const allSelectableTokens = [
     QuantumSOLVersionSOL,
     QuantumSOLVersionWSOL,
     ...Object.values(pureBalances)
       .sort((a, b) => (a.raw.lt(b.raw) ? 1 : -1))
       .map((t) => tokens[String(t.token.mint)]),
   ]
+
+  const allValuableTokens = allSelectableTokens.filter(
+    (t) => balances[t.id] && !balances[t.id].isZero(),
+  )
 
   return (
     <Provider
@@ -50,6 +55,7 @@ const SolanaTokenProvider = ({ children }: WithChildren) => {
         pureBalances,
         balances,
         allSelectableTokens,
+        allValuableTokens,
       }}
     >
       {children}

@@ -7,6 +7,7 @@ import { AuthContextProvider } from 'context/auth'
 import { Toaster } from 'components/Toast'
 import { SolanaWalletProvider } from 'context/solana-wallet'
 import { SolanaTokenProvider } from 'context/solana-token'
+import { ProgramProvider } from 'context/program'
 
 class MyApp extends App {
   render() {
@@ -38,8 +39,10 @@ class MyApp extends App {
         <AuthContextProvider>
           <SolanaWalletProvider>
             <SolanaTokenProvider>
-              <NProgressHandler />
-              <Component {...pageProps} />
+              <ProgramProvider>
+                <NProgressHandler />
+                <Component {...pageProps} />
+              </ProgramProvider>
             </SolanaTokenProvider>
           </SolanaWalletProvider>
         </AuthContextProvider>
