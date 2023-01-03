@@ -14,7 +14,7 @@ export const Header = () => {
   const { isOpen, onClose, onOpen } = useDisclosure()
 
   return (
-    <header className="py-2 px-5 border-b border-b-gray-800">
+    <header className="py-2 px-5 border-b border-b-gray-800 z-50">
       <div className="container mx-auto">
         <div className="flex justify-between">
           <span className="inline-flex items-center">
@@ -25,7 +25,7 @@ export const Header = () => {
               Solana Grant
             </Text>
           </span>
-          <Menu as="div" className="relative inline-block text-left">
+          <Menu as="div" className="relative inline-block text-left z-100">
             <Menu.Button
               className="inline-flex focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 items-center space-x-3"
               data-testid="profile-button"
