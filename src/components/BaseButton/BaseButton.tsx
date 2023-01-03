@@ -8,6 +8,8 @@ export interface BaseButtonProps {
   className?: string
   target?: string
   disabled?: boolean
+  display?: string
+  active?: boolean
 }
 
 export const BaseButton = forwardRefWithAs<'button', BaseButtonProps>(
@@ -22,9 +24,10 @@ export const BaseButton = forwardRefWithAs<'button', BaseButtonProps>(
 
     const className = cx(
       classNameProps,
-      'inline-flex justify-center items-center text-center whitespace-nowrap leading-none',
+      'justify-center items-center text-center whitespace-nowrap leading-none',
       'focus:outline-none transition duration-200',
       props.disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+      props.display || 'inline-flex',
     )
 
     return React.createElement(as, { className, ...rest, rel, ref })

@@ -1,215 +1,231 @@
+import React, { Fragment, useState } from 'react'
+import { Menu, Transition } from '@headlessui/react'
 import { Layout } from 'components/Layout'
-import { Heading } from 'components/Heading'
-import { Card } from 'components/Card'
 import { Text } from 'components/Text'
 import { useAuthContext } from 'context/auth'
-import { formatNumber } from 'utils/formatNumber'
-import { Badge } from 'components/Badge'
-import { IconArrowSmUp } from 'components/icons/components/IconArrowSmUp'
-import { IconArrowSmDown } from 'components/icons/components/IconArrowSmDown'
-import { IconPaperClip } from 'components/icons/components/IconPaperClip'
+import { Button } from 'components/Button'
+import { Tabs } from 'components/Tabs'
+import { GrantItemType } from 'types/GrantItem'
+import { GrantList } from 'components/GrantList'
+import { Input } from 'components/Input'
+import { IconChevronDown } from 'components/icons/components/IconChevronDown'
+import { IconChevronUp } from 'components/icons/components/IconChevronUp'
 
-interface StatCardProps {
-  title: string
-  from: number
-  to: number
-  suffix?: string
-}
+const grantItems: GrantItemType[] = [
+  {
+    name: 'Grant 1',
+    receiverWallet: 'Bu61gzC1axsgn7hRSpK8aXdP1FkUkQBSU9pmvbDEReGq',
+    tokenAmount: 1000,
+    tokenSymbol: 'SOL',
+    tokenAddress: 'So11111111111111111111111111111111111111112',
+    status: 'pending',
+    avatar:
+      'https://img-cdn.magiceden.dev/rs:fill:228:228:0:0/plain/https://bafybeibrumzlxuai3rs6sdafq24faaggprot5e7sdluolefveb576lnpnq.ipfs.nftstorage.link/5679.png?ext=png',
+    tags: ['nft, gamefi'],
+  },
+  {
+    name: 'Grant 2',
+    receiverWallet: 'Bu61gzC1axsgn7hRSpK8aXdP1FkUkQBSU9pmvbDEReGq',
+    tokenAmount: 1000,
+    tokenSymbol: 'SOL',
+    tokenAddress: 'So11111111111111111111111111111111111111112',
+    status: 'pending',
+    avatar:
+      'https://img-cdn.magiceden.dev/rs:fill:228:228:0:0/plain/https://bafybeibrumzlxuai3rs6sdafq24faaggprot5e7sdluolefveb576lnpnq.ipfs.nftstorage.link/5679.png?ext=png',
+    tags: ['nft, gamefi'],
+  },
+  {
+    name: 'Grant 3',
+    receiverWallet: 'Bu61gzC1axsgn7hRSpK8aXdP1FkUkQBSU9pmvbDEReGq',
+    tokenAmount: 1000,
+    tokenSymbol: 'SOL',
+    tokenAddress: 'So11111111111111111111111111111111111111112',
+    status: 'pending',
+    avatar:
+      'https://img-cdn.magiceden.dev/rs:fill:228:228:0:0/plain/https://bafybeibrumzlxuai3rs6sdafq24faaggprot5e7sdluolefveb576lnpnq.ipfs.nftstorage.link/5679.png?ext=png',
+    tags: ['nft, gamefi', 'nft, gamefi', 'nft, gamefi'],
+  },
+  {
+    name: 'Grant 4',
+    receiverWallet: 'Bu61gzC1axsgn7hRSpK8aXdP1FkUkQBSU9pmvbDEReGq',
+    tokenAmount: 1000,
+    tokenSymbol: 'SOL',
+    tokenAddress: 'So11111111111111111111111111111111111111112',
+    status: 'approved',
+    avatar:
+      'https://img-cdn.magiceden.dev/rs:fill:228:228:0:0/plain/https://bafybeibrumzlxuai3rs6sdafq24faaggprot5e7sdluolefveb576lnpnq.ipfs.nftstorage.link/5679.png?ext=png',
+    tags: ['nft', 'gamefi'],
+  },
+  {
+    name: 'Grant 5',
+    receiverWallet: 'Bu61gzC1axsgn7hRSpK8aXdP1FkUkQBSU9pmvbDEReGq',
+    tokenAmount: 1000,
+    tokenSymbol: 'SOL',
+    tokenAddress: 'So11111111111111111111111111111111111111112',
+    status: 'rejected',
+    avatar:
+      'https://img-cdn.magiceden.dev/rs:fill:228:228:0:0/plain/https://bafybeibrumzlxuai3rs6sdafq24faaggprot5e7sdluolefveb576lnpnq.ipfs.nftstorage.link/5679.png?ext=png',
+    tags: [
+      'nft',
+      'gamefi',
+      'nft',
+      'gamefi',
+      'nft',
+      'gamefi',
+      'nft',
+      'gamefi',
+      'nft',
+      'gamefi',
+      'nft',
+      'gamefi',
+    ],
+  },
+]
 
-const StatCard = (props: StatCardProps) => {
-  const { title, suffix, from, to } = props
-  const isGrowth = to > from
-
-  return (
-    <Card>
-      <Heading className="mb-1 !font-medium !text-gray-700 !text-base" as="h5">
-        {title}
-      </Heading>
-      <div className="flex justify-between items-end">
-        <div className="flex space-x-2 items-end">
-          <Text as="span" className="text-2xl font-medium text-pink-500">
-            {formatNumber(to)}
-            {suffix}
-          </Text>
-          <Text as="span" className="text-sm mb-1 text-gray-500">
-            from {formatNumber(from)}
-            {suffix}
-          </Text>
-        </div>
-        <Badge type={isGrowth ? 'success' : 'error'} className="pl-1">
-          {isGrowth ? (
-            <IconArrowSmUp className="text-green-500 w-5 h-5" />
-          ) : (
-            <IconArrowSmDown className="text-red-500 w-5 h-5" />
-          )}
-          20.2%
-        </Badge>
-      </div>
-    </Card>
-  )
-}
-
-const DashboardPage = () => {
+const HomePage = () => {
   const { user } = useAuthContext()
+  const [activeTab, setActiveTab] = useState('approved')
+
+  const handleChangeTab = (tabId: string) => {
+    setActiveTab(tabId)
+  }
+
+  const filteredItems = grantItems.filter((i) => i.status === activeTab)
+
+  const tabData = [
+    {
+      id: 'pending',
+      label: 'Pending',
+      content: <GrantList data={filteredItems} />,
+    },
+    {
+      id: 'approved',
+      label: 'Approved',
+      content: <GrantList data={filteredItems} />,
+    },
+    {
+      id: 'rejected',
+      label: 'Rejected',
+      content: <GrantList data={filteredItems} />,
+    },
+  ]
 
   return (
     <Layout>
-      <div className="space-y-px">
-        <Heading as="h3">Good afternoon, {user.firstName}</Heading>
-        <Text className="text-gray-500">
-          Here's what's happenning with your ambassador account today.
-        </Text>
-      </div>
-
-      <div className="grid-cols-3 grid gap-6">
-        <StatCard title="Total Subscribers" from={70946} to={71897} />
-        <StatCard title="Avg. Open Rate" from={56.14} to={58.16} suffix="%" />
-        <StatCard title="Avg. Click Rate" from={28.62} to={24.57} suffix="%" />
-      </div>
-
-      <div className="grid-cols-3 grid gap-6">
-        <div className="col-span-2 space-y-5">
-          <Card spacing={false} className="overflow-hidden">
-            <div className="px-6 py-5">
-              <Heading className="mb-1 !font-medium !text-gray-700" as="h5">
-                Applicant Information
-              </Heading>
-              <Text className="text-sm text-gray-400">
-                Personal details and application.
-              </Text>
-            </div>
-            <div className="border-t border-gray-200">
-              <dl>
-                <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">
-                    Full name
-                  </dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    Margot Foster
-                  </dd>
-                </div>
-                <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">
-                    Application for
-                  </dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    Backend Developer
-                  </dd>
-                </div>
-                <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">
-                    Email address
-                  </dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    margotfoster@example.com
-                  </dd>
-                </div>
-                <div className="bg-white px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">
-                    Attachments
-                  </dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    <ul className="border border-gray-200 rounded-md divide-y divide-gray-200">
-                      <li className="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
-                        <div className="w-0 flex-1 flex items-center">
-                          <IconPaperClip className="flex-shrink-0 h-5 w-5 text-gray-400" />
-                          <span className="ml-2 flex-1 w-0 truncate">
-                            resume_back_end_developer.pdf
-                          </span>
-                        </div>
-                        <div className="ml-4 flex-shrink-0">
-                          <a className="font-medium text-pink-600 hover:text-pink-500">
-                            Download
-                          </a>
-                        </div>
-                      </li>
-                      <li className="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
-                        <div className="w-0 flex-1 flex items-center">
-                          <IconPaperClip className="flex-shrink-0 h-5 w-5 text-gray-400" />
-                          <span className="ml-2 flex-1 w-0 truncate">
-                            coverletter_back_end_developer.pdf
-                          </span>
-                        </div>
-                        <div className="ml-4 flex-shrink-0">
-                          <a className="font-medium text-pink-600 hover:text-pink-500">
-                            Download
-                          </a>
-                        </div>
-                      </li>
-                    </ul>
-                  </dd>
-                </div>
-              </dl>
-            </div>
-          </Card>
+      <aside className="w-[16rem] flex-none px-9 mr-4 border-2 border-purple-600 rounded-lg py-8 flex min-h-full flex-col">
+        <div className="text-center mb-4">
+          <span className="overflow-hidden rounded-full w-[86px] h-[86px] inline-flex mx-auto">
+            <img
+              src={user.avatar}
+              alt="avatar sidebar"
+              width="86"
+              height="86"
+              className="rounded-full"
+            />
+          </span>
         </div>
-        <div className="col-span-1 space-y-5">
-          <Card spacing={false} className="overflow-hidden">
-            <div className="px-6 py-5">
-              <Heading className="mb-1 !font-medium !text-gray-700" as="h5">
-                Recent Sign-ups
-              </Heading>
-              <Text className="text-sm text-gray-400">
-                Recent customers onboarded.
-              </Text>
-            </div>
-            <div className="border-t border-gray-200 divide-y divide-gray-200">
-              {[
-                {
-                  name: 'Jane Cooper',
-                  avatar:
-                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
-                  email: 'jane.cooper@example.com',
-                },
-                {
-                  name: 'Cody Fisher',
-                  avatar:
-                    'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
-                  email: 'cody.fisher@example.com',
-                },
-                {
-                  name: 'Esther Howard',
-                  avatar:
-                    'https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
-                  email: 'esther.howard@example.com',
-                },
-                {
-                  name: 'Jenny Wilson',
-                  avatar:
-                    'https://images.unsplash.com/photo-1498551172505-8ee7ad69f235?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
-                  email: 'jenny.wilson@example.com',
-                },
-                {
-                  name: 'Cameron Williamson',
-                  avatar:
-                    'https://images.unsplash.com/photo-1566492031773-4f4e44671857?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
-                  email: 'cameron.williamson@example.com',
-                },
-              ].map(({ avatar, email, name }) => (
-                <div key={name} className="px-6 py-2.5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10">
-                      <img
-                        className="h-10 w-10 rounded-full"
-                        src={avatar}
-                        alt=""
-                      />
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {name}
-                      </div>
-                      <div className="text-sm text-gray-500">{email}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
+        <Text as="b" className="mb-2 text-xl block text-center">
+          {user.firstName}
+        </Text>
+        <Text className="block text-center text-slate-400">
+          {user.firstName}
+        </Text>
+        <div className="mt-5">
+          <Text className="text-lg">Proof of work</Text>
+          <Text className="text-slate-300">10000 USD earned</Text>
+          <Text className="text-slate-300">10000 SOL earned</Text>
+          <Text className="mt-5 text-lg">Transaction</Text>
+          <Button
+            as="a"
+            target="_blank"
+            appearance="link"
+            href="https://solscan.io/tx/49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4"
+            className="truncate block max-w-full mb-1"
+            size="lg"
+            display="block"
+          >
+            49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4
+          </Button>
+          <Button
+            as="a"
+            target="_blank"
+            appearance="link"
+            href="https://solscan.io/tx/49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4"
+            className="truncate block max-w-full mb-1"
+            size="lg"
+            display="block"
+          >
+            49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4
+          </Button>
+        </div>
+      </aside>
+      <div className="px-4 flex flex-col flex-grow">
+        <div className="mb-5 flex justify-between">
+          <div>
+            <Button appearance="primary" size="lg" className="mr-4" active>
+              Sent Grant
+            </Button>
+            <Button appearance="primary" size="lg">
+              Received Grant
+            </Button>
+          </div>
+          <div>
+            <Input
+              type="search"
+              placeholder="Search approver address"
+              className="w-[18rem] mr-4"
+            />
+            <Menu as="div" className="relative inline-block text-left">
+              <Menu.Button
+                data-testid="profile-button"
+                as={Button}
+                appearance="border"
+              >
+                {({ open }) => (
+                  <>
+                    Tags
+                    <span className="ml-2 w-4 h-4 text-purple-600">
+                      {open ? <IconChevronUp /> : <IconChevronDown />}
+                    </span>
+                  </>
+                )}
+              </Menu.Button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute right-0 w-48 mt-1 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? 'bg-pink-600 text-white' : 'text-gray-500'
+                        } group flex rounded-md items-center w-full px-2 py-2 text-sm space-x-2`}
+                      >
+                        <span>Logout</span>
+                      </button>
+                    )}
+                  </Menu.Item>
+                </Menu.Items>
+              </Transition>
+            </Menu>
+          </div>
+        </div>
+        <div className="px-12 py-8 border-purple-600 border-2 rounded-lg flex-grow">
+          <Tabs
+            activeTab={activeTab}
+            onChange={handleChangeTab}
+            data={tabData}
+          />
         </div>
       </div>
     </Layout>
   )
 }
 
-export default DashboardPage
+export default HomePage

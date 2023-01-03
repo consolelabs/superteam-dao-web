@@ -5,7 +5,7 @@ import { IconSpinner } from 'components/icons/components/IconSpinner'
 import { forwardRefWithAs } from 'utils/forwardRefWithAs'
 import { WithChildren } from 'types/common'
 import { ButtonAppearance } from '../BaseButton/types'
-import { getappearanceButtonStyles } from '../BaseButton/utils'
+import { getAppearanceButtonStyles } from '../BaseButton/utils'
 
 export interface ButtonProps extends WithChildren<BaseButtonProps> {
   appearance?: ButtonAppearance
@@ -13,6 +13,7 @@ export interface ButtonProps extends WithChildren<BaseButtonProps> {
   iconPosition?: 'left' | 'right'
   loading?: boolean
   disabled?: boolean
+  active?: boolean
   Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
   asLabel?: boolean
 }
@@ -66,6 +67,7 @@ export const Button = forwardRefWithAs<'button', ButtonProps>(
       asLabel = false,
       className,
       fullWidth = false,
+      active = false,
       ...props
     },
     ref,
@@ -91,7 +93,14 @@ export const Button = forwardRefWithAs<'button', ButtonProps>(
       )
     }
 
-    const passedInProps = { ...props, fullWidth, size, appearance, asLabel }
+    const passedInProps = {
+      ...props,
+      fullWidth,
+      size,
+      appearance,
+      asLabel,
+      active,
+    }
 
     return (
       <BaseButton
@@ -100,7 +109,7 @@ export const Button = forwardRefWithAs<'button', ButtonProps>(
         className={cx(
           className,
           getButtonStyles(passedInProps),
-          getappearanceButtonStyles(passedInProps),
+          getAppearanceButtonStyles(passedInProps),
         )}
       >
         {children}
