@@ -30,12 +30,12 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       >
         <textarea
           className={cx(
-            'focus:outline-none bg-transparent border rounded-lg px-3 py-2 appearance-none',
-            'bg-white placeholder-gray-500',
+            'focus:outline-none bg-transparent border-2 border-purple-600 rounded-lg px-3 py-2 appearance-none',
+            'bg-white placeholder-slate-500',
             'text-sm appearance-none w-full block',
             {
               'border-red-600 text-red-900': invalid,
-              'border-gray-300 text-gray-900 focus:ring-pink-500 focus:border-pink-500 focus:ring-1':
+              'focus:ring-purple-500 focus:border-purple-500 focus:ring-1':
                 !invalid,
             },
             className,

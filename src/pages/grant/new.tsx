@@ -179,12 +179,9 @@ const GrantPage = () => {
 
   return (
     <Layout>
-      <Button appearance="primary" onClick={createProposal}>
-        Create Proposal
-      </Button>
       <Card
         spacing={false}
-        className="flex flex-col items-center p-6 space-y-3"
+        className="flex flex-col items-center p-6 space-y-3 text-black"
       >
         <Logo width={106} height={106} />
         <FormProvider {...formInstance}>
@@ -255,6 +252,9 @@ const GrantPage = () => {
             <div className="px-5 py-2 text-center">
               <Button appearance="primary" type="submit">
                 Submit
+              </Button>
+              <Button className="ml-2" type="button" onClick={createProposal}>
+                Create Proposal
               </Button>
             </div>
           </form>

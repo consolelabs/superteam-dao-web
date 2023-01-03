@@ -22,14 +22,15 @@ export const CustomListbox = React.forwardRef<HTMLInputElement, ListboxProps>(
       <Listbox value={value} onChange={onChange}>
         <div id={id} ref={ref} className={cx('relative', className)}>
           <Listbox.Button
-            className={cx(
-              'h-10 relative focus:outline-none bg-transparent border rounded-lg pl-3 pr-10 appearance-none bg-white text-sm w-full block text-left',
-              {
-                'border-red-600 text-red-900': invalid,
-                'border-gray-300 text-gray-900 focus:ring-pink-500 focus:border-pink-500 focus:ring-1':
-                  !invalid,
-              },
-            )}
+            className={({ open }) =>
+              cx(
+                'h-10 relative focus:outline-none bg-transparent border-2 border-purple-600 rounded-lg pl-3 pr-10 appearance-none text-sm w-full block text-left',
+                {
+                  'border-red-600 text-red-900': invalid,
+                  'ring-purple-500 border-purple-500 ring-1': open,
+                },
+              )
+            }
           >
             {({ open }) => (
               <>

@@ -1,9 +1,11 @@
 import { Listbox } from '@headlessui/react'
-import React from 'react'
+import React, { SyntheticEvent } from 'react'
 import cx from 'classnames'
 import { useId } from 'hooks/useId'
 import { GrantAmount } from 'types/grant'
 import { IconChevronDown } from 'components/icons/components/IconChevronDown'
+import { Input } from 'components/Input'
+import { IconPlus } from 'components/icons/components/IconPlus'
 
 export interface GrantAmountInputProps {
   id?: string
@@ -26,54 +28,71 @@ export const GrantAmountInput = React.forwardRef<
       value={value?.token}
       onChange={(token) => onChange?.({ ...value, token })}
     >
-      <div id={id} ref={ref} className={cx('relative', className)}>
-        <div
-          className={cx(
-            'grid grid-cols-3 h-10 border rounded-lg bg-white text-sm w-full',
-            {
-              'border-red-600 text-red-900': invalid,
-              'border-gray-300 text-gray-900 focus:ring-pink-500 focus:border-pink-500 focus:ring-1':
-                !invalid,
-            },
-          )}
-        >
-          <input
-            value={value?.amount}
-            onChange={(e) => onChange?.({ ...value, amount: e.target.value })}
-            className="h-full col-span-2 px-3 py-2 border-none rounded-lg focus:outline-none focus:ring-0"
-          />
-          <Listbox.Button className="col-span-1 pl-3 pr-10 text-left border-l">
-            {({ open }) => (
-              <>
-                <span className="block truncate">{value?.token}</span>
-                <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                  <IconChevronDown
-                    className={cx('w-4 h-4 transition-all', {
-                      'rotate-180': open,
-                    })}
-                  />
-                </span>
-              </>
+      {({ open }) => (
+        <div id={id} ref={ref} className={cx('relative', className)}>
+          <div
+            className={cx(
+              'grid group grid-cols-3 h-10 rounded-lg bg-transparent border-2 border-purple-600 text-sm w-full',
+              {
+                'border-red-600 text-red-900': invalid,
+                'focus-within:ring-purple-500 focus-within:border-purple-500 focus-within:ring-1':
+                  !invalid,
+                'ring-purple-500 border-purple-500 ring-1': open,
+              },
             )}
-          </Listbox.Button>
-        </div>
-        <Listbox.Options className="absolute z-10 w-full py-2 mt-1 overflow-auto bg-white border rounded-lg shadow-lg max-h-60">
-          {items.map((item) => (
-            <Listbox.Option
-              key={item.key}
-              value={item.value}
-              className={({ active }) =>
-                cx(
-                  'relative cursor-default select-none py-1 px-4 text-sm',
-                  active ? 'bg-pink-500 text-white' : 'text-gray-900',
-                )
-              }
+          >
+            <input
+              value={value?.amount}
+              onChange={(e) => onChange?.({ ...value, amount: e.target.value })}
+              className="h-full col-span-2 px-3 py-2 border-none rounded-lg focus:outline-none focus:ring-0"
+            />
+            <Listbox.Button
+              className="col-span-1 pl-3 pr-10 text-left border-l"
+              onFocus={(e: SyntheticEvent<HTMLButtonElement>) => {
+                e.currentTarget.blur()
+              }}
             >
-              {item.value}
-            </Listbox.Option>
-          ))}
-        </Listbox.Options>
-      </div>
+              <span className="block truncate">{value?.token}</span>
+              <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <IconChevronDown
+                  className={cx('w-4 h-4 transition-all', {
+                    'rotate-180': open,
+                  })}
+                />
+              </span>
+            </Listbox.Button>
+          </div>
+          <Listbox.Options className="absolute z-10 w-full py-2 mt-1 overflow-auto bg-white border rounded-lg shadow-lg max-h-60">
+            {items.map((item) => (
+              <Listbox.Option
+                key={item.key}
+                value={item.value}
+                className={({ active }) =>
+                  cx(
+                    'relative cursor-default select-none py-1 px-4 text-sm text-right',
+                    active ? 'bg-pink-500 text-white' : 'text-gray-900',
+                  )
+                }
+              >
+                {item.value}
+              </Listbox.Option>
+            ))}
+            <div className="relative px-4 py-1">
+              <Input
+                className="w-full pr-8"
+                fullWidth
+                placeholder="Enter contract"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 flex items-center text-xl right-6"
+              >
+                <IconPlus className="w-5 h-5" />
+              </button>
+            </div>
+          </Listbox.Options>
+        </div>
+      )}
     </Listbox>
   )
 })

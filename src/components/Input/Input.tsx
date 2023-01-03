@@ -45,7 +45,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             'text-sm appearance-none w-full block',
             {
               'border-red-600 text-red-900': invalid,
-              'text-white focus:ring-purple-500 focus:border-purple-500 focus:ring-1':
+              'focus:ring-purple-500 focus:border-purple-500 focus:ring-1':
                 !invalid,
             },
             className,
