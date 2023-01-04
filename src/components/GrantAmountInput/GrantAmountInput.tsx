@@ -70,7 +70,9 @@ export const GrantAmountInput = React.forwardRef<
                 className={({ active }) =>
                   cx(
                     'relative cursor-default select-none py-1 px-4 text-sm text-right',
-                    active ? 'bg-pink-500 text-white' : 'text-gray-900',
+                    active
+                      ? 'bg-purple-500 bg-opacity-10 text-black'
+                      : 'text-gray-900',
                   )
                 }
               >

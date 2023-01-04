@@ -1,25 +1,38 @@
 import { Listbox } from '@headlessui/react'
-import React from 'react'
+import React, { Fragment } from 'react'
 import cx from 'classnames'
 import { useId } from 'hooks/useId'
 import { IconChevronDown } from 'components/icons/components/IconChevronDown'
+import { IconCheck } from 'components/icons/components/IconCheck'
 
 export interface ListboxProps {
   id?: string
-  value?: string[]
-  onChange?: (value: string[]) => void
+  value?: string | string[]
+  onChange?: (value: string | string[]) => void
   invalid?: boolean
   className?: string
-  items: { key: React.Key; value: string }[]
+  items: {
+    key: React.Key
+    value: string | number | boolean
+  }[]
+  multiple?: boolean
 }
 
 export const CustomListbox = React.forwardRef<HTMLInputElement, ListboxProps>(
   (props, ref) => {
     const defaultId = `listbox-${useId()}`
-    const { id = defaultId, value, onChange, invalid, className, items } = props
+    const {
+      id = defaultId,
+      value,
+      onChange,
+      invalid,
+      className,
+      items,
+      multiple,
+    } = props
 
     return (
-      <Listbox value={value} onChange={onChange}>
+      <Listbox value={value} onChange={onChange} multiple={multiple}>
         <div id={id} ref={ref} className={cx('relative', className)}>
           <Listbox.Button
             className={({ open }) =>
@@ -34,7 +47,9 @@ export const CustomListbox = React.forwardRef<HTMLInputElement, ListboxProps>(
           >
             {({ open }) => (
               <>
-                <span className="block truncate">{value}</span>
+                <span className="block truncate">
+                  {Array.isArray(value) ? value?.join(', ') : value}
+                </span>
                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                   <IconChevronDown
                     className={cx('w-4 h-4 transition-all', {
@@ -47,17 +62,24 @@ export const CustomListbox = React.forwardRef<HTMLInputElement, ListboxProps>(
           </Listbox.Button>
           <Listbox.Options className="absolute z-10 w-full py-2 mt-1 overflow-auto bg-white border rounded-lg shadow-lg max-h-60">
             {items.map((item) => (
-              <Listbox.Option
-                key={item.key}
-                value={item.value}
-                className={({ active }) =>
-                  cx(
-                    'relative cursor-default select-none py-1 px-4 text-sm',
-                    active ? 'bg-pink-500 text-white' : 'text-gray-900',
-                  )
-                }
-              >
-                {item.value}
+              <Listbox.Option key={item.key} value={item.value} as={Fragment}>
+                {({ selected, active }) => (
+                  <li
+                    className={cx(
+                      'relative cursor-default select-none py-1 text-sm pl-10 pr-4',
+                      active
+                        ? 'bg-purple-500 bg-opacity-10 text-black'
+                        : 'text-gray-900',
+                    )}
+                  >
+                    {selected ? (
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-purple-500">
+                        <IconCheck className="w-4 h-4" />
+                      </span>
+                    ) : null}
+                    {item.value}
+                  </li>
+                )}
               </Listbox.Option>
             ))}
           </Listbox.Options>

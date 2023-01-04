@@ -84,7 +84,7 @@ export const Header = () => {
                             onClick={onOpenWalletModal}
                           >
                             <IconWallet className="w-5 h-5" />
-                            <span>Edit wallet</span>
+                            <span>Wallet info</span>
                           </button>
                         )}
                       </Menu.Item>

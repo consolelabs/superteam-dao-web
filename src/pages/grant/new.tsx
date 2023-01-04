@@ -17,13 +17,17 @@ import { FormGrantAmountInput } from 'components/FormGrantAmountInput'
 import { GrantAmount } from 'types/grant'
 import { retry } from 'utils/retry'
 
+const owners = ['Applicant (You)', 'Approver'] as const
+type Owner = typeof owners[number]
+
 export interface GrantData {
   title: string
-  tag: string
+  tags: string[]
   description: string
   grantAmount: GrantAmount
   approverWallet: string
   linkSubmission: string
+  owner: Owner
 }
 
 const GrantPage = () => {
@@ -33,9 +37,10 @@ const GrantPage = () => {
   const { allValuableTokens } = useToken()
 
   const formInstance = useForm<GrantData>({
-    defaultValues: {},
+    defaultValues: { owner: 'Applicant (You)' },
   })
-  const { handleSubmit } = formInstance
+  const { handleSubmit, getValues } = formInstance
+  console.log(getValues)
 
   const onSubmit = async (data?: GrantData) => {
     if (!program || !publicKey || !data) return
@@ -82,9 +87,9 @@ const GrantPage = () => {
           data.title,
           '',
           mintA,
-          data.tag,
+          data.tags.join(','),
           new anchor.BN(grantAmount * 10 ** grantToken.decimals),
-          true,
+          data.owner === 'Applicant (You)',
         )
         .accounts({
           proposal: proposalAccount,
@@ -197,7 +202,8 @@ const GrantPage = () => {
               <div className="col-span-3">
                 <FormListbox
                   label="Tag"
-                  name="tag"
+                  name="tags"
+                  multiple
                   rules={{ required: 'Required' }}
                   items={[
                     { key: 'GameFi', value: 'GameFi' },
@@ -245,6 +251,15 @@ const GrantPage = () => {
                   name="LlinkSubmission"
                   fullWidth
                   rules={{ required: 'Required' }}
+                />
+              </div>
+              <div className="col-span-6">
+                <FormListbox
+                  label="Who have the authority to mint the Proof of Work?"
+                  name="owner"
+                  rules={{ required: 'Required' }}
+                  items={owners.map((value) => ({ key: value, value }))}
+                  className="text-gray-900"
                 />
               </div>
             </div>
