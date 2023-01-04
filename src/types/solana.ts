@@ -1,10 +1,6 @@
 import { PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
-import {
-  Token,
-  TokenAccount as _TokenAccount,
-  TokenAmount,
-} from '@raydium-io/raydium-sdk'
+import { Token, TokenAccount as _TokenAccount } from '@raydium-io/raydium-sdk'
 
 export interface TokenAccount {
   publicKey?: PublicKey
