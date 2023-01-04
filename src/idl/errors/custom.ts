@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 export type CustomError =
   | SenderInvalidStateAccount
   | RecipientInvalidStateAccount
@@ -184,7 +185,7 @@ export function fromCode(code: number, logs?: string[]): CustomError | null {
       return new SubtitleTooLong(logs)
     case 6012:
       return new ImageTooLong(logs)
+    default:
+      return null
   }
-
-  return null
 }

@@ -30,10 +30,10 @@ import {
 import { clusterApiUrl } from '@solana/web3.js'
 import { WithChildren } from 'types/common'
 
-const endpointUrl = 'https://solana-mainnet.rpc.extrnode.com/'
+// const endpointUrl = 'https://solana-mainnet.rpc.extrnode.com/'
 
 const SolanaWalletProvider = ({ children }: WithChildren) => {
-  const endpoint = useMemo(() => endpointUrl ?? clusterApiUrl('devnet'), [])
+  const endpoint = useMemo(() => clusterApiUrl('devnet'), [])
 
   const wallets = useMemo(
     () => [

@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 export type AnchorError =
   | InstructionMissing
   | InstructionFallbackNotFound
@@ -767,7 +768,7 @@ export function fromCode(code: number, logs?: string[]): AnchorError | null {
       return new DeclaredProgramIdMismatch(logs)
     case 5000:
       return new Deprecated(logs)
+    default:
+      return null
   }
-
-  return null
 }

@@ -11,6 +11,7 @@ export interface CreateProposalArgs {
   spl: PublicKey
   tags: string
   amount: BN
+  isOwner: boolean
 }
 
 export interface CreateProposalAccounts {
@@ -29,6 +30,7 @@ export const layout = borsh.struct([
   borsh.publicKey('spl'),
   borsh.str('tags'),
   borsh.u64('amount'),
+  borsh.bool('isOwner'),
 ])
 
 export function createProposal(
@@ -53,6 +55,7 @@ export function createProposal(
       spl: args.spl,
       tags: args.tags,
       amount: args.amount,
+      isOwner: args.isOwner,
     },
     buffer,
   )

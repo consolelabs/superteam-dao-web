@@ -7,13 +7,14 @@ export interface ProposalFields {
   recipient: PublicKey
   sender: PublicKey
   status: number
+  owner: boolean
+  spl: PublicKey
+  amount: BN
   tags: string
   transaction: string | null
   image: string
   title: string
   subtitle: string
-  spl: PublicKey
-  amount: BN
   identifier: BN
 }
 
@@ -21,13 +22,14 @@ export interface ProposalJSON {
   recipient: string
   sender: string
   status: number
+  owner: boolean
+  spl: string
+  amount: string
   tags: string
   transaction: string | null
   image: string
   title: string
   subtitle: string
-  spl: string
-  amount: string
   identifier: string
 }
 
@@ -35,13 +37,14 @@ export class Proposal {
   readonly recipient: PublicKey
   readonly sender: PublicKey
   readonly status: number
+  readonly owner: boolean
+  readonly spl: PublicKey
+  readonly amount: BN
   readonly tags: string
   readonly transaction: string | null
   readonly image: string
   readonly title: string
   readonly subtitle: string
-  readonly spl: PublicKey
-  readonly amount: BN
   readonly identifier: BN
 
   static readonly discriminator = Buffer.from([
@@ -52,13 +55,14 @@ export class Proposal {
     borsh.publicKey('recipient'),
     borsh.publicKey('sender'),
     borsh.u8('status'),
+    borsh.bool('owner'),
+    borsh.publicKey('spl'),
+    borsh.u64('amount'),
     borsh.str('tags'),
     borsh.option(borsh.str(), 'transaction'),
     borsh.str('image'),
     borsh.str('title'),
     borsh.str('subtitle'),
-    borsh.publicKey('spl'),
-    borsh.u64('amount'),
     borsh.u64('identifier'),
   ])
 
@@ -66,13 +70,14 @@ export class Proposal {
     this.recipient = fields.recipient
     this.sender = fields.sender
     this.status = fields.status
+    this.owner = fields.owner
+    this.spl = fields.spl
+    this.amount = fields.amount
     this.tags = fields.tags
     this.transaction = fields.transaction
     this.image = fields.image
     this.title = fields.title
     this.subtitle = fields.subtitle
-    this.spl = fields.spl
-    this.amount = fields.amount
     this.identifier = fields.identifier
   }
 
@@ -121,13 +126,14 @@ export class Proposal {
       recipient: dec.recipient,
       sender: dec.sender,
       status: dec.status,
+      owner: dec.owner,
+      spl: dec.spl,
+      amount: dec.amount,
       tags: dec.tags,
       transaction: dec.transaction,
       image: dec.image,
       title: dec.title,
       subtitle: dec.subtitle,
-      spl: dec.spl,
-      amount: dec.amount,
       identifier: dec.identifier,
     })
   }
@@ -137,13 +143,14 @@ export class Proposal {
       recipient: this.recipient.toString(),
       sender: this.sender.toString(),
       status: this.status,
+      owner: this.owner,
+      spl: this.spl.toString(),
+      amount: this.amount.toString(),
       tags: this.tags,
       transaction: this.transaction,
       image: this.image,
       title: this.title,
       subtitle: this.subtitle,
-      spl: this.spl.toString(),
-      amount: this.amount.toString(),
       identifier: this.identifier.toString(),
     }
   }
@@ -153,13 +160,14 @@ export class Proposal {
       recipient: new PublicKey(obj.recipient),
       sender: new PublicKey(obj.sender),
       status: obj.status,
+      owner: obj.owner,
+      spl: new PublicKey(obj.spl),
+      amount: new BN(obj.amount),
       tags: obj.tags,
       transaction: obj.transaction,
       image: obj.image,
       title: obj.title,
       subtitle: obj.subtitle,
-      spl: new PublicKey(obj.spl),
-      amount: new BN(obj.amount),
       identifier: new BN(obj.identifier),
     })
   }

@@ -1,5 +1,4 @@
 import { TransactionInstruction, PublicKey, AccountMeta } from '@solana/web3.js' // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from 'bn.js' // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from '@project-serum/borsh' // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from '../programId'
 

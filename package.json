@@ -17,7 +17,8 @@
     "build-storybook": "build-storybook -s ./public",
     "fetch-definitions": "swagger-typescript-api --no-client -p ./libs/swagger.json -o ./types -n schema.ts",
     "cypress:open": "cypress open",
-    "release": "standard-version -a"
+    "release": "standard-version -a",
+    "generate-program-solana": "anchor-client-gen src/idl/superteam_dao_contract.json src/idl/"
   },
   "dependencies": {
     "@dwarvesf/react-hooks": "^0.7.0",

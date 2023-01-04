@@ -15,6 +15,3 @@ coverage
 cypress
 __stubs__
 __snapshots__
-
-#idl
-idl

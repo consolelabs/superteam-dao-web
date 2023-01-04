@@ -7,16 +7,15 @@ import { Layout } from 'components/Layout'
 import { Logo } from 'components/Logo'
 import { useToken } from 'context/solana-token'
 import { FormProvider, useForm } from 'react-hook-form'
-import { PROGRAM_ID } from 'idl/programId'
 import { findPDAIdentifier, findPDAProposal } from 'utils/contract/setup'
 import * as anchor from '@project-serum/anchor'
-import { SystemProgram } from '@solana/web3.js'
-import { createMint, TOKEN_PROGRAM_ID } from '@solana/spl-token'
+import { PublicKey, SystemProgram } from '@solana/web3.js'
 import { MINT_A_DECIMALS } from 'constants/contract'
 import { useProgram } from 'context/program'
 import { FormListbox } from 'components/FormListbox'
 import { FormGrantAmountInput } from 'components/FormGrantAmountInput'
 import { GrantAmount } from 'types/grant'
+import { retry } from 'utils/retry'
 
 export interface GrantData {
   title: string
@@ -29,7 +28,7 @@ export interface GrantData {
 
 const GrantPage = () => {
   const { program } = useProgram()
-  const { publicKey } = useWallet()
+  const { publicKey, sendTransaction } = useWallet()
   const { connection } = useConnection()
   const { allValuableTokens } = useToken()
 
@@ -38,46 +37,37 @@ const GrantPage = () => {
   })
   const { handleSubmit } = formInstance
 
-  const onSubmit = async (data: GrantData) => {
-    alert(JSON.stringify(data))
-  }
+  const onSubmit = async (data?: GrantData) => {
+    if (!program || !publicKey || !data) return
 
-  const payer = anchor.web3.Keypair.generate()
-  // const sender = anchor.web3.Keypair.generate()
-  const recipient = anchor.web3.Keypair.generate()
-
-  const createProposal = async () => {
-    if (!program || !publicKey) return
+    const grantAmount = Number(data.grantAmount.amount)
+    const grantToken = allValuableTokens.find(
+      (token) => token.symbol === data.grantAmount?.token,
+    )
+    if (Number.isNaN(grantAmount) || grantAmount <= 0 || !grantToken) return
 
     try {
       const [identifierAccount] = findPDAIdentifier(publicKey, program)
 
-      await program.methods
+      const transaction = await program.methods
         .createIdentifier()
         .accounts({
           identifier: identifierAccount,
           sender: publicKey,
-          systemProgram: PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         })
-        .signers([])
-        .rpc()
+        .transaction()
+      await sendTransaction(transaction, connection)
 
-      let identifierData = await program.account.identifier.fetch(
-        identifierAccount,
+      const identifierData = await retry(
+        () => program.account.identifier.fetch(identifierAccount),
+        2000,
+        3,
       )
       console.log('[identifier account] Create result: ', identifierData)
 
-      const mintA = await createMint(
-        connection,
-        payer,
-        payer.publicKey,
-        null,
-        MINT_A_DECIMALS,
-        undefined,
-        undefined,
-        TOKEN_PROGRAM_ID,
-      )
+      const mintA = grantToken.mint
 
       const [proposalAccount] = findPDAProposal(
         publicKey,
@@ -85,15 +75,16 @@ const GrantPage = () => {
         program,
       )
 
-      await program.methods
+      const createProposalTx = await program.methods
         .createProposal(
-          recipient.publicKey,
+          new PublicKey(data.approverWallet),
           'https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png',
-          'Orca summer Winner',
+          data.title,
           '',
           mintA,
-          'gamefi',
-          new anchor.BN(100 * 10 ** MINT_A_DECIMALS),
+          data.tag,
+          new anchor.BN(grantAmount * 10 ** grantToken.decimals),
+          true,
         )
         .accounts({
           proposal: proposalAccount,
@@ -102,78 +93,86 @@ const GrantPage = () => {
           systemProgram: SystemProgram.programId,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         })
-        .signers([])
-        .rpc()
+        .transaction()
+      await sendTransaction(createProposalTx, connection)
 
-      const dataProposal = await program.account.proposal.fetch(proposalAccount)
-      console.log('[proposal account] Create result: ', dataProposal)
-
-      identifierData = await program.account.identifier.fetch(identifierAccount)
-
-      const [proposalAccount1] = findPDAProposal(
-        publicKey,
-        identifierData.count as any,
-        program,
+      const proposalData = await retry(
+        () => program.account.proposal.fetch(proposalAccount),
+        2000,
+        3,
       )
-
-      await program.methods
-        .createProposal(
-          recipient.publicKey,
-          'https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png',
-          'Orca summer 2nd',
-          '',
-          mintA,
-          'defi',
-          new anchor.BN(100 * 10 ** MINT_A_DECIMALS),
-        )
-        .accounts({
-          proposal: proposalAccount1,
-          identifier: identifierAccount,
-          sender: publicKey,
-          systemProgram: SystemProgram.programId,
-          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-        })
-        .signers([])
-        .rpc()
-
-      const dataProposal1 = await program.account.proposal.fetch(
-        proposalAccount1,
-      )
-      console.log('[proposal account 1] Create result: ', dataProposal1)
-
-      identifierData = await program.account.identifier.fetch(identifierAccount)
-      const [proposalAccount2] = await findPDAProposal(
-        publicKey,
-        identifierData.count as any,
-        program,
-      )
-
-      await program.methods
-        .createProposal(
-          recipient.publicKey,
-          'https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png',
-          'Orca summer 3rd',
-          '',
-          mintA,
-          'orca',
-          new anchor.BN(100 * 10 ** MINT_A_DECIMALS),
-        )
-        .accounts({
-          proposal: proposalAccount2,
-          identifier: identifierAccount,
-          sender: publicKey,
-          systemProgram: SystemProgram.programId,
-          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-        })
-        .signers([])
-        .rpc()
-
-      const dataProposal2 = await program.account.proposal.fetch(
-        proposalAccount2,
-      )
-      console.log('[proposal account 2] Create result: ', dataProposal2)
+      console.log('[proposal account] Create result: ', proposalData)
     } catch (err) {
       console.log({ err })
+      alert(err)
+    }
+  }
+
+  const createProposal = async () => {
+    if (!program || !publicKey) return
+
+    try {
+      const [identifierAccount] = findPDAIdentifier(publicKey, program)
+
+      const transaction = await program.methods
+        .createIdentifier()
+        .accounts({
+          identifier: identifierAccount,
+          sender: publicKey,
+          systemProgram: SystemProgram.programId,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+        })
+        .transaction()
+      await sendTransaction(transaction, connection)
+
+      const identifierData = await retry(
+        () => program.account.identifier.fetch(identifierAccount),
+        2000,
+        3,
+      )
+      console.log('[identifier account] Create result: ', identifierData)
+
+      const mintA = new PublicKey(
+        'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+      )
+
+      const [proposalAccount] = findPDAProposal(
+        publicKey,
+        identifierData.count as any,
+        program,
+      )
+
+      const recipient = anchor.web3.Keypair.generate()
+      const createProposalTx = await program.methods
+        .createProposal(
+          recipient.publicKey,
+          'https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png',
+          'Orca summer Winner',
+          '',
+          mintA,
+          'gamefi',
+          new anchor.BN(1 * 10 ** MINT_A_DECIMALS),
+          true,
+        )
+        .accounts({
+          proposal: proposalAccount,
+          identifier: identifierAccount,
+          sender: publicKey,
+          systemProgram: SystemProgram.programId,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+        })
+        .transaction()
+      await sendTransaction(createProposalTx, connection)
+
+      const proposalData = await retry(
+        () => program.account.proposal.fetch(proposalAccount),
+        2000,
+        3,
+      )
+      console.log('[proposal account] Create result: ', proposalData)
+    } catch (err) {
+      console.log({ err })
+      alert(err)
     }
   }
 
@@ -254,7 +253,7 @@ const GrantPage = () => {
                 Submit
               </Button>
               <Button className="ml-2" type="button" onClick={createProposal}>
-                Create Proposal
+                Test
               </Button>
             </div>
           </form>
