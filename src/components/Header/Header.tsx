@@ -1,5 +1,4 @@
 import { useDisclosure } from '@dwarvesf/react-hooks'
-import { truncate } from '@dwarvesf/react-utils'
 import { Menu, Transition } from '@headlessui/react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Button } from 'components/Button'
@@ -11,6 +10,7 @@ import { Text } from 'components/Text'
 import { useAuthContext } from 'context/auth'
 import Link from 'next/link'
 import React, { Fragment } from 'react'
+import { formatWallet } from 'utils/formatWallet'
 import { ProfileModal } from './ProfileModal'
 import { WalletModal } from './WalletModal'
 // import { Logo } from './Logo'
@@ -59,7 +59,7 @@ export const Header = () => {
                     className="rounded-full"
                   />
                   <span className="text-sm">
-                    {truncate(String(publicKey), 10, true)}
+                    {formatWallet(String(publicKey))}
                   </span>
                 </Menu.Button>
                 <Transition

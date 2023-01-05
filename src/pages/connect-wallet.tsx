@@ -1,4 +1,3 @@
-import { truncate } from '@dwarvesf/react-utils'
 import { WalletReadyState } from '@solana/wallet-adapter-base'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Button } from 'components/Button'
@@ -8,6 +7,7 @@ import { Layout } from 'components/Layout'
 import { Text } from 'components/Text'
 import { useToken } from 'context/solana-token'
 import dynamic from 'next/dynamic'
+import { formatWallet } from 'utils/formatWallet'
 
 const WalletList = () => {
   const { wallets, select } = useWallet()
@@ -86,7 +86,7 @@ const WalletInfo = () => {
       <div className="flex items-center justify-between">
         <div className="flex space-x-1">
           <Text>Wallet:</Text>
-          <Text className="text-pink-500">{truncate(address, 15, true)}</Text>
+          <Text className="text-pink-500">{formatWallet(address)}</Text>
         </div>
         <Button onClick={disconnect}>Disconnect</Button>
       </div>

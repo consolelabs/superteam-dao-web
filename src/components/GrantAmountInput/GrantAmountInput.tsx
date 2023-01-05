@@ -13,7 +13,7 @@ export interface GrantAmountInputProps {
   onChange?: (value: GrantAmount) => void
   invalid?: boolean
   className?: string
-  items: { key: React.Key; value: string }[]
+  items: { key: React.Key; value: string; icon?: string }[]
 }
 
 export const GrantAmountInput = React.forwardRef<
@@ -69,17 +69,18 @@ export const GrantAmountInput = React.forwardRef<
                 value={item.value}
                 className={({ active }) =>
                   cx(
-                    'relative cursor-default select-none py-1 px-4 text-sm text-right',
+                    'relative cursor-default select-none py-1 px-4 text-sm flex items-center space-x-2',
                     active
                       ? 'bg-purple-500 bg-opacity-10 text-black'
                       : 'text-gray-900',
                   )
                 }
               >
-                {item.value}
+                <img src={item.icon} alt="" className="w-4 h-4 rounded-full" />
+                <span>{item.value}</span>
               </Listbox.Option>
             ))}
-            <div className="relative px-4 py-1">
+            <div className="relative px-4 pt-2 pb-1">
               <Input
                 className="w-full pr-8"
                 fullWidth

@@ -1,4 +1,3 @@
-import { truncate } from '@dwarvesf/react-utils'
 import { WalletReadyState } from '@solana/wallet-adapter-base'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Button } from 'components/Button'
@@ -10,6 +9,7 @@ import {
   ModalTitle,
 } from 'components/Modal'
 import { Text } from 'components/Text'
+import { formatWallet } from 'utils/formatWallet'
 
 interface Props extends ModalProps {}
 
@@ -18,7 +18,7 @@ const WalletInfo = () => {
   const address = String(publicKey)
 
   return (
-    <div className="mt-5 space-y-5">
+    <div className="flex justify-between mt-5">
       <div className="flex items-center space-x-2">
         <img
           src={wallet?.adapter.icon}
@@ -27,9 +27,7 @@ const WalletInfo = () => {
         />
         <div>
           <Text className="text-sm text-black">{wallet?.adapter.name}</Text>
-          <Text className="text-sm text-pink-500">
-            {truncate(address, 15, true)}
-          </Text>
+          <Text className="text-sm text-pink-500">{formatWallet(address)}</Text>
         </div>
       </div>
       <div className="text-center">
