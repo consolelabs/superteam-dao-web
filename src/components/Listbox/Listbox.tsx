@@ -37,7 +37,7 @@ export const CustomListbox = React.forwardRef<HTMLInputElement, ListboxProps>(
           <Listbox.Button
             className={({ open }) =>
               cx(
-                'h-10 relative focus:outline-none bg-transparent border-2 border-purple-600 rounded-lg pl-3 pr-10 appearance-none text-sm w-full block text-left',
+                'h-10 relative text-white focus:outline-none bg-transparent border-2 border-purple-600 rounded-lg pl-3 pr-10 appearance-none text-sm w-full block text-left',
                 {
                   'border-red-600 text-red-900': invalid,
                   'ring-purple-500 border-purple-500 ring-1': open,
@@ -50,7 +50,7 @@ export const CustomListbox = React.forwardRef<HTMLInputElement, ListboxProps>(
                 <span className="block truncate">
                   {Array.isArray(value) ? value?.join(', ') : value}
                 </span>
-                <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <span className="absolute inset-y-0 right-0 flex items-center pr-2 text-purple-600 pointer-events-none">
                   <IconChevronDown
                     className={cx('w-4 h-4 transition-all', {
                       'rotate-180': open,

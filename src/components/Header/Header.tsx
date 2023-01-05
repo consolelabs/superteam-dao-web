@@ -42,7 +42,7 @@ export const Header = () => {
             </Text>
           </span>
           <div className="flex items-center space-x-3">
-            <Link href="/grant/new">
+            <Link href="/create-grant">
               <Button appearance="border">Create new grant</Button>
             </Link>
             {connected ? (

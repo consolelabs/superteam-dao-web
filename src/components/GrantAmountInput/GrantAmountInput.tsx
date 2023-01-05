@@ -44,16 +44,16 @@ export const GrantAmountInput = React.forwardRef<
             <input
               value={value?.amount}
               onChange={(e) => onChange?.({ ...value, amount: e.target.value })}
-              className="h-full col-span-2 px-3 py-2 border-none rounded-lg focus:outline-none focus:ring-0"
+              className="h-full col-span-2 px-3 py-2 bg-transparent border-none rounded-lg focus:outline-none focus:ring-0"
             />
             <Listbox.Button
-              className="col-span-1 pl-3 pr-10 text-left border-l"
+              className="col-span-1 pl-3 pr-10 text-left border-l border-purple-600"
               onFocus={(e: SyntheticEvent<HTMLButtonElement>) => {
                 e.currentTarget.blur()
               }}
             >
               <span className="block truncate">{value?.token}</span>
-              <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <span className="absolute inset-y-0 right-0 flex items-center pr-2 text-purple-600 pointer-events-none">
                 <IconChevronDown
                   className={cx('w-4 h-4 transition-all', {
                     'rotate-180': open,
@@ -82,13 +82,13 @@ export const GrantAmountInput = React.forwardRef<
             ))}
             <div className="relative px-4 pt-2 pb-1">
               <Input
-                className="w-full pr-8"
+                className="w-full pr-8 text-black"
                 fullWidth
                 placeholder="Enter contract"
               />
               <button
                 type="button"
-                className="absolute inset-y-0 flex items-center text-xl right-6"
+                className="absolute inset-y-0 flex items-center text-xl text-purple-600 right-6"
               >
                 <IconPlus className="w-5 h-5" />
               </button>

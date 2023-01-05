@@ -1,6 +1,5 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { Button } from 'components/Button'
-import { Card } from 'components/Card'
 import { FormInput } from 'components/FormInput'
 import { FormTextarea } from 'components/FormTextarea'
 import { Layout } from 'components/Layout'
@@ -16,6 +15,10 @@ import { FormGrantAmountInput } from 'components/FormGrantAmountInput'
 import { GrantAmount } from 'types/grant'
 import { retry } from 'utils/retry'
 import { isValidPublicKey } from 'utils/publicKey'
+import { Program } from '@project-serum/anchor'
+import { useState } from 'react'
+import { useDisclosure } from '@dwarvesf/react-hooks'
+import { ResultModal } from 'components/ResultModal'
 
 const minters = ['Applicant (You)', 'Approver'] as const
 type Minter = typeof minters[number]
@@ -26,7 +29,6 @@ export interface GrantData {
   description: string
   grantAmount: GrantAmount
   approverWallet: string
-  linkSubmission: string
   minter: Minter
 }
 
@@ -36,10 +38,53 @@ const GrantPage = () => {
   const { connection } = useConnection()
   const { allValuableTokens } = useToken()
 
+  const [submitting, setSubmitting] = useState(false)
+  const [result, setResult] = useState<{ data?: any; error?: any }>({})
+  const {
+    isOpen: isOpenResultModal,
+    onClose: onCloseResultModal,
+    onOpen: onOpenResultModal,
+  } = useDisclosure()
   const formInstance = useForm<GrantData>({
-    defaultValues: { minter: 'Applicant (You)' },
+    defaultValues: {
+      title: '',
+      tags: [],
+      description: '',
+      grantAmount: {},
+      approverWallet: '',
+      minter: 'Applicant (You)',
+    },
   })
   const { handleSubmit } = formInstance
+
+  const getIdentifier = async (
+    program: Program,
+    identifier: PublicKey,
+    sender: PublicKey,
+  ) => {
+    const identifierData = await program.account.identifier.fetch(identifier)
+    if (identifierData) {
+      return identifierData
+    }
+
+    const transaction = await program.methods
+      .createIdentifier()
+      .accounts({
+        identifier,
+        sender,
+        systemProgram: SystemProgram.programId,
+        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+      })
+      .transaction()
+    await sendTransaction(transaction, connection)
+
+    const newIdentifierData = await retry(
+      () => program.account.identifier.fetch(identifier),
+      2000,
+      3,
+    )
+    return newIdentifierData
+  }
 
   const onSubmit = async (data?: GrantData) => {
     if (!program || !publicKey || !data) return
@@ -51,25 +96,14 @@ const GrantPage = () => {
     if (Number.isNaN(grantAmount) || grantAmount <= 0 || !grantToken) return
 
     try {
+      setSubmitting(true)
       const [identifierAccount] = findPDAIdentifier(publicKey, program)
 
-      const transaction = await program.methods
-        .createIdentifier()
-        .accounts({
-          identifier: identifierAccount,
-          sender: publicKey,
-          systemProgram: SystemProgram.programId,
-          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-        })
-        .transaction()
-      await sendTransaction(transaction, connection)
-
-      const identifierData = await retry(
-        () => program.account.identifier.fetch(identifierAccount),
-        2000,
-        3,
+      const identifierData = await getIdentifier(
+        program,
+        identifierAccount,
+        publicKey,
       )
-      console.log('[identifier account] Create result: ', identifierData)
 
       const mintA = grantToken.mint
 
@@ -84,7 +118,7 @@ const GrantPage = () => {
           new PublicKey(data.approverWallet),
           'https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png',
           data.title,
-          '',
+          data.description,
           mintA,
           data.tags.join(','),
           new anchor.BN(grantAmount * 10 ** grantToken.decimals),
@@ -105,19 +139,18 @@ const GrantPage = () => {
         2000,
         3,
       )
-      console.log('[proposal account] Create result: ', proposalData)
-    } catch (err) {
-      console.log({ err })
-      alert(err)
+      setResult({ data: proposalData })
+    } catch (error: any) {
+      setResult({ error })
+    } finally {
+      setSubmitting(false)
+      onOpenResultModal()
     }
   }
 
   return (
     <Layout>
-      <Card
-        spacing={false}
-        className="flex flex-col items-center p-6 space-y-3 text-black"
-      >
+      <div className="flex flex-col items-center w-full p-6 space-y-3">
         {/* TODO: upload logo */}
         <Logo width={106} height={106} />
         <FormProvider {...formInstance}>
@@ -182,14 +215,6 @@ const GrantPage = () => {
                 />
               </div>
               <div className="col-span-6">
-                <FormInput
-                  label="Link Submission"
-                  name="LlinkSubmission"
-                  fullWidth
-                  rules={{ required: 'Required' }}
-                />
-              </div>
-              <div className="col-span-6">
                 <FormListbox
                   label="Who have the authority to mint the Proof of Work?"
                   name="minter"
@@ -200,13 +225,19 @@ const GrantPage = () => {
               </div>
             </div>
             <div className="px-5 py-2 text-center">
-              <Button appearance="primary" type="submit">
+              <Button appearance="primary" type="submit" disabled={submitting}>
                 Submit
               </Button>
             </div>
           </form>
         </FormProvider>
-      </Card>
+      </div>
+
+      <ResultModal
+        isOpen={isOpenResultModal}
+        onClose={onCloseResultModal}
+        title={result.data ? 'Submitted successfully' : 'Something went wrong'}
+      />
     </Layout>
   )
 }
