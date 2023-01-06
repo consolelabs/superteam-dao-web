@@ -10,13 +10,15 @@ import { SolanaTokenProvider } from 'context/solana-token'
 import { ProgramProvider } from 'context/program'
 import Moralis from 'moralis'
 
+const { MORALIS_API_KEY } = process.env
+
 class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props
 
-    if (!Moralis.Core.isStarted) {
+    if (!Moralis.Core.isStarted && MORALIS_API_KEY) {
       Moralis.start({
-        apiKey: process.env.MORALIS_API_KEY,
+        apiKey: MORALIS_API_KEY,
       })
     }
 
