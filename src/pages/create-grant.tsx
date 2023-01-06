@@ -64,28 +64,33 @@ const GrantPage = () => {
     identifier: PublicKey,
     sender: PublicKey,
   ) => {
-    const identifierData = await program.account.identifier.fetch(identifier)
-    if (identifierData) {
-      return identifierData
+    try {
+      const identifierData = await program.account.identifier.fetch(identifier)
+
+      if (identifierData) {
+        return identifierData
+      }
+
+      throw new Error('Identifier not found')
+    } catch (error) {
+      const transaction = await program.methods
+        .createIdentifier()
+        .accounts({
+          identifier,
+          sender,
+          systemProgram: SystemProgram.programId,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+        })
+        .transaction()
+      await sendTransaction(transaction, connection)
+
+      const newIdentifierData = await retry(
+        () => program.account.identifier.fetch(identifier),
+        2000,
+        3,
+      )
+      return newIdentifierData
     }
-
-    const transaction = await program.methods
-      .createIdentifier()
-      .accounts({
-        identifier,
-        sender,
-        systemProgram: SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      })
-      .transaction()
-    await sendTransaction(transaction, connection)
-
-    const newIdentifierData = await retry(
-      () => program.account.identifier.fetch(identifier),
-      2000,
-      3,
-    )
-    return newIdentifierData
   }
 
   const onSubmit = async (data?: GrantData) => {
