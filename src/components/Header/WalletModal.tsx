@@ -1,6 +1,9 @@
+import { useClipboard } from '@dwarvesf/react-hooks'
 import { WalletReadyState } from '@solana/wallet-adapter-base'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Button } from 'components/Button'
+import { IconCheck } from 'components/icons/components/IconCheck'
+import { IconCopy } from 'components/icons/components/IconCopy'
 import {
   Modal,
   ModalCloseButton,
@@ -16,6 +19,7 @@ interface Props extends ModalProps {}
 const WalletInfo = () => {
   const { wallet, publicKey, disconnect } = useWallet()
   const address = String(publicKey)
+  const { onCopy, hasCopied } = useClipboard(address)
 
   return (
     <div className="flex justify-between mt-5">
@@ -27,7 +31,19 @@ const WalletInfo = () => {
         />
         <div>
           <Text className="text-sm text-black">{wallet?.adapter.name}</Text>
-          <Text className="text-sm text-pink-500">{formatWallet(address)}</Text>
+          <div className="flex items-center space-x-1">
+            <Text className="text-sm text-pink-500">
+              {formatWallet(address)}
+            </Text>
+            {hasCopied ? (
+              <IconCheck className="w-4 h-4 text-purple-600 cursor-pointer stroke-2" />
+            ) : (
+              <IconCopy
+                className="w-4 h-4 text-purple-600 cursor-pointer stroke-2"
+                onClick={onCopy}
+              />
+            )}
+          </div>
         </div>
       </div>
       <div className="text-center">

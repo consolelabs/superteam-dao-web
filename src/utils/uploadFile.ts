@@ -15,11 +15,6 @@ const convertBase64 = (file: File) => {
 
 export const uploadFile = async (file: File) => {
   try {
-    await Moralis.start({
-      apiKey:
-        '9bIt1xsuHlxCiXi9Ab9OzVtfjKwbQhjqTL9ws0lgSzHUqg4aJIEyJRLCn2JdXBfu',
-    })
-
     const fileBase64 = await convertBase64(file)
     const fileContent = fileBase64?.toString() || ''
 

@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { Layout } from 'components/Layout'
 import { Text } from 'components/Text'
@@ -10,6 +10,7 @@ import { GrantList } from 'components/GrantList'
 import { Input } from 'components/Input'
 import { IconChevronDown } from 'components/icons/components/IconChevronDown'
 import { IconChevronUp } from 'components/icons/components/IconChevronUp'
+import { useProgram } from 'context/program'
 
 const grantItems: GrantItemType[] = [
   {
@@ -84,6 +85,7 @@ const grantItems: GrantItemType[] = [
 
 const HomePage = () => {
   const { user } = useAuthContext()
+  const { program } = useProgram()
   const [activeTab, setActiveTab] = useState('approved')
 
   const handleChangeTab = (tabId: string) => {
@@ -110,10 +112,23 @@ const HomePage = () => {
     },
   ]
 
+  useEffect(() => {
+    if (!program) return
+    const fetch = async () => {
+      try {
+        const proposal = await program.account.proposal.all()
+        console.log({ proposal })
+      } catch (error) {
+        console.log({ error })
+      }
+    }
+    fetch()
+  }, [program])
+
   return (
     <Layout>
       <aside className="w-[16rem] flex-none px-9 mr-4 border-2 border-purple-600 rounded-lg py-8 flex min-h-full flex-col">
-        <div className="text-center mb-4">
+        <div className="mb-4 text-center">
           <span className="overflow-hidden rounded-full w-[86px] h-[86px] inline-flex mx-auto">
             <img
               src={user.avatar}
@@ -124,7 +139,7 @@ const HomePage = () => {
             />
           </span>
         </div>
-        <Text as="b" className="mb-2 text-xl block text-center">
+        <Text as="b" className="block mb-2 text-xl text-center">
           {user.firstName}
         </Text>
         <Text className="block text-center text-slate-400">
@@ -140,7 +155,7 @@ const HomePage = () => {
             target="_blank"
             appearance="link"
             href="https://solscan.io/tx/49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4"
-            className="truncate block max-w-full mb-1"
+            className="block max-w-full mb-1 truncate"
             size="lg"
             display="block"
           >
@@ -151,7 +166,7 @@ const HomePage = () => {
             target="_blank"
             appearance="link"
             href="https://solscan.io/tx/49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4"
-            className="truncate block max-w-full mb-1"
+            className="block max-w-full mb-1 truncate"
             size="lg"
             display="block"
           >
@@ -159,8 +174,8 @@ const HomePage = () => {
           </Button>
         </div>
       </aside>
-      <div className="px-4 flex flex-col flex-grow">
-        <div className="mb-5 flex justify-between">
+      <div className="flex flex-col flex-grow px-4">
+        <div className="flex justify-between mb-5">
           <div>
             <Button appearance="primary" size="lg" className="mr-4" active>
               Sent Grant
@@ -184,7 +199,7 @@ const HomePage = () => {
                 {({ open }) => (
                   <>
                     Tags
-                    <span className="ml-2 w-4 h-4 text-purple-600">
+                    <span className="w-4 h-4 ml-2 text-purple-600">
                       {open ? <IconChevronUp /> : <IconChevronDown />}
                     </span>
                   </>
@@ -216,7 +231,7 @@ const HomePage = () => {
             </Menu>
           </div>
         </div>
-        <div className="px-12 py-8 border-purple-600 border-2 rounded-lg flex-grow">
+        <div className="flex-grow px-12 py-8 border-2 border-purple-600 rounded-lg">
           <Tabs
             activeTab={activeTab}
             onChange={handleChangeTab}

@@ -19,6 +19,7 @@ interface TokenValues {
   balances: Record<string, TokenAmount>
   allSelectableTokens: SplToken[]
   allValuableTokens: SplToken[]
+  grantTokens: SplToken[]
 }
 
 const [Provider, useToken] = createContext<TokenValues>({
@@ -49,6 +50,12 @@ const SolanaTokenProvider = ({ children }: WithChildren) => {
     ),
   ]
 
+  const grantTokens = [
+    QuantumSOLVersionSOL,
+    QuantumSOLVersionWSOL,
+    ...tokenList.filter((t) => ['USDC'].includes(String(t.symbol))),
+  ]
+
   return (
     <Provider
       value={{
@@ -62,6 +69,7 @@ const SolanaTokenProvider = ({ children }: WithChildren) => {
         balances,
         allSelectableTokens,
         allValuableTokens,
+        grantTokens,
       }}
     >
       {children}

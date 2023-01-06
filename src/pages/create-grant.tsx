@@ -37,7 +37,7 @@ const GrantPage = () => {
   const { program } = useProgram()
   const { publicKey, sendTransaction } = useWallet()
   const { connection } = useConnection()
-  const { allValuableTokens } = useToken()
+  const { grantTokens } = useToken()
 
   const [selectedFile, setSelectedFile] = useState<File>()
   const [submitting, setSubmitting] = useState(false)
@@ -97,7 +97,7 @@ const GrantPage = () => {
     if (!program || !publicKey || !data) return
 
     const grantAmount = Number(data.grantAmount.amount)
-    const grantToken = allValuableTokens.find(
+    const grantToken = grantTokens.find(
       (token) => token.symbol === data.grantAmount?.token,
     )
     if (Number.isNaN(grantAmount) || grantAmount <= 0 || !grantToken) return
@@ -206,7 +206,7 @@ const GrantPage = () => {
                     validate: (data?: GrantAmount) =>
                       !data?.amount || !data?.token ? 'Required' : undefined,
                   }}
-                  items={allValuableTokens.map((t) => ({
+                  items={grantTokens.map((t) => ({
                     key: t.id,
                     value: t.symbol!,
                     icon: t.icon,

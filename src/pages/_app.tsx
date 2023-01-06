@@ -8,10 +8,17 @@ import { Toaster } from 'components/Toast'
 import { SolanaWalletProvider } from 'context/solana-wallet'
 import { SolanaTokenProvider } from 'context/solana-token'
 import { ProgramProvider } from 'context/program'
+import Moralis from 'moralis'
 
 class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props
+
+    if (!Moralis.Core.isStarted) {
+      Moralis.start({
+        apiKey: process.env.MORALIS_API_KEY,
+      })
+    }
 
     return (
       <>
