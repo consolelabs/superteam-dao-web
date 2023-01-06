@@ -1,4 +1,4 @@
 export interface GrantAmount {
-  amount?: string
+  amount?: number | string
   token?: string
 }

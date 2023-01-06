@@ -3,7 +3,6 @@ import { Button } from 'components/Button'
 import { FormInput } from 'components/FormInput'
 import { FormTextarea } from 'components/FormTextarea'
 import { Layout } from 'components/Layout'
-import { Logo } from 'components/Logo'
 import { useToken } from 'context/solana-token'
 import { FormProvider, useForm } from 'react-hook-form'
 import { findPDAIdentifier, findPDAProposal } from 'utils/contract/setup'
@@ -19,6 +18,8 @@ import { Program } from '@project-serum/anchor'
 import { useState } from 'react'
 import { useDisclosure } from '@dwarvesf/react-hooks'
 import { ResultModal } from 'components/ResultModal'
+import { ImageUpload } from 'components/ImageUpload'
+import { uploadFile } from 'utils/uploadFile'
 
 const minters = ['Applicant (You)', 'Approver'] as const
 type Minter = typeof minters[number]
@@ -38,6 +39,7 @@ const GrantPage = () => {
   const { connection } = useConnection()
   const { allValuableTokens } = useToken()
 
+  const [selectedFile, setSelectedFile] = useState<File>()
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<{ data?: any; error?: any }>({})
   const {
@@ -50,7 +52,7 @@ const GrantPage = () => {
       title: '',
       tags: [],
       description: '',
-      grantAmount: {},
+      grantAmount: { amount: '', token: '' },
       approverWallet: '',
       minter: 'Applicant (You)',
     },
@@ -97,6 +99,9 @@ const GrantPage = () => {
 
     try {
       setSubmitting(true)
+
+      const image = selectedFile ? (await uploadFile(selectedFile)) || '' : ''
+
       const [identifierAccount] = findPDAIdentifier(publicKey, program)
 
       const identifierData = await getIdentifier(
@@ -116,7 +121,7 @@ const GrantPage = () => {
       const createProposalTx = await program.methods
         .createProposal(
           new PublicKey(data.approverWallet),
-          'https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png',
+          image,
           data.title,
           data.description,
           mintA,
@@ -151,8 +156,7 @@ const GrantPage = () => {
   return (
     <Layout>
       <div className="flex flex-col items-center w-full p-6 space-y-3">
-        {/* TODO: upload logo */}
-        <Logo width={106} height={106} />
+        <ImageUpload {...{ selectedFile, setSelectedFile }} />
         <FormProvider {...formInstance}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-6 gap-6 p-6">
@@ -162,6 +166,7 @@ const GrantPage = () => {
                   name="title"
                   fullWidth
                   rules={{ required: 'Required' }}
+                  maxLength={100}
                 />
               </div>
               <div className="col-span-3">
@@ -185,10 +190,10 @@ const GrantPage = () => {
                   name="description"
                   fullWidth
                   rows={3}
+                  maxLength={6400}
                 />
               </div>
               <div className="col-span-3">
-                {/* TODO: number input */}
                 <FormGrantAmountInput
                   label="Grant Amount"
                   name="grantAmount"

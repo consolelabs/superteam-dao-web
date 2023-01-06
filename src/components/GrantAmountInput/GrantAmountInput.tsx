@@ -6,6 +6,7 @@ import { GrantAmount } from 'types/grant'
 import { IconChevronDown } from 'components/icons/components/IconChevronDown'
 import { Input } from 'components/Input'
 import { IconPlus } from 'components/icons/components/IconPlus'
+import { NumericFormat } from 'react-number-format'
 
 export interface GrantAmountInputProps {
   id?: string
@@ -41,10 +42,14 @@ export const GrantAmountInput = React.forwardRef<
               },
             )}
           >
-            <input
+            <NumericFormat
+              thousandSeparator
+              allowNegative={false}
               value={value?.amount}
-              onChange={(e) => onChange?.({ ...value, amount: e.target.value })}
-              className="h-full col-span-2 px-3 py-2 bg-transparent border-none rounded-lg focus:outline-none focus:ring-0"
+              onValueChange={(values) =>
+                onChange?.({ ...value, amount: values.floatValue })
+              }
+              className="h-full col-span-2 px-3 py-2 text-sm bg-transparent border-none rounded-lg focus:outline-none focus:ring-0"
             />
             <Listbox.Button
               className="col-span-1 pl-3 pr-10 text-left border-l border-purple-600"

@@ -37,9 +37,11 @@ export const Header = () => {
             {/* <span className="inline-block w-8 h-8 mr-2">
               <Logo />
             </span> */}
-            <Text id="logo" as="strong">
-              Solana Grant
-            </Text>
+            <Link href="/">
+              <Text id="logo" as="strong" className="cursor-pointer">
+                Solana Grant
+              </Text>
+            </Link>
           </span>
           <div className="flex items-center space-x-3">
             <Link href="/create-grant">
