@@ -34,17 +34,23 @@ const HomePage = () => {
     {
       id: 'pending',
       label: 'Pending',
-      content: <GrantList data={grantList} />,
+      content: (
+        <GrantList data={grantList.filter((grant) => grant.status === 0)} />
+      ),
     },
     {
       id: 'approved',
       label: 'Approved',
-      content: <GrantList data={[]} />,
+      content: (
+        <GrantList data={grantList.filter((grant) => grant.status === 2)} />
+      ),
     },
     {
       id: 'rejected',
       label: 'Rejected',
-      content: <GrantList data={[]} />,
+      content: (
+        <GrantList data={grantList.filter((grant) => grant.status === 3)} />
+      ),
     },
   ]
 
