@@ -16,6 +16,7 @@ export interface ListboxProps {
     value: string | number | boolean
   }[]
   multiple?: boolean
+  placeholder?: string
 }
 
 export const CustomListbox = React.forwardRef<HTMLInputElement, ListboxProps>(
@@ -29,7 +30,9 @@ export const CustomListbox = React.forwardRef<HTMLInputElement, ListboxProps>(
       className,
       items,
       multiple,
+      placeholder,
     } = props
+    const displayValue = Array.isArray(value) ? value?.join(', ') : value
 
     return (
       <Listbox value={value} onChange={onChange} multiple={multiple}>
@@ -47,8 +50,14 @@ export const CustomListbox = React.forwardRef<HTMLInputElement, ListboxProps>(
           >
             {({ open }) => (
               <>
-                <span className="block truncate">
-                  {Array.isArray(value) ? value?.join(', ') : value}
+                <span
+                  className={
+                    displayValue
+                      ? 'block truncate'
+                      : 'block truncate text-slate-500'
+                  }
+                >
+                  {displayValue || placeholder}
                 </span>
                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 text-purple-600 pointer-events-none">
                   <IconChevronDown
