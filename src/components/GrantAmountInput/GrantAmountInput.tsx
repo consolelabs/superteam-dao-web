@@ -33,7 +33,7 @@ export const GrantAmountInput = React.forwardRef<
         <div id={id} ref={ref} className={cx('relative', className)}>
           <div
             className={cx(
-              'grid group grid-cols-3 h-10 rounded-lg bg-transparent border-2 border-purple-600 text-sm w-full',
+              'flex group h-10 rounded-lg bg-transparent border-2 border-purple-600 text-sm w-full',
               {
                 'border-red-600 text-red-900': invalid,
                 'focus-within:ring-purple-500 focus-within:border-purple-500 focus-within:ring-1':
@@ -49,10 +49,10 @@ export const GrantAmountInput = React.forwardRef<
               onValueChange={(values) =>
                 onChange?.({ ...value, amount: values.floatValue })
               }
-              className="h-full col-span-2 px-3 py-2 text-sm bg-transparent border-none rounded-lg focus:outline-none focus:ring-0"
+              className="h-full px-3 py-2 text-sm bg-transparent border-none rounded-lg focus:outline-none focus:ring-0"
             />
             <Listbox.Button
-              className="col-span-1 pl-3 pr-10 text-left border-l border-purple-600"
+              className="min-w-[100px] pl-3 pr-10 text-left border-l border-purple-600"
               onFocus={(e: SyntheticEvent<HTMLButtonElement>) => {
                 e.currentTarget.blur()
               }}
