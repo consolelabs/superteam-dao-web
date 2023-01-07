@@ -18,7 +18,7 @@ export const uploadFile = async (file: File) => {
     const fileBase64 = await convertBase64(file)
     const fileContent = fileBase64?.toString() || ''
 
-    if (fileContent) {
+    if (!fileContent) {
       return undefined
     }
 
