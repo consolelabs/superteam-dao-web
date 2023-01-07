@@ -45,6 +45,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.41.1",
     "react-hot-toast": "^2.4.0",
+    "react-html-parser": "^2.0.2",
     "react-number-format": "^5.1.2",
     "swr": "^2.0.0"
   },
