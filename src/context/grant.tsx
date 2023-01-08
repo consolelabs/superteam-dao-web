@@ -3,6 +3,7 @@ import { WithChildren } from 'types/common'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useEffect, useState } from 'react'
 import { ProposalFields } from 'idl/accounts'
+import { toast } from 'components/Toast'
 import { useProgram } from './program'
 
 interface GrantValues {
@@ -26,12 +27,9 @@ const GrantProvider = ({ children }: WithChildren) => {
     ProposalFields[]
   >([])
 
-  console.log({ refreshCount })
-
   useEffect(() => {
     if (!program || !publicKey) return
     const fetchProposalBySender = async () => {
-      console.log('fetchProposalBySender')
       try {
         const proposalBySender = await program.account.proposal.all([
           {
@@ -42,8 +40,11 @@ const GrantProvider = ({ children }: WithChildren) => {
           },
         ])
         setProposalBySender(proposalBySender.map((each) => each.account) as any)
-      } catch (error) {
-        console.log({ error })
+      } catch (error: any) {
+        toast.error({
+          title: 'Cannot fetch grant by sender',
+          message: error?.message,
+        })
       }
     }
     fetchProposalBySender()
@@ -52,7 +53,6 @@ const GrantProvider = ({ children }: WithChildren) => {
   useEffect(() => {
     if (!program || !publicKey) return
     const fetchProposalByRecipient = async () => {
-      console.log('fetchProposalByRecipient')
       try {
         const proposalByRecipient = await program.account.proposal.all([
           {
@@ -65,8 +65,11 @@ const GrantProvider = ({ children }: WithChildren) => {
         setProposalByRecipient(
           proposalByRecipient.map((each) => each.account) as any,
         )
-      } catch (error) {
-        console.log({ error })
+      } catch (error: any) {
+        toast.error({
+          title: 'Cannot fetch grant by recipient',
+          message: error?.message,
+        })
       }
     }
     fetchProposalByRecipient()

@@ -21,13 +21,6 @@ const HomePage = () => {
   const [filter, setFilter] = useState<'sender' | 'recipient'>('sender')
   const [tags, setTags] = useState<string[]>([])
 
-  console.log(
-    proposalBySender.filter((grant) =>
-      [GRANT_STATUS.PENDING, GRANT_STATUS.REJECTED].includes(
-        grantStatusMapping[grant.status],
-      ),
-    ),
-  )
   const tabData =
     filter === 'sender'
       ? [
