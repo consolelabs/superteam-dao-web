@@ -1,11 +1,12 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { SystemProgram } from '@solana/web3.js'
 import { Button } from 'components/Button'
+import { toast } from 'components/Toast'
 import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
+import { useGrant } from 'context/grant'
 import { useProgram } from 'context/program'
 import { ProposalFields } from 'idl/accounts'
 import { findPDAProposal } from 'utils/contract/setup'
-import { retry } from 'utils/retry'
 
 interface SenderActionProps {
   grant: ProposalFields
@@ -15,6 +16,7 @@ export const SenderAction = ({ grant }: SenderActionProps) => {
   const { connection } = useConnection()
   const { sendTransaction } = useWallet()
   const { program } = useProgram()
+  const { refreshGrant } = useGrant()
 
   const cancelGrant = async () => {
     if (!program) return
@@ -34,21 +36,51 @@ export const SenderAction = ({ grant }: SenderActionProps) => {
         .transaction()
       await sendTransaction(transaction, connection)
 
-      const proposalCancelData = await retry(
-        () => program.account.proposal.fetch(proposalAccount),
-        2000,
-        3,
-      )
-      console.log(
-        '[proposal cancel account] Create result: ',
-        proposalCancelData,
-      )
-    } catch (error) {
-      console.log({ error })
+      toast.success({
+        title: 'Grant canceled successfully',
+      })
+      setTimeout(() => {
+        refreshGrant()
+      }, 2000)
+    } catch (error: any) {
+      toast.error({
+        title: 'Cannot cancel grant',
+        message: error?.message,
+      })
     }
   }
 
-  const closeGrant = async () => {}
+  const closeGrant = async () => {
+    if (!program) return
+    try {
+      const [proposalAccount] = findPDAProposal(
+        grant.sender,
+        grant.identifier,
+        program,
+      )
+      const transaction = await program.methods
+        .closeProposal()
+        .accounts({
+          proposal: proposalAccount,
+          sender: grant.sender,
+          systemProgram: SystemProgram.programId,
+        })
+        .transaction()
+      await sendTransaction(transaction, connection)
+
+      toast.success({
+        title: 'Grant closed successfully',
+      })
+      setTimeout(() => {
+        refreshGrant()
+      }, 2000)
+    } catch (error: any) {
+      toast.error({
+        title: 'Cannot close grant',
+        message: error?.message,
+      })
+    }
+  }
 
   return {
     [GRANT_STATUS.PENDING]: (

@@ -2,11 +2,12 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { SystemProgram } from '@solana/web3.js'
 import { Button } from 'components/Button'
+import { toast } from 'components/Toast'
 import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
+import { useGrant } from 'context/grant'
 import { useProgram } from 'context/program'
 import { ProposalFields } from 'idl/accounts'
 import { findPDAProposal } from 'utils/contract/setup'
-import { retry } from 'utils/retry'
 
 interface RecipientActionProps {
   grant: ProposalFields
@@ -16,6 +17,7 @@ export const RecipientAction = ({ grant }: RecipientActionProps) => {
   const { connection } = useConnection()
   const { sendTransaction } = useWallet()
   const { program } = useProgram()
+  const { refreshGrant } = useGrant()
 
   const approveGrant = async () => {
     if (!program) return
@@ -36,17 +38,17 @@ export const RecipientAction = ({ grant }: RecipientActionProps) => {
         .transaction()
       await sendTransaction(transaction, connection)
 
-      const proposalApproveData = await retry(
-        () => program.account.proposal.fetch(proposalAccount),
-        2000,
-        3,
-      )
-      console.log(
-        '[proposal approve account] Create result: ',
-        proposalApproveData,
-      )
-    } catch (error) {
-      console.log({ error })
+      toast.success({
+        title: 'Grant approved successfully',
+      })
+      setTimeout(() => {
+        refreshGrant()
+      }, 2000)
+    } catch (error: any) {
+      toast.error({
+        title: 'Cannot approve grant',
+        message: error?.message,
+      })
     }
   }
 
@@ -68,17 +70,17 @@ export const RecipientAction = ({ grant }: RecipientActionProps) => {
         .transaction()
       await sendTransaction(transaction, connection)
 
-      const proposalRejectData = await retry(
-        () => program.account.proposal.fetch(proposalAccount),
-        2000,
-        3,
-      )
-      console.log(
-        '[proposal reject account] Create result: ',
-        proposalRejectData,
-      )
-    } catch (error) {
-      console.log({ error })
+      toast.success({
+        title: 'Grant rejected successfully',
+      })
+      setTimeout(() => {
+        refreshGrant()
+      }, 2000)
+    } catch (error: any) {
+      toast.error({
+        title: 'Cannot reject grant',
+        message: error?.message,
+      })
     }
   }
 

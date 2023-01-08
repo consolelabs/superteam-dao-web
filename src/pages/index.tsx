@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Layout } from 'components/Layout'
 import { Text } from 'components/Text'
 import { useAuthContext } from 'context/auth'
@@ -6,26 +6,28 @@ import { Button } from 'components/Button'
 import { Tabs } from 'components/Tabs'
 import { GrantList } from 'components/GrantList'
 import { Input } from 'components/Input'
-import { useProgram } from 'context/program'
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { ProposalFields } from 'idl/accounts'
+import { useWallet } from '@solana/wallet-adapter-react'
 import { CustomListbox } from 'components/Listbox'
 import { formatWallet } from 'utils/formatWallet'
 import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
+import { GrantProvider, useGrant } from 'context/grant'
 
 const HomePage = () => {
   const { user } = useAuthContext()
-  const { connection } = useConnection()
   const { publicKey } = useWallet()
-  const { program } = useProgram()
-  const [proposalBySender, setProposalBySender] = useState<ProposalFields[]>([])
-  const [proposalByRecipient, setProposalByRecipient] = useState<
-    ProposalFields[]
-  >([])
+  const { proposalBySender, proposalByRecipient } = useGrant()
+
   const [activeTab, setActiveTab] = useState('pending')
   const [filter, setFilter] = useState<'sender' | 'recipient'>('sender')
   const [tags, setTags] = useState<string[]>([])
 
+  console.log(
+    proposalBySender.filter((grant) =>
+      [GRANT_STATUS.PENDING, GRANT_STATUS.REJECTED].includes(
+        grantStatusMapping[grant.status],
+      ),
+    ),
+  )
   const tabData =
     filter === 'sender'
       ? [
@@ -98,48 +100,6 @@ const HomePage = () => {
             ),
           },
         ]
-
-  useEffect(() => {
-    if (!program || !publicKey) return
-    const fetchProposalBySender = async () => {
-      try {
-        const proposalBySender = await program.account.proposal.all([
-          {
-            memcmp: {
-              offset: 40,
-              bytes: publicKey.toBase58(),
-            },
-          },
-        ])
-        setProposalBySender(proposalBySender.map((each) => each.account) as any)
-      } catch (error) {
-        console.log({ error })
-      }
-    }
-    fetchProposalBySender()
-  }, [connection, program, publicKey])
-
-  useEffect(() => {
-    if (!program || !publicKey) return
-    const fetchProposalByRecipient = async () => {
-      try {
-        const proposalByRecipient = await program.account.proposal.all([
-          {
-            memcmp: {
-              offset: 8,
-              bytes: publicKey.toBase58(),
-            },
-          },
-        ])
-        setProposalByRecipient(
-          proposalByRecipient.map((each) => each.account) as any,
-        )
-      } catch (error) {
-        console.log({ error })
-      }
-    }
-    fetchProposalByRecipient()
-  }, [connection, program, publicKey])
 
   return (
     <Layout>
@@ -244,4 +204,8 @@ const HomePage = () => {
   )
 }
 
-export default HomePage
+export default () => (
+  <GrantProvider>
+    <HomePage />
+  </GrantProvider>
+)
