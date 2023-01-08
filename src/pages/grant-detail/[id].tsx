@@ -6,6 +6,8 @@ import { Text } from 'components/Text'
 import { Button } from 'components/Button'
 import { IconChevronDown } from 'components/icons/components/IconChevronDown'
 import { IconChevronUp } from 'components/icons/components/IconChevronUp'
+import { formatWallet } from 'utils/formatWallet'
+import { CopyElement } from 'components/CopyElement'
 
 const DESCRIPTION = `Writing grant proposals can be stressful process for many
 organizations. However, it's also an exciting time for your
@@ -126,6 +128,48 @@ const GrantPage = () => {
         </div>
         <div>
           <Text className="text-3xl font-bold mb-4">Transaction</Text>
+          <div className="flex">
+            <div className="w-1/2">
+              <div className="mb-2">
+                <Text as="span" className="text-lg mr-2">
+                  Grant amount:
+                </Text>
+                <Text as="span" className="text-lg font-bold text-purple-600">
+                  10000 SOL
+                </Text>
+              </div>
+              <div className="mb-2">
+                <Text as="span" className="text-lg mr-2">
+                  Approver:
+                </Text>
+                <CopyElement
+                  value="59hZKyRiX7Y6o364RinbwN8GPajBa614St4iwt7wKe1q"
+                  iconClass="w-5 h-5 text-purple-600 cursor-pointer stroke-2"
+                >
+                  <Text as="span" className="text-lg font-bold text-purple-600">
+                    {formatWallet(
+                      '59hZKyRiX7Y6o364RinbwN8GPajBa614St4iwt7wKe1q',
+                    )}
+                  </Text>
+                </CopyElement>
+              </div>
+              <div className="mb-2">
+                <Text as="span" className="text-lg mr-2">
+                  Applicant:
+                </Text>
+                <CopyElement
+                  value="59hZKyRiX7Y6o364RinbwN8GPajBa614St4iwt7wKe1q"
+                  iconClass="w-5 h-5 text-purple-600 cursor-pointer stroke-2"
+                >
+                  <Text as="span" className="text-lg font-bold text-purple-600">
+                    {formatWallet(
+                      '59hZKyRiX7Y6o364RinbwN8GPajBa614St4iwt7wKe1q',
+                    )}
+                  </Text>
+                </CopyElement>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>
