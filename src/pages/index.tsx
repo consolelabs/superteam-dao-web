@@ -21,78 +21,48 @@ const HomePage = () => {
   const [filter, setFilter] = useState<'sender' | 'recipient'>('sender')
   const [tags, setTags] = useState<string[]>([])
 
-  const tabData =
-    filter === 'sender'
-      ? [
-          {
-            id: 'pending',
-            label: 'Pending',
-            content: (
-              <GrantList
-                filter={filter}
-                data={proposalBySender.filter((grant) =>
-                  [GRANT_STATUS.PENDING, GRANT_STATUS.REJECTED].includes(
-                    grantStatusMapping[grant.status],
-                  ),
-                )}
-              />
-            ),
-          },
-          {
-            id: 'approved',
-            label: 'Approved',
-            content: (
-              <GrantList
-                filter={filter}
-                data={proposalBySender.filter(
-                  (grant) =>
-                    grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
-                )}
-              />
-            ),
-          },
-        ]
-      : [
-          {
-            id: 'pending',
-            label: 'Pending',
-            content: (
-              <GrantList
-                filter={filter}
-                data={proposalByRecipient.filter(
-                  (grant) =>
-                    grantStatusMapping[grant.status] === GRANT_STATUS.PENDING,
-                )}
-              />
-            ),
-          },
-          {
-            id: 'approved',
-            label: 'Approved',
-            content: (
-              <GrantList
-                filter={filter}
-                data={proposalByRecipient.filter(
-                  (grant) =>
-                    grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
-                )}
-              />
-            ),
-          },
-          {
-            id: 'rejected',
-            label: 'Rejected',
-            content: (
-              <GrantList
-                filter={filter}
-                data={proposalByRecipient.filter(
-                  (grant) =>
-                    grantStatusMapping[grant.status] === GRANT_STATUS.REJECTED,
-                )}
-              />
-            ),
-          },
-        ]
+  const grantData = filter === 'sender' ? proposalBySender : proposalByRecipient
+  const tabData = [
+    {
+      id: 'pending',
+      label: 'Pending',
+      content: (
+        <GrantList
+          filter={filter}
+          data={grantData.filter(
+            (grant) =>
+              grantStatusMapping[grant.status] === GRANT_STATUS.PENDING,
+          )}
+        />
+      ),
+    },
+    {
+      id: 'approved',
+      label: 'Approved',
+      content: (
+        <GrantList
+          filter={filter}
+          data={grantData.filter(
+            (grant) =>
+              grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
+          )}
+        />
+      ),
+    },
+    {
+      id: 'rejected',
+      label: 'Rejected',
+      content: (
+        <GrantList
+          filter={filter}
+          data={grantData.filter(
+            (grant) =>
+              grantStatusMapping[grant.status] === GRANT_STATUS.REJECTED,
+          )}
+        />
+      ),
+    },
+  ]
 
   return (
     <Layout>
