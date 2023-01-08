@@ -5,10 +5,22 @@ import NProgressHandler from 'components/NProgressHandler'
 import Head from 'next/head'
 import { AuthContextProvider } from 'context/auth'
 import { Toaster } from 'components/Toast'
+import { SolanaWalletProvider } from 'context/solana-wallet'
+import { SolanaTokenProvider } from 'context/solana-token'
+import { ProgramProvider } from 'context/program'
+import Moralis from 'moralis'
+
+const { MORALIS_API_KEY } = process.env
 
 class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props
+
+    if (!Moralis.Core.isStarted && MORALIS_API_KEY) {
+      Moralis.start({
+        apiKey: MORALIS_API_KEY,
+      })
+    }
 
     return (
       <>
@@ -34,8 +46,14 @@ class MyApp extends App {
           <meta name="twitter:image" content="/thumbnail.jpeg" />
         </Head>
         <AuthContextProvider>
-          <NProgressHandler />
-          <Component {...pageProps} />
+          <SolanaWalletProvider>
+            <SolanaTokenProvider>
+              <ProgramProvider>
+                <NProgressHandler />
+                <Component {...pageProps} />
+              </ProgramProvider>
+            </SolanaTokenProvider>
+          </SolanaWalletProvider>
         </AuthContextProvider>
         <Toaster />
       </>

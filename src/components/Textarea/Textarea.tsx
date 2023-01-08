@@ -1,25 +1,16 @@
 import React from 'react'
 import cx from 'classnames'
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface TextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   fullWidth?: boolean
   filled?: boolean
   readOnly?: boolean
   value?: string
   invalid?: boolean
-  type?:
-    | 'text'
-    | 'date'
-    | 'time'
-    | 'email'
-    | 'number'
-    | 'tel'
-    | 'password'
-    | 'search'
 }
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   (props, ref) => {
     const {
       fullWidth = false,
@@ -27,7 +18,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       invalid = false,
       onFocus,
       onBlur,
-      type,
       className,
       ...rest
     } = props
@@ -38,9 +28,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           'w-full': fullWidth,
         })}
       >
-        <input
+        <textarea
           className={cx(
-            'h-10 focus:outline-none bg-transparent border-2 border-purple-600 rounded-lg px-3 py-2 appearance-none',
+            'focus:outline-none bg-transparent border-2 border-purple-600 rounded-lg px-3 py-2 appearance-none',
             'bg-white placeholder-slate-500',
             'text-sm appearance-none w-full block',
             {
@@ -59,4 +49,4 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   },
 )
 
-export default Input
+export default Textarea

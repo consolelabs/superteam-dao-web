@@ -1,13 +1,15 @@
-interface LogoProps {
+import { SVGAttributes } from 'react'
+
+interface LogoProps extends SVGAttributes<SVGSVGElement> {
   hasText?: boolean
 }
 
 export const Logo = (props: LogoProps) => {
-  const { hasText = false } = props
+  const { hasText = false, ...rest } = props
 
   return (
     <div className="flex items-center">
-      <svg width="39" height="41" viewBox="0 0 39 41">
+      <svg width="39" height="41" viewBox="0 0 39 41" {...rest}>
         <title>logo</title>
         <g fillRule="nonzero" fill="none">
           <path
@@ -21,7 +23,7 @@ export const Logo = (props: LogoProps) => {
         </g>
       </svg>
       {hasText && (
-        <div className="text-white text-2xl tracking-wide ml-3 font-semibold">
+        <div className="ml-3 text-2xl font-semibold tracking-wide text-white">
           dwarvesf
         </div>
       )}

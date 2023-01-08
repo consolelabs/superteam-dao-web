@@ -1,119 +1,105 @@
-import React, { Fragment, useState } from 'react'
-import { Menu, Transition } from '@headlessui/react'
+import React, { useEffect, useState } from 'react'
 import { Layout } from 'components/Layout'
 import { Text } from 'components/Text'
 import { useAuthContext } from 'context/auth'
 import { Button } from 'components/Button'
 import { Tabs } from 'components/Tabs'
-import { GrantItemType } from 'types/GrantItem'
 import { GrantList } from 'components/GrantList'
 import { Input } from 'components/Input'
-import { IconChevronDown } from 'components/icons/components/IconChevronDown'
-import { IconChevronUp } from 'components/icons/components/IconChevronUp'
-
-const grantItems: GrantItemType[] = [
-  {
-    name: 'Grant 1',
-    receiverWallet: 'Bu61gzC1axsgn7hRSpK8aXdP1FkUkQBSU9pmvbDEReGq',
-    tokenAmount: 1000,
-    tokenSymbol: 'SOL',
-    tokenAddress: 'So11111111111111111111111111111111111111112',
-    status: 'pending',
-    avatar:
-      'https://img-cdn.magiceden.dev/rs:fill:228:228:0:0/plain/https://bafybeibrumzlxuai3rs6sdafq24faaggprot5e7sdluolefveb576lnpnq.ipfs.nftstorage.link/5679.png?ext=png',
-    tags: ['nft, gamefi'],
-  },
-  {
-    name: 'Grant 2',
-    receiverWallet: 'Bu61gzC1axsgn7hRSpK8aXdP1FkUkQBSU9pmvbDEReGq',
-    tokenAmount: 1000,
-    tokenSymbol: 'SOL',
-    tokenAddress: 'So11111111111111111111111111111111111111112',
-    status: 'pending',
-    avatar:
-      'https://img-cdn.magiceden.dev/rs:fill:228:228:0:0/plain/https://bafybeibrumzlxuai3rs6sdafq24faaggprot5e7sdluolefveb576lnpnq.ipfs.nftstorage.link/5679.png?ext=png',
-    tags: ['nft, gamefi'],
-  },
-  {
-    name: 'Grant 3',
-    receiverWallet: 'Bu61gzC1axsgn7hRSpK8aXdP1FkUkQBSU9pmvbDEReGq',
-    tokenAmount: 1000,
-    tokenSymbol: 'SOL',
-    tokenAddress: 'So11111111111111111111111111111111111111112',
-    status: 'pending',
-    avatar:
-      'https://img-cdn.magiceden.dev/rs:fill:228:228:0:0/plain/https://bafybeibrumzlxuai3rs6sdafq24faaggprot5e7sdluolefveb576lnpnq.ipfs.nftstorage.link/5679.png?ext=png',
-    tags: ['nft, gamefi', 'nft, gamefi', 'nft, gamefi'],
-  },
-  {
-    name: 'Grant 4',
-    receiverWallet: 'Bu61gzC1axsgn7hRSpK8aXdP1FkUkQBSU9pmvbDEReGq',
-    tokenAmount: 1000,
-    tokenSymbol: 'SOL',
-    tokenAddress: 'So11111111111111111111111111111111111111112',
-    status: 'approved',
-    avatar:
-      'https://img-cdn.magiceden.dev/rs:fill:228:228:0:0/plain/https://bafybeibrumzlxuai3rs6sdafq24faaggprot5e7sdluolefveb576lnpnq.ipfs.nftstorage.link/5679.png?ext=png',
-    tags: ['nft', 'gamefi'],
-  },
-  {
-    name: 'Grant 5',
-    receiverWallet: 'Bu61gzC1axsgn7hRSpK8aXdP1FkUkQBSU9pmvbDEReGq',
-    tokenAmount: 1000,
-    tokenSymbol: 'SOL',
-    tokenAddress: 'So11111111111111111111111111111111111111112',
-    status: 'rejected',
-    avatar:
-      'https://img-cdn.magiceden.dev/rs:fill:228:228:0:0/plain/https://bafybeibrumzlxuai3rs6sdafq24faaggprot5e7sdluolefveb576lnpnq.ipfs.nftstorage.link/5679.png?ext=png',
-    tags: [
-      'nft',
-      'gamefi',
-      'nft',
-      'gamefi',
-      'nft',
-      'gamefi',
-      'nft',
-      'gamefi',
-      'nft',
-      'gamefi',
-      'nft',
-      'gamefi',
-    ],
-  },
-]
+import { useProgram } from 'context/program'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { ProposalFields } from 'idl/accounts'
+import { CustomListbox } from 'components/Listbox'
+import { formatWallet } from 'utils/formatWallet'
 
 const HomePage = () => {
   const { user } = useAuthContext()
-  const [activeTab, setActiveTab] = useState('approved')
+  const { connection } = useConnection()
+  const { publicKey } = useWallet()
+  const { program } = useProgram()
+  const [proposalBySender, setProposalBySender] = useState<ProposalFields[]>([])
+  const [proposalByRecipient, setProposalByRecipient] = useState<
+    ProposalFields[]
+  >([])
+  const [activeTab, setActiveTab] = useState('pending')
+  const [filter, setFilter] = useState<'sender' | 'recipient'>('sender')
+  const [tags, setTags] = useState<string[]>([])
 
   const handleChangeTab = (tabId: string) => {
     setActiveTab(tabId)
   }
 
-  const filteredItems = grantItems.filter((i) => i.status === activeTab)
-
+  const grantList = filter === 'sender' ? proposalBySender : proposalByRecipient
   const tabData = [
     {
       id: 'pending',
       label: 'Pending',
-      content: <GrantList data={filteredItems} />,
+      content: (
+        <GrantList data={grantList.filter((grant) => grant.status === 0)} />
+      ),
     },
     {
       id: 'approved',
       label: 'Approved',
-      content: <GrantList data={filteredItems} />,
+      content: (
+        <GrantList data={grantList.filter((grant) => grant.status === 2)} />
+      ),
     },
     {
       id: 'rejected',
       label: 'Rejected',
-      content: <GrantList data={filteredItems} />,
+      content: (
+        <GrantList data={grantList.filter((grant) => grant.status === 3)} />
+      ),
     },
   ]
+
+  useEffect(() => {
+    if (!program || !publicKey) return
+    const fetchProposalBySender = async () => {
+      try {
+        const proposalBySender = await program.account.proposal.all([
+          {
+            memcmp: {
+              offset: 40,
+              bytes: publicKey.toBase58(),
+            },
+          },
+        ])
+        setProposalBySender(proposalBySender.map((each) => each.account) as any)
+      } catch (error) {
+        console.log({ error })
+      }
+    }
+    fetchProposalBySender()
+  }, [connection, program, publicKey])
+
+  useEffect(() => {
+    if (!program || !publicKey) return
+    const fetchProposalByRecipient = async () => {
+      try {
+        const proposalByRecipient = await program.account.proposal.all([
+          {
+            memcmp: {
+              offset: 8,
+              bytes: publicKey.toBase58(),
+            },
+          },
+        ])
+        setProposalByRecipient(
+          proposalByRecipient.map((each) => each.account) as any,
+        )
+      } catch (error) {
+        console.log({ error })
+      }
+    }
+    fetchProposalByRecipient()
+  }, [connection, program, publicKey])
 
   return (
     <Layout>
       <aside className="w-[16rem] flex-none px-9 mr-4 border-2 border-purple-600 rounded-lg py-8 flex min-h-full flex-col">
-        <div className="text-center mb-4">
+        <div className="mb-4 text-center">
           <span className="overflow-hidden rounded-full w-[86px] h-[86px] inline-flex mx-auto">
             <img
               src={user.avatar}
@@ -124,11 +110,11 @@ const HomePage = () => {
             />
           </span>
         </div>
-        <Text as="b" className="mb-2 text-xl block text-center">
+        <Text as="b" className="block mb-2 text-xl text-center">
           {user.firstName}
         </Text>
-        <Text className="block text-center text-slate-400">
-          {user.firstName}
+        <Text className="block text-sm text-center text-slate-400">
+          {formatWallet(String(publicKey))}
         </Text>
         <div className="mt-5">
           <Text className="text-lg">Proof of work</Text>
@@ -140,7 +126,7 @@ const HomePage = () => {
             target="_blank"
             appearance="link"
             href="https://solscan.io/tx/49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4"
-            className="truncate block max-w-full mb-1"
+            className="block max-w-full mb-1 truncate"
             size="lg"
             display="block"
           >
@@ -151,7 +137,7 @@ const HomePage = () => {
             target="_blank"
             appearance="link"
             href="https://solscan.io/tx/49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4"
-            className="truncate block max-w-full mb-1"
+            className="block max-w-full mb-1 truncate"
             size="lg"
             display="block"
           >
@@ -159,64 +145,47 @@ const HomePage = () => {
           </Button>
         </div>
       </aside>
-      <div className="px-4 flex flex-col flex-grow">
-        <div className="mb-5 flex justify-between">
+      <div className="flex flex-col flex-grow px-4">
+        <div className="flex flex-col flex-wrap items-center mb-5 space-y-3 md:flex-row md:justify-between">
           <div>
-            <Button appearance="primary" size="lg" className="mr-4" active>
+            <Button
+              appearance={filter === 'sender' ? 'primary' : 'border'}
+              size="lg"
+              className="mr-4"
+              onClick={() => setFilter('sender')}
+            >
               Sent Grant
             </Button>
-            <Button appearance="primary" size="lg">
+            <Button
+              appearance={filter === 'recipient' ? 'primary' : 'border'}
+              size="lg"
+              onClick={() => setFilter('recipient')}
+            >
               Received Grant
             </Button>
           </div>
-          <div>
+          <div className="flex">
             <Input
               type="search"
               placeholder="Search approver address"
               className="w-[18rem] mr-4"
             />
-            <Menu as="div" className="relative inline-block text-left">
-              <Menu.Button
-                data-testid="profile-button"
-                as={Button}
-                appearance="border"
-              >
-                {({ open }) => (
-                  <>
-                    Tags
-                    <span className="ml-2 w-4 h-4 text-purple-600">
-                      {open ? <IconChevronUp /> : <IconChevronDown />}
-                    </span>
-                  </>
-                )}
-              </Menu.Button>
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 w-48 mt-1 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        className={`${
-                          active ? 'bg-pink-600 text-white' : 'text-gray-500'
-                        } group flex rounded-md items-center w-full px-2 py-2 text-sm space-x-2`}
-                      >
-                        <span>Logout</span>
-                      </button>
-                    )}
-                  </Menu.Item>
-                </Menu.Items>
-              </Transition>
-            </Menu>
+            <CustomListbox
+              value={tags}
+              onChange={(value) => setTags(Array.from(value))}
+              placeholder="Tags"
+              multiple
+              items={[
+                { key: 'GameFi', value: 'GameFi' },
+                { key: 'DeFi', value: 'DeFi' },
+                { key: 'Payment', value: 'Payment' },
+                { key: 'SocialFi', value: 'SocialFi' },
+              ]}
+              className="w-40"
+            />
           </div>
         </div>
-        <div className="px-12 py-8 border-purple-600 border-2 rounded-lg flex-grow">
+        <div className="flex-grow px-12 py-8 border-2 border-purple-600 rounded-lg">
           <Tabs
             activeTab={activeTab}
             onChange={handleChangeTab}

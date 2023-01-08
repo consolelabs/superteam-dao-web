@@ -11,5 +11,6 @@ require('dotenv').config()
 module.exports = withBundleAnalyzer({
   env: {
     BASE_URL: process.env.BASE_URL,
+    MORALIS_API_KEY: process.env.MORALIS_API_KEY,
   },
 })

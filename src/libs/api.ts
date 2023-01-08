@@ -1,4 +1,6 @@
+import { raydiumMainnetTokenListUrl } from 'hooks/solana/useTokenList'
 import { User } from 'types/schema'
+import { RaydiumTokenListJsonInfo } from 'types/solana'
 import fetcher from './fetcher'
 
 // eslint-disable-next-line prefer-destructuring
@@ -11,6 +13,12 @@ class Client {
 
   getUsers() {
     return fetcher<User[]>(`${BASE_URL}/users`, {
+      headers: this.headers,
+    })
+  }
+
+  getTokenList() {
+    return fetcher<RaydiumTokenListJsonInfo>(raydiumMainnetTokenListUrl, {
       headers: this.headers,
     })
   }
