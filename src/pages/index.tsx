@@ -11,6 +11,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { ProposalFields } from 'idl/accounts'
 import { CustomListbox } from 'components/Listbox'
 import { formatWallet } from 'utils/formatWallet'
+import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
 
 const HomePage = () => {
   const { user } = useAuthContext()
@@ -25,34 +26,78 @@ const HomePage = () => {
   const [filter, setFilter] = useState<'sender' | 'recipient'>('sender')
   const [tags, setTags] = useState<string[]>([])
 
-  const handleChangeTab = (tabId: string) => {
-    setActiveTab(tabId)
-  }
-
-  const grantList = filter === 'sender' ? proposalBySender : proposalByRecipient
-  const tabData = [
-    {
-      id: 'pending',
-      label: 'Pending',
-      content: (
-        <GrantList data={grantList.filter((grant) => grant.status === 0)} />
-      ),
-    },
-    {
-      id: 'approved',
-      label: 'Approved',
-      content: (
-        <GrantList data={grantList.filter((grant) => grant.status === 2)} />
-      ),
-    },
-    {
-      id: 'rejected',
-      label: 'Rejected',
-      content: (
-        <GrantList data={grantList.filter((grant) => grant.status === 3)} />
-      ),
-    },
-  ]
+  const tabData =
+    filter === 'sender'
+      ? [
+          {
+            id: 'pending',
+            label: 'Pending',
+            content: (
+              <GrantList
+                filter={filter}
+                data={proposalBySender.filter((grant) =>
+                  [GRANT_STATUS.PENDING, GRANT_STATUS.REJECTED].includes(
+                    grantStatusMapping[grant.status],
+                  ),
+                )}
+              />
+            ),
+          },
+          {
+            id: 'approved',
+            label: 'Approved',
+            content: (
+              <GrantList
+                filter={filter}
+                data={proposalBySender.filter(
+                  (grant) =>
+                    grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
+                )}
+              />
+            ),
+          },
+        ]
+      : [
+          {
+            id: 'pending',
+            label: 'Pending',
+            content: (
+              <GrantList
+                filter={filter}
+                data={proposalByRecipient.filter(
+                  (grant) =>
+                    grantStatusMapping[grant.status] === GRANT_STATUS.PENDING,
+                )}
+              />
+            ),
+          },
+          {
+            id: 'approved',
+            label: 'Approved',
+            content: (
+              <GrantList
+                filter={filter}
+                data={proposalByRecipient.filter(
+                  (grant) =>
+                    grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
+                )}
+              />
+            ),
+          },
+          {
+            id: 'rejected',
+            label: 'Rejected',
+            content: (
+              <GrantList
+                filter={filter}
+                data={proposalByRecipient.filter(
+                  (grant) =>
+                    grantStatusMapping[grant.status] === GRANT_STATUS.REJECTED,
+                )}
+              />
+            ),
+          },
+        ]
 
   useEffect(() => {
     if (!program || !publicKey) return
@@ -152,14 +197,20 @@ const HomePage = () => {
               appearance={filter === 'sender' ? 'primary' : 'border'}
               size="lg"
               className="mr-4"
-              onClick={() => setFilter('sender')}
+              onClick={() => {
+                setActiveTab('pending')
+                setFilter('sender')
+              }}
             >
               Sent Grant
             </Button>
             <Button
               appearance={filter === 'recipient' ? 'primary' : 'border'}
               size="lg"
-              onClick={() => setFilter('recipient')}
+              onClick={() => {
+                setActiveTab('pending')
+                setFilter('recipient')
+              }}
             >
               Received Grant
             </Button>
@@ -186,11 +237,7 @@ const HomePage = () => {
           </div>
         </div>
         <div className="flex-grow px-12 py-8 border-2 border-purple-600 rounded-lg">
-          <Tabs
-            activeTab={activeTab}
-            onChange={handleChangeTab}
-            data={tabData}
-          />
+          <Tabs activeTab={activeTab} onChange={setActiveTab} data={tabData} />
         </div>
       </div>
     </Layout>

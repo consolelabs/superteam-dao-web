@@ -43,7 +43,7 @@ export function Tabs({ data, activeTab, onChange }: TabsProps) {
                 ref={(el: HTMLButtonElement) => {
                   tabsRef.current[idx] = el
                 }}
-                className="text-lg mb-2"
+                className="mb-2 text-lg"
                 onClick={() => {
                   onChange(tab.id)
                 }}
@@ -54,11 +54,11 @@ export function Tabs({ data, activeTab, onChange }: TabsProps) {
           })}
         </div>
         <span
-          className="absolute bottom-0 block h-1 bg-purple-600 transition-all duration-200"
+          className="absolute bottom-0 block h-1 transition-all duration-200 bg-purple-600"
           style={{ left: tabUnderlineLeft, width: tabUnderlineWidth }}
         />
       </div>
-      <div className="mt-8">{data[activeTabIndex].content}</div>
+      <div className="mt-8">{data[activeTabIndex]?.content}</div>
     </div>
   )
 }
