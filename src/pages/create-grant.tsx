@@ -133,6 +133,7 @@ const GrantPage = () => {
           data.tags.join(','),
           new anchor.BN(grantAmount * 10 ** grantToken.decimals),
           data.minter === 'Applicant (You)',
+          null,
         )
         .accounts({
           proposal: proposalAccount,

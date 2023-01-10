@@ -2,17 +2,19 @@ import React, { HTMLAttributes } from 'react'
 import cx from 'classnames'
 import { Text } from 'components/Text'
 import { formatWallet } from 'utils/formatWallet'
-import { Button } from 'components/Button'
 import { ProposalFields } from 'idl/accounts'
 import { useToken } from 'context/solana-token'
 import BN from 'bn.js'
+import { SenderAction } from './SenderAction'
 
 export interface GrantItemProps {
   grant: ProposalFields
+  filter: 'sender' | 'recipient'
 }
 
 export function GrantItem({
   grant,
+  filter,
   className,
   ...props
 }: GrantItemProps & HTMLAttributes<HTMLDivElement>) {
@@ -65,9 +67,7 @@ export function GrantItem({
         {Intl.NumberFormat().format(tokenAmount)} {symbol}
       </div>
       <div className="w-fit text-end">
-        <Button appearance="link" size="md" className="text-purple-600">
-          View
-        </Button>
+        {filter === 'sender' ? <SenderAction grant={grant} /> : null}
       </div>
     </div>
   )
