@@ -50,6 +50,7 @@ const HomePage = () => {
       label: 'Pending',
       content: (
         <GrantList
+          filter={filter}
           data={grantData.filter(
             (grant) =>
               grantStatusMapping[grant.status] === GRANT_STATUS.PENDING,
@@ -62,6 +63,7 @@ const HomePage = () => {
       label: 'Approved',
       content: (
         <GrantList
+          filter={filter}
           data={grantData.filter(
             (grant) =>
               grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
@@ -74,6 +76,7 @@ const HomePage = () => {
       label: 'Rejected',
       content: (
         <GrantList
+          filter={filter}
           data={grantData.filter(
             (grant) =>
               grantStatusMapping[grant.status] === GRANT_STATUS.REJECTED,
