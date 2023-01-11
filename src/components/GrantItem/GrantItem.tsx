@@ -2,10 +2,10 @@ import React, { HTMLAttributes } from 'react'
 import cx from 'classnames'
 import { Text } from 'components/Text'
 import { formatWallet } from 'utils/formatWallet'
+import { Button } from 'components/Button'
 import { ProposalFields } from 'idl/accounts'
 import { useToken } from 'context/solana-token'
 import BN from 'bn.js'
-import { Button } from 'components/Button'
 
 export interface GrantItemProps {
   grant: ProposalFields

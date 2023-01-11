@@ -11,6 +11,25 @@ import { CustomListbox } from 'components/Listbox'
 import { formatWallet } from 'utils/formatWallet'
 import { GrantProvider, useGrant } from 'context/grant'
 import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
+import { ProposalFields } from 'idl/accounts'
+
+const filterData = (
+  data: ProposalFields[],
+  filters: { tags: string[]; approver: string },
+) => {
+  const { tags, approver } = filters
+  return data
+    .filter((each) =>
+      !tags.length
+        ? true
+        : tags.every((tag) => each.tags.split(',').includes(tag)),
+    )
+    .filter((each) =>
+      !approver
+        ? true
+        : String(each.owner ? each.recipient : each.sender) === approver,
+    )
+}
 
 const HomePage = () => {
   const { user } = useAuthContext()
@@ -19,8 +38,12 @@ const HomePage = () => {
   const [activeTab, setActiveTab] = useState('pending')
   const [filter, setFilter] = useState<'sender' | 'recipient'>('sender')
   const [tags, setTags] = useState<string[]>([])
+  const [approver, setApprover] = useState('')
 
-  const grantData = filter === 'sender' ? proposalBySender : proposalByRecipient
+  const grantData = filterData(
+    filter === 'sender' ? proposalBySender : proposalByRecipient,
+    { tags, approver },
+  )
   const tabData = [
     {
       id: 'pending',
@@ -139,6 +162,8 @@ const HomePage = () => {
               type="search"
               placeholder="Search approver address"
               className="w-[18rem] mr-4"
+              value={approver}
+              onChange={(e) => setApprover(e.target.value)}
             />
             <CustomListbox
               value={tags}
