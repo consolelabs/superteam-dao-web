@@ -12,6 +12,7 @@ export interface CreateProposalArgs {
   tags: string
   amount: BN
   isOwner: boolean
+  transactionHash: string | null
 }
 
 export interface CreateProposalAccounts {
@@ -31,6 +32,7 @@ export const layout = borsh.struct([
   borsh.str('tags'),
   borsh.u64('amount'),
   borsh.bool('isOwner'),
+  borsh.option(borsh.str(), 'transactionHash'),
 ])
 
 export function createProposal(
@@ -56,6 +58,7 @@ export function createProposal(
       tags: args.tags,
       amount: args.amount,
       isOwner: args.isOwner,
+      transactionHash: args.transactionHash,
     },
     buffer,
   )

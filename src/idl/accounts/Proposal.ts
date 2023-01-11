@@ -10,6 +10,7 @@ export interface ProposalFields {
   owner: boolean
   spl: PublicKey
   amount: BN
+  popStatus: number
   tags: string
   transaction: string | null
   image: string
@@ -25,6 +26,7 @@ export interface ProposalJSON {
   owner: boolean
   spl: string
   amount: string
+  popStatus: number
   tags: string
   transaction: string | null
   image: string
@@ -40,6 +42,7 @@ export class Proposal {
   readonly owner: boolean
   readonly spl: PublicKey
   readonly amount: BN
+  readonly popStatus: number
   readonly tags: string
   readonly transaction: string | null
   readonly image: string
@@ -58,6 +61,7 @@ export class Proposal {
     borsh.bool('owner'),
     borsh.publicKey('spl'),
     borsh.u64('amount'),
+    borsh.u8('popStatus'),
     borsh.str('tags'),
     borsh.option(borsh.str(), 'transaction'),
     borsh.str('image'),
@@ -73,6 +77,7 @@ export class Proposal {
     this.owner = fields.owner
     this.spl = fields.spl
     this.amount = fields.amount
+    this.popStatus = fields.popStatus
     this.tags = fields.tags
     this.transaction = fields.transaction
     this.image = fields.image
@@ -129,6 +134,7 @@ export class Proposal {
       owner: dec.owner,
       spl: dec.spl,
       amount: dec.amount,
+      popStatus: dec.popStatus,
       tags: dec.tags,
       transaction: dec.transaction,
       image: dec.image,
@@ -146,6 +152,7 @@ export class Proposal {
       owner: this.owner,
       spl: this.spl.toString(),
       amount: this.amount.toString(),
+      popStatus: this.popStatus,
       tags: this.tags,
       transaction: this.transaction,
       image: this.image,
@@ -163,6 +170,7 @@ export class Proposal {
       owner: obj.owner,
       spl: new PublicKey(obj.spl),
       amount: new BN(obj.amount),
+      popStatus: obj.popStatus,
       tags: obj.tags,
       transaction: obj.transaction,
       image: obj.image,

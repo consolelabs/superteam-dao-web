@@ -13,6 +13,8 @@ export type CustomError =
   | TitleTooLong
   | SubtitleTooLong
   | ImageTooLong
+  | TransactionHashIsNotValid
+  | InvalidProposal
 
 export class SenderInvalidStateAccount extends Error {
   static readonly code = 6000
@@ -157,6 +159,28 @@ export class ImageTooLong extends Error {
   }
 }
 
+export class TransactionHashIsNotValid extends Error {
+  static readonly code = 6013
+  readonly code = 6013
+  readonly name = 'TransactionHashIsNotValid'
+  readonly msg = 'The transaction hash is needed'
+
+  constructor(readonly logs?: string[]) {
+    super('6013: The transaction hash is needed')
+  }
+}
+
+export class InvalidProposal extends Error {
+  static readonly code = 6014
+  readonly code = 6014
+  readonly name = 'InvalidProposal'
+  readonly msg = 'Proposal is invalid'
+
+  constructor(readonly logs?: string[]) {
+    super('6014: Proposal is invalid')
+  }
+}
+
 export function fromCode(code: number, logs?: string[]): CustomError | null {
   switch (code) {
     case 6000:
@@ -185,6 +209,10 @@ export function fromCode(code: number, logs?: string[]): CustomError | null {
       return new SubtitleTooLong(logs)
     case 6012:
       return new ImageTooLong(logs)
+    case 6013:
+      return new TransactionHashIsNotValid(logs)
+    case 6014:
+      return new InvalidProposal(logs)
     default:
       return null
   }

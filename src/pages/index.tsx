@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Layout } from 'components/Layout'
 import { Text } from 'components/Text'
 import { useAuthContext } from 'context/auth'
@@ -6,95 +6,82 @@ import { Button } from 'components/Button'
 import { Tabs } from 'components/Tabs'
 import { GrantList } from 'components/GrantList'
 import { Input } from 'components/Input'
-import { useProgram } from 'context/program'
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { ProposalFields } from 'idl/accounts'
+import { useWallet } from '@solana/wallet-adapter-react'
 import { CustomListbox } from 'components/Listbox'
 import { formatWallet } from 'utils/formatWallet'
+import { GrantProvider, useGrant } from 'context/grant'
+import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
+import { ProposalFields } from 'idl/accounts'
+
+const filterData = (
+  data: ProposalFields[],
+  filters: { tags: string[]; approver: string },
+) => {
+  const { tags, approver } = filters
+  return data
+    .filter((each) =>
+      !tags.length
+        ? true
+        : tags.every((tag) => each.tags.split(',').includes(tag)),
+    )
+    .filter((each) =>
+      !approver
+        ? true
+        : String(each.owner ? each.recipient : each.sender) === approver,
+    )
+}
 
 const HomePage = () => {
   const { user } = useAuthContext()
-  const { connection } = useConnection()
   const { publicKey } = useWallet()
-  const { program } = useProgram()
-  const [proposalBySender, setProposalBySender] = useState<ProposalFields[]>([])
-  const [proposalByRecipient, setProposalByRecipient] = useState<
-    ProposalFields[]
-  >([])
+  const { proposalBySender, proposalByRecipient } = useGrant()
   const [activeTab, setActiveTab] = useState('pending')
   const [filter, setFilter] = useState<'sender' | 'recipient'>('sender')
   const [tags, setTags] = useState<string[]>([])
+  const [approver, setApprover] = useState('')
 
-  const handleChangeTab = (tabId: string) => {
-    setActiveTab(tabId)
-  }
-
-  const grantList = filter === 'sender' ? proposalBySender : proposalByRecipient
+  const grantData = filterData(
+    filter === 'sender' ? proposalBySender : proposalByRecipient,
+    { tags, approver },
+  )
   const tabData = [
     {
       id: 'pending',
       label: 'Pending',
       content: (
-        <GrantList data={grantList.filter((grant) => grant.status === 0)} />
+        <GrantList
+          data={grantData.filter(
+            (grant) =>
+              grantStatusMapping[grant.status] === GRANT_STATUS.PENDING,
+          )}
+        />
       ),
     },
     {
       id: 'approved',
       label: 'Approved',
       content: (
-        <GrantList data={grantList.filter((grant) => grant.status === 2)} />
+        <GrantList
+          data={grantData.filter(
+            (grant) =>
+              grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
+          )}
+        />
       ),
     },
     {
       id: 'rejected',
       label: 'Rejected',
       content: (
-        <GrantList data={grantList.filter((grant) => grant.status === 3)} />
+        <GrantList
+          data={grantData.filter(
+            (grant) =>
+              grantStatusMapping[grant.status] === GRANT_STATUS.REJECTED,
+          )}
+        />
       ),
     },
   ]
-
-  useEffect(() => {
-    if (!program || !publicKey) return
-    const fetchProposalBySender = async () => {
-      try {
-        const proposalBySender = await program.account.proposal.all([
-          {
-            memcmp: {
-              offset: 40,
-              bytes: publicKey.toBase58(),
-            },
-          },
-        ])
-        setProposalBySender(proposalBySender.map((each) => each.account) as any)
-      } catch (error) {
-        console.log({ error })
-      }
-    }
-    fetchProposalBySender()
-  }, [connection, program, publicKey])
-
-  useEffect(() => {
-    if (!program || !publicKey) return
-    const fetchProposalByRecipient = async () => {
-      try {
-        const proposalByRecipient = await program.account.proposal.all([
-          {
-            memcmp: {
-              offset: 8,
-              bytes: publicKey.toBase58(),
-            },
-          },
-        ])
-        setProposalByRecipient(
-          proposalByRecipient.map((each) => each.account) as any,
-        )
-      } catch (error) {
-        console.log({ error })
-      }
-    }
-    fetchProposalByRecipient()
-  }, [connection, program, publicKey])
 
   return (
     <Layout>
@@ -152,14 +139,20 @@ const HomePage = () => {
               appearance={filter === 'sender' ? 'primary' : 'border'}
               size="lg"
               className="mr-4"
-              onClick={() => setFilter('sender')}
+              onClick={() => {
+                setActiveTab('pending')
+                setFilter('sender')
+              }}
             >
               Sent Grant
             </Button>
             <Button
               appearance={filter === 'recipient' ? 'primary' : 'border'}
               size="lg"
-              onClick={() => setFilter('recipient')}
+              onClick={() => {
+                setActiveTab('pending')
+                setFilter('recipient')
+              }}
             >
               Received Grant
             </Button>
@@ -169,6 +162,8 @@ const HomePage = () => {
               type="search"
               placeholder="Search approver address"
               className="w-[18rem] mr-4"
+              value={approver}
+              onChange={(e) => setApprover(e.target.value)}
             />
             <CustomListbox
               value={tags}
@@ -186,15 +181,15 @@ const HomePage = () => {
           </div>
         </div>
         <div className="flex-grow px-12 py-8 border-2 border-purple-600 rounded-lg">
-          <Tabs
-            activeTab={activeTab}
-            onChange={handleChangeTab}
-            data={tabData}
-          />
+          <Tabs activeTab={activeTab} onChange={setActiveTab} data={tabData} />
         </div>
       </div>
     </Layout>
   )
 }
 
-export default HomePage
+export default () => (
+  <GrantProvider>
+    <HomePage />
+  </GrantProvider>
+)
