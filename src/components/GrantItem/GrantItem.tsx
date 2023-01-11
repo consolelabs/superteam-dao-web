@@ -34,13 +34,17 @@ export function GrantItem({
       <div className="flex items-center flex-1">
         <img
           src={image}
-          className="flex-none w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-full -indent-20"
+          className="flex-none w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-full object-cover"
           alt=""
         />
         <div>
-          <Text as="b" className="text-xl">
-            {title}
-          </Text>
+          <Link
+            href={`/grant-detail/${String(account)}`}
+            passHref
+            legacyBehavior
+          >
+            <a className="text-xl underline hover:text-purple-600">{title}</a>
+          </Link>
           <Text
             truncate
             className="text-slate-300 block max-w-[10rem] text-sm mt-2"

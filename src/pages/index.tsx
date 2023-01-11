@@ -98,10 +98,7 @@ const HomePage = () => {
           </span>
         </div>
         <Text as="b" className="block mb-2 text-xl text-center">
-          {user.firstName}
-        </Text>
-        <Text className="block text-sm text-center text-slate-400">
-          {formatWallet(String(publicKey))}
+          {formatWallet(String(publicKey)) || 'Loading...'}
         </Text>
         <div className="mt-5">
           <Text className="text-lg">Proof of work</Text>
