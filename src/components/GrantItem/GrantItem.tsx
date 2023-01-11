@@ -3,13 +3,14 @@ import cx from 'classnames'
 import { Text } from 'components/Text'
 import { formatWallet } from 'utils/formatWallet'
 import { Button } from 'components/Button'
-import { ProposalFields } from 'idl/accounts'
 import { useToken } from 'context/solana-token'
 import BN from 'bn.js'
+import { GrantDetail } from 'types/grant'
+import Link from 'next/link'
 import { SenderAction } from './SenderAction'
 
 export interface GrantItemProps {
-  grant: ProposalFields
+  grant: GrantDetail
   filter: 'sender' | 'recipient'
 }
 
@@ -19,7 +20,7 @@ export function GrantItem({
   className,
   ...props
 }: GrantItemProps & HTMLAttributes<HTMLDivElement>) {
-  const { sender, recipient, spl, amount, tags, image, title } = grant
+  const { sender, recipient, spl, amount, tags, image, title, account } = grant
   const { tokens } = useToken()
   const token = tokens[String(spl)] || {}
   const { decimals = 0, symbol } = token
@@ -71,9 +72,11 @@ export function GrantItem({
         {filter === 'sender' ? (
           <SenderAction grant={grant} />
         ) : (
-          <Button appearance="link" size="md" className="text-purple-600">
-            View
-          </Button>
+          <Link href={`/grant-detail/${String(account)}`}>
+            <Button appearance="link" size="md" className="text-purple-600">
+              View
+            </Button>
+          </Link>
         )}
       </div>
     </div>

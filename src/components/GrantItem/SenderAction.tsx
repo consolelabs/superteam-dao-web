@@ -5,11 +5,12 @@ import { toast } from 'components/Toast'
 import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
 import { useGrant } from 'context/grant'
 import { useProgram } from 'context/program'
-import { ProposalFields } from 'idl/accounts'
+import Link from 'next/link'
+import { GrantDetail } from 'types/grant'
 import { findPDAProposal } from 'utils/contract/setup'
 
 interface SenderActionProps {
-  grant: ProposalFields
+  grant: GrantDetail
 }
 
 export const SenderAction = ({ grant }: SenderActionProps) => {
@@ -104,9 +105,11 @@ export const SenderAction = ({ grant }: SenderActionProps) => {
       </Button>
     ),
     [GRANT_STATUS.APPROVED]: (
-      <Button appearance="link" size="md" className="text-purple-600">
-        Mint Proof of Work
-      </Button>
+      <Link href={`/grant-detail/${String(grant.account)}`}>
+        <Button appearance="link" size="md" className="text-purple-600">
+          View
+        </Button>
+      </Link>
     ),
   }[grantStatusMapping[grant.status]]
 }

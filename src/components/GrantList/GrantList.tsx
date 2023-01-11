@@ -1,8 +1,8 @@
 import { GrantItem } from 'components/GrantItem'
-import { ProposalFields } from 'idl/accounts'
+import { GrantDetail } from 'types/grant'
 
 export interface GrantListProps {
-  data: ProposalFields[]
+  data: GrantDetail[]
   filter: 'sender' | 'recipient'
 }
 
