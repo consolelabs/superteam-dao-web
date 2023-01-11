@@ -12,7 +12,7 @@ export const ModalCloseButton: React.FC<{
     <button
       className={cx(
         'absolute right-6 top-6 hover:text-gray-800 focus:text-gray-800 text-gray-400 transition-all duration-200 text-xl',
-        'outline-none focus:ring-2 focus:ring-pink-500 rounded-md',
+        'outline-none focus:ring-2 focus:ring-purple-500 rounded-md',
         { 'cursor-not-allowed opacity-25': disabled },
         className,
       )}

@@ -9,7 +9,7 @@ export const ModalTitle = ({
   return (
     <Dialog.Title
       as="h3"
-      className={cx(className, 'text-gray-900 leading-snug font-medium')}
+      className={cx('text-gray-900 leading-snug font-medium', className)}
       {...props}
     />
   )

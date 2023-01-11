@@ -31,7 +31,7 @@ function getCheckboxStyles({ invalid, readOnly, disabled }: CheckboxProps) {
     )
   } else {
     styles.push(
-      'text-pink-600 form-checkbox focus:ring-pink-500 border-gray-300',
+      'text-pink-600 form-checkbox focus:ring-purple-500 border-gray-300',
     )
   }
 

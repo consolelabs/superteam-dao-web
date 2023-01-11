@@ -21,7 +21,7 @@ export function getAppearanceButtonStyles({
   if (appearance === 'default') {
     if (!disabled) {
       classNames.push(
-        'border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-pink-500',
+        'border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-purple-500',
       )
       classNames.push(focusRing)
     } else if (disabled) {
