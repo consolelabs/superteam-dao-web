@@ -10,7 +10,7 @@ export function GrantList(props: GrantListProps) {
   return (
     <div className="space-y-4">
       {data.map((item) => (
-        <GrantItem key={item.identifier.toString()} grant={item} />
+        <GrantItem key={String(item.account)} grant={item} />
       ))}
     </div>
   )

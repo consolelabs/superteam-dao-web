@@ -81,7 +81,7 @@ const GrantPage = () => {
     defaultIsOpen: false,
   })
 
-  if (!grant) return null
+  if (!grant) return <Layout>{null}</Layout>
 
   return (
     <Layout>
