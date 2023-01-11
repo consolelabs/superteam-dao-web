@@ -2,6 +2,7 @@ import React, { HTMLAttributes } from 'react'
 import cx from 'classnames'
 import { Text } from 'components/Text'
 import { formatWallet } from 'utils/formatWallet'
+import { Button } from 'components/Button'
 import { ProposalFields } from 'idl/accounts'
 import { useToken } from 'context/solana-token'
 import BN from 'bn.js'
@@ -67,7 +68,13 @@ export function GrantItem({
         {Intl.NumberFormat().format(tokenAmount)} {symbol}
       </div>
       <div className="w-fit text-end">
-        {filter === 'sender' ? <SenderAction grant={grant} /> : null}
+        {filter === 'sender' ? (
+          <SenderAction grant={grant} />
+        ) : (
+          <Button appearance="link" size="md" className="text-purple-600">
+            View
+          </Button>
+        )}
       </div>
     </div>
   )
