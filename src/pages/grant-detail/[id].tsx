@@ -9,6 +9,12 @@ import { IconChevronUp } from 'components/icons/components/IconChevronUp'
 import { formatWallet } from 'utils/formatWallet'
 import { CopyElement } from 'components/CopyElement'
 import { MintProofOfWorkModal } from 'components/MintProofOfWorkModal'
+import { useProgram } from 'context/program'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { toast } from 'components/Toast'
+import { GrantDetail } from 'types/grant'
+import { PublicKey } from '@solana/web3.js'
 
 const DESCRIPTION = `Writing grant proposals can be stressful process for many
 organizations. However, it's also an exciting time for your
@@ -59,6 +65,28 @@ solution unique? What are the specific, tangible goals that you hope
 to accomplish with the potential grant award?`
 
 const GrantPage = () => {
+  const {
+    query: { id },
+  } = useRouter()
+  const { program } = useProgram()
+  const [, setGrant] = useState<GrantDetail>()
+
+  useEffect(() => {
+    if (!id || !program) return
+    const fetchGrant = async () => {
+      try {
+        const grant = await program.account.proposal.fetch(id as string)
+        setGrant({ ...grant, account: new PublicKey(id) } as any)
+      } catch (error: any) {
+        toast.error({
+          title: 'Cannot fetch grant',
+          message: error?.message,
+        })
+      }
+    }
+    fetchGrant()
+  }, [id, program])
+
   const needCollapse = DESCRIPTION.length > 1600
 
   const { isOpen: isOpenDescription, onToggle: onToggleDescription } =
@@ -75,7 +103,7 @@ const GrantPage = () => {
   return (
     <Layout>
       <div className="w-full py-10">
-        <div className="flex items-center self-top w-full mb-10">
+        <div className="flex items-center w-full mb-10 self-top">
           <img
             src="https://img-cdn.magiceden.dev/rs:fill:228:228:0:0/plain/https://bafybeibrumzlxuai3rs6sdafq24faaggprot5e7sdluolefveb576lnpnq.ipfs.nftstorage.link/5679.png?ext=png"
             alt="title"
@@ -86,7 +114,7 @@ const GrantPage = () => {
           </Text>
           <div className="ml-auto">
             <span className="flex mb-3">
-              <Text as="span" className="text-lg mr-1">
+              <Text as="span" className="mr-1 text-lg">
                 Status:
               </Text>
               <Text as="b" className="text-lg font-bold">
@@ -103,14 +131,14 @@ const GrantPage = () => {
           </div>
         </div>
         <div className="flex items-center mb-12">
-          <Text as="b" className="text-3xl font-bold mr-32">
+          <Text as="b" className="mr-32 text-3xl font-bold">
             Tags
           </Text>
-          <ul className="flex mt-2 flex-wrap">
+          <ul className="flex flex-wrap mt-2">
             {['gamefi', 'defi', 'nft'].map((tag) => (
               <li
                 key={tag}
-                className="inline-flex border border-slate-300 rounded-md overflow-hidden py-1 px-3 mb-2 mr-3"
+                className="inline-flex px-3 py-1 mb-2 mr-3 overflow-hidden border rounded-md border-slate-300"
               >
                 {tag}
               </li>
@@ -118,7 +146,7 @@ const GrantPage = () => {
           </ul>
         </div>
         <div>
-          <Text className="text-3xl font-bold mb-4">Description</Text>
+          <Text className="mb-4 text-3xl font-bold">Description</Text>
           <div
             className={cx(
               'text-lg transition-height duration-500',
@@ -129,13 +157,13 @@ const GrantPage = () => {
           >
             {ReactHtmlParser(DESCRIPTION)}
             {!isOpenDescription && needCollapse && (
-              <div className="bg-gradient-to-b from-transparent to-slate-800 absolute inset-x-0 bottom-0 top-0">
+              <div className="absolute inset-x-0 top-0 bottom-0 bg-gradient-to-b from-transparent to-slate-800">
                 &nbsp;
               </div>
             )}
           </div>
           {needCollapse && (
-            <div className="text-center py-4">
+            <div className="py-4 text-center">
               <Button
                 fullWidth
                 size="lg"
@@ -150,11 +178,11 @@ const GrantPage = () => {
           )}
         </div>
         <div>
-          <Text className="text-3xl font-bold mb-4">Transaction</Text>
+          <Text className="mb-4 text-3xl font-bold">Transaction</Text>
           <div className="flex">
             <div className="w-1/2">
               <div className="mb-2">
-                <Text as="span" className="text-lg mr-2">
+                <Text as="span" className="mr-2 text-lg">
                   Grant amount:
                 </Text>
                 <Text as="span" className="text-lg font-bold text-purple-600">
@@ -162,7 +190,7 @@ const GrantPage = () => {
                 </Text>
               </div>
               <div className="mb-2">
-                <Text as="span" className="text-lg mr-2">
+                <Text as="span" className="mr-2 text-lg">
                   Approver:
                 </Text>
                 <CopyElement
@@ -177,7 +205,7 @@ const GrantPage = () => {
                 </CopyElement>
               </div>
               <div className="mb-2">
-                <Text as="span" className="text-lg mr-2">
+                <Text as="span" className="mr-2 text-lg">
                   Applicant:
                 </Text>
                 <CopyElement

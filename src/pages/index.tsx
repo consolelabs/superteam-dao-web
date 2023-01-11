@@ -11,10 +11,10 @@ import { CustomListbox } from 'components/Listbox'
 import { formatWallet } from 'utils/formatWallet'
 import { GrantProvider, useGrant } from 'context/grant'
 import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
-import { ProposalFields } from 'idl/accounts'
+import { GrantDetail } from 'types/grant'
 
 const filterData = (
-  data: ProposalFields[],
+  data: GrantDetail[],
   filters: { tags: string[]; approver: string },
 ) => {
   const { tags, approver } = filters
