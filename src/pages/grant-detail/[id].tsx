@@ -8,6 +8,7 @@ import { IconChevronDown } from 'components/icons/components/IconChevronDown'
 import { IconChevronUp } from 'components/icons/components/IconChevronUp'
 import { formatWallet } from 'utils/formatWallet'
 import { CopyElement } from 'components/CopyElement'
+import { MintProofOfWorkModal } from 'components/MintProofOfWorkModal'
 
 const DESCRIPTION = `Writing grant proposals can be stressful process for many
 organizations. However, it's also an exciting time for your
@@ -63,6 +64,14 @@ const GrantPage = () => {
   const { isOpen: isOpenDescription, onToggle: onToggleDescription } =
     useDisclosure({ defaultIsOpen: !needCollapse })
 
+  const {
+    isOpen: isOpenModal,
+    onToggle: onToggleModal,
+    onClose: onCloseProofOfWorkModal,
+  } = useDisclosure({
+    defaultIsOpen: false,
+  })
+
   return (
     <Layout>
       <div className="w-full py-10">
@@ -72,12 +81,26 @@ const GrantPage = () => {
             alt="title"
             className="w-[8rem] h-[8rem] mr-12 rounded-full"
           />
-          <Text as="h1" className="text-4xl font-bold mb-6">
+          <Text as="h1" className="text-4xl font-bold">
             Grant title
           </Text>
-          <Text as="b" className="text-lg font-bold mb-6 ml-auto">
-            Approved
-          </Text>
+          <div className="ml-auto">
+            <span className="flex mb-3">
+              <Text as="span" className="text-lg mr-1">
+                Status:
+              </Text>
+              <Text as="b" className="text-lg font-bold">
+                Approved
+              </Text>
+            </span>
+            <Button
+              appearance="border"
+              className="rounded-full"
+              onClick={onToggleModal}
+            >
+              Mint Proof of Work
+            </Button>
+          </div>
         </div>
         <div className="flex items-center mb-12">
           <Text as="b" className="text-3xl font-bold mr-32">
@@ -172,6 +195,10 @@ const GrantPage = () => {
           </div>
         </div>
       </div>
+      <MintProofOfWorkModal
+        isOpen={isOpenModal}
+        onClose={onCloseProofOfWorkModal}
+      />
     </Layout>
   )
 }
