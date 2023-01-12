@@ -15,7 +15,7 @@ export const parseBalanceFromTokenAccount = ({
 }) => {
   // native sol balance
   const nativeTokenAccount = allTokenAccounts.find((t) => t.isNative)
-  const solBalance = nativeTokenAccount?.amount
+  const solBalance = nativeTokenAccount?.amount || ZERO
 
   // all wsol balance
   const allWsolBalance = allTokenAccounts.reduce(
@@ -35,7 +35,7 @@ export const parseBalanceFromTokenAccount = ({
 
   const balances = {
     ...pureBalances,
-    sol: new TokenAmount(QuantumSOLVersionSOL, allWsolBalance),
+    sol: new TokenAmount(QuantumSOLVersionSOL, solBalance),
     [String(WSOLMint)]: new TokenAmount(QuantumSOLVersionWSOL, allWsolBalance),
   }
 
