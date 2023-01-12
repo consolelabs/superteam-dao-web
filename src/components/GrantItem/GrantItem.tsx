@@ -3,12 +3,13 @@ import cx from 'classnames'
 import { Text } from 'components/Text'
 import { formatWallet } from 'utils/formatWallet'
 import { Button } from 'components/Button'
-import { ProposalFields } from 'idl/accounts'
 import { useToken } from 'context/solana-token'
 import BN from 'bn.js'
+import { GrantDetail } from 'types/grant'
+import Link from 'next/link'
 
 export interface GrantItemProps {
-  grant: ProposalFields
+  grant: GrantDetail
 }
 
 export function GrantItem({
@@ -16,7 +17,7 @@ export function GrantItem({
   className,
   ...props
 }: GrantItemProps & HTMLAttributes<HTMLDivElement>) {
-  const { sender, recipient, spl, amount, tags, image, title } = grant
+  const { sender, recipient, spl, amount, tags, image, title, account } = grant
   const { tokens } = useToken()
   const token = tokens[String(spl)] || {}
   const { decimals = 0, symbol } = token
@@ -33,13 +34,17 @@ export function GrantItem({
       <div className="flex items-center flex-1">
         <img
           src={image}
-          className="flex-none w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-full -indent-20"
+          className="flex-none w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-full object-cover"
           alt=""
         />
         <div>
-          <Text as="b" className="text-xl">
-            {title}
-          </Text>
+          <Link
+            href={`/grant-detail/${String(account)}`}
+            passHref
+            legacyBehavior
+          >
+            <a className="text-xl underline hover:text-purple-600">{title}</a>
+          </Link>
           <Text
             truncate
             className="text-slate-300 block max-w-[10rem] text-sm mt-2"
@@ -65,9 +70,11 @@ export function GrantItem({
         {Intl.NumberFormat().format(tokenAmount)} {symbol}
       </div>
       <div className="w-fit text-end">
-        <Button appearance="link" size="md" className="text-purple-600">
-          View
-        </Button>
+        <Link href={`/grant-detail/${String(account)}`}>
+          <Button appearance="link" size="md" className="text-purple-600">
+            View
+          </Button>
+        </Link>
       </div>
     </div>
   )

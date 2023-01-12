@@ -1,8 +1,8 @@
 import { GrantItem } from 'components/GrantItem'
-import { ProposalFields } from 'idl/accounts'
+import { GrantDetail } from 'types/grant'
 
 export interface GrantListProps {
-  data: ProposalFields[]
+  data: GrantDetail[]
 }
 
 export function GrantList(props: GrantListProps) {
@@ -10,7 +10,7 @@ export function GrantList(props: GrantListProps) {
   return (
     <div className="space-y-4">
       {data.map((item) => (
-        <GrantItem key={item.identifier.toString()} grant={item} />
+        <GrantItem key={String(item.account)} grant={item} />
       ))}
     </div>
   )

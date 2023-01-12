@@ -33,7 +33,7 @@ export const Label: React.FC<LabelProps> = React.forwardRef<
       {...rest}
       ref={ref}
       htmlFor={htmlFor}
-      className={cx('block text-sm font-medium text-gray-700', className)}
+      className={cx('block text-sm font-medium text-slate-400', className)}
     >
       {children}
       {isRequired && (

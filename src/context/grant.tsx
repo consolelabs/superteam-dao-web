@@ -2,13 +2,13 @@ import { createContext } from '@dwarvesf/react-utils'
 import { WithChildren } from 'types/common'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useEffect, useState } from 'react'
-import { ProposalFields } from 'idl/accounts'
 import { toast } from 'components/Toast'
+import { GrantDetail } from 'types/grant'
 import { useProgram } from './program'
 
 interface GrantValues {
-  proposalBySender: ProposalFields[]
-  proposalByRecipient: ProposalFields[]
+  proposalBySender: GrantDetail[]
+  proposalByRecipient: GrantDetail[]
   refreshGrant: () => void
 }
 
@@ -22,10 +22,10 @@ const GrantProvider = ({ children }: WithChildren) => {
   const { program } = useProgram()
 
   const [refreshCount, setRefreshCount] = useState(0)
-  const [proposalBySender, setProposalBySender] = useState<ProposalFields[]>([])
-  const [proposalByRecipient, setProposalByRecipient] = useState<
-    ProposalFields[]
-  >([])
+  const [proposalBySender, setProposalBySender] = useState<GrantDetail[]>([])
+  const [proposalByRecipient, setProposalByRecipient] = useState<GrantDetail[]>(
+    [],
+  )
 
   useEffect(() => {
     if (!program || !publicKey) return
@@ -39,7 +39,13 @@ const GrantProvider = ({ children }: WithChildren) => {
             },
           },
         ])
-        setProposalBySender(proposalBySender.map((each) => each.account) as any)
+        console.log(proposalBySender.map((each) => String(each.publicKey)))
+        setProposalBySender(
+          proposalBySender.map((each) => ({
+            ...each.account,
+            account: each.publicKey,
+          })) as any,
+        )
       } catch (error: any) {
         toast.error({
           title: 'Cannot fetch grant by sender',
@@ -63,7 +69,10 @@ const GrantProvider = ({ children }: WithChildren) => {
           },
         ])
         setProposalByRecipient(
-          proposalByRecipient.map((each) => each.account) as any,
+          proposalByRecipient.map((each) => ({
+            ...each.account,
+            account: each.publicKey,
+          })) as any,
         )
       } catch (error: any) {
         toast.error({
