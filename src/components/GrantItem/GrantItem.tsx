@@ -2,18 +2,21 @@ import React, { HTMLAttributes } from 'react'
 import cx from 'classnames'
 import { Text } from 'components/Text'
 import { formatWallet } from 'utils/formatWallet'
-import { Button } from 'components/Button'
 import { useToken } from 'context/solana-token'
 import BN from 'bn.js'
 import { GrantDetail } from 'types/grant'
 import Link from 'next/link'
+import { SenderAction } from './SenderAction'
+import { RecipientAction } from './RecipientAction'
 
 export interface GrantItemProps {
   grant: GrantDetail
+  filter: 'sender' | 'recipient'
 }
 
 export function GrantItem({
   grant,
+  filter,
   className,
   ...props
 }: GrantItemProps & HTMLAttributes<HTMLDivElement>) {
@@ -34,7 +37,7 @@ export function GrantItem({
       <div className="flex items-center flex-1">
         <img
           src={image}
-          className="flex-none w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-full object-cover"
+          className="flex-none object-cover w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-full"
           alt=""
         />
         <div>
@@ -69,12 +72,12 @@ export function GrantItem({
       <div className="w-1/6 font-semibold text-left">
         {Intl.NumberFormat().format(tokenAmount)} {symbol}
       </div>
-      <div className="w-fit text-end">
-        <Link href={`/grant-detail/${String(account)}`}>
-          <Button appearance="link" size="md" className="text-purple-600">
-            View
-          </Button>
-        </Link>
+      <div className="w-1/6 text-end">
+        {filter === 'sender' ? (
+          <SenderAction grant={grant} />
+        ) : (
+          <RecipientAction grant={grant} />
+        )}
       </div>
     </div>
   )

@@ -39,7 +39,6 @@ const GrantProvider = ({ children }: WithChildren) => {
             },
           },
         ])
-        console.log(proposalBySender.map((each) => String(each.publicKey)))
         setProposalBySender(
           proposalBySender.map((each) => ({
             ...each.account,
