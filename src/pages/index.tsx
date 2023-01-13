@@ -101,32 +101,25 @@ const HomePage = () => {
           {formatWallet(String(publicKey)) || 'Loading...'}
         </Text>
         <div className="mt-5">
-          <Text className="text-lg">Proof of work</Text>
-          <Text className="text-slate-300">10000 USD earned</Text>
-          <Text className="text-slate-300">10000 SOL earned</Text>
-          <Text className="mt-5 text-lg">Transaction</Text>
-          <Button
-            as="a"
-            target="_blank"
-            appearance="link"
-            href="https://solscan.io/tx/49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4"
-            className="block max-w-full mb-1 truncate"
-            size="lg"
-            display="block"
-          >
-            49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4
-          </Button>
-          <Button
-            as="a"
-            target="_blank"
-            appearance="link"
-            href="https://solscan.io/tx/49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4"
-            className="block max-w-full mb-1 truncate"
-            size="lg"
-            display="block"
-          >
-            49ZGRVb8E76Q9UVjYLUHffG5EXaKuvJ89HKtDsqa73CZyWJBP2tRJnCD74BGC235CW5cTQN4koMUFyPnLGgiLXH4
-          </Button>
+          <Text as="b" className="font-bold mb-3 block">
+            Your proof of works
+          </Text>
+          <ul className="list-none flex space-x-3">
+            <li>
+              <img
+                src="https://cdn.galxe.com/galaxy/delysium/7930bb02-c86f-410d-95e9-a7aad36c46ce.png?optimizer=image&width=800&quality=100"
+                alt="Proof of work NFT"
+                className="w-12 h-12 object-cover border border-slate-100 rounded-full"
+              />
+            </li>
+            <li>
+              <img
+                src="https://cdn.galxe.com/galaxy/delysium/7930bb02-c86f-410d-95e9-a7aad36c46ce.png?optimizer=image&width=800&quality=100"
+                alt="Proof of work NFT"
+                className="w-12 h-12 object-cover border border-slate-100 rounded-full"
+              />
+            </li>
+          </ul>
         </div>
       </aside>
       <div className="flex flex-col flex-grow px-4">
