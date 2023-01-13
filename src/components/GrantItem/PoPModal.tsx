@@ -58,14 +58,14 @@ export const PoPModal = (props: Props) => {
         .transaction()
       await sendTransaction(transaction, connection)
 
-      toast.success({
-        title: 'Sunmit Proof of payment successfully',
-      })
-      // setTimeout(() => {
-      setLoading(false)
-      onClose()
-      refreshGrant()
-      // }, 2000)
+      setTimeout(() => {
+        toast.success({
+          title: 'Sunmit Proof of payment successfully',
+        })
+        setLoading(false)
+        onClose()
+        refreshGrant()
+      }, 2000)
     } catch (error: any) {
       setLoading(false)
       toast.error({
