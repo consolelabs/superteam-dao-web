@@ -21,38 +21,32 @@ export const RecipientAction = ({ grant }: RecipientActionProps) => {
     onClose: onClosePoPModal,
     onOpen: onOpenPoPModal,
   } = useDisclosure()
-  const { approveGrant, rejectGrant, closeGrant } = useGrantActions(grant)
+  const { approveGrant, rejectGrant, closeGrant, approvePoP, rejectPoP } =
+    useGrantActions(grant)
 
   switch (grantStatusMapping[grant.status]) {
     case GRANT_STATUS.PENDING: {
-      switch (grant.owner) {
-        case true: {
-          return (
-            <>
-              <Button
-                appearance="link"
-                size="md"
-                className="text-purple-600"
-                onClick={approveGrant}
-              >
-                Approve
-              </Button>
-              {' / '}
-              <Button
-                appearance="link"
-                size="md"
-                className="text-purple-600"
-                onClick={rejectGrant}
-              >
-                Reject
-              </Button>
-            </>
-          )
-        }
-        case false:
-        default:
-          return null
-      }
+      return (
+        <>
+          <Button
+            appearance="link"
+            size="md"
+            className="text-purple-600"
+            onClick={approveGrant}
+          >
+            Approve
+          </Button>
+          {' / '}
+          <Button
+            appearance="link"
+            size="md"
+            className="text-purple-600"
+            onClick={rejectGrant}
+          >
+            Reject
+          </Button>
+        </>
+      )
     }
     case GRANT_STATUS.REJECTED: {
       return (
@@ -100,7 +94,42 @@ export const RecipientAction = ({ grant }: RecipientActionProps) => {
             <Text className="text-xs italic">Waiting for PoP confirmation</Text>
           )
         }
-        case false:
+        case false: {
+          if (!grant.transaction) {
+            return <Text className="text-xs italic">Waiting for PoP</Text>
+          }
+          if (popStatusMapping[grant.popStatus] === POP_STATUS.REJECTED) {
+            return <Text className="text-xs italic">PoP rejected</Text>
+          }
+          if (popStatusMapping[grant.popStatus] === POP_STATUS.PENDING) {
+            return (
+              <>
+                <Button
+                  appearance="link"
+                  size="md"
+                  className="text-purple-600"
+                  onClick={approvePoP}
+                >
+                  Approve PoP
+                </Button>
+                {' / '}
+                <Button
+                  appearance="link"
+                  size="md"
+                  className="text-purple-600"
+                  onClick={rejectPoP}
+                >
+                  Reject PoP
+                </Button>
+              </>
+            )
+          }
+          return (
+            <Button appearance="link" size="md" className="text-purple-600">
+              Mint PoW
+            </Button>
+          )
+        }
         default:
           return null
       }

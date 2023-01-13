@@ -37,7 +37,7 @@ export function GrantItem({
       <div className="flex items-center flex-1">
         <img
           src={image}
-          className="flex-none object-cover w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-full"
+          className="flex-none object-cover w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-full -indent-20"
           alt=""
         />
         <div>

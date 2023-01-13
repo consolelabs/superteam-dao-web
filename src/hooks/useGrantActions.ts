@@ -12,8 +12,31 @@ export const useGrantActions = (grant: GrantDetail) => {
   const { program } = useProgram()
   const { refreshGrant } = useGrant()
 
+  const onSuccess = ({
+    title,
+    message,
+  }: {
+    title: string
+    message?: React.ReactNode
+  }) => {
+    toast.success({ title, message })
+    setTimeout(() => {
+      refreshGrant()
+    }, 2000)
+  }
+
+  const onError = ({
+    title,
+    message,
+  }: {
+    title: string
+    message?: React.ReactNode
+  }) => {
+    toast.error({ title, message })
+  }
+
   const approveGrant = async () => {
-    if (!program) return
+    if (!program || !publicKey) return
     try {
       const [proposalAccount] = findPDAProposal(
         grant.sender,
@@ -24,7 +47,7 @@ export const useGrantActions = (grant: GrantDetail) => {
         .approveProposal()
         .accounts({
           proposal: proposalAccount,
-          recipient: grant.recipient,
+          recipient: publicKey,
           systemProgram: SystemProgram.programId,
         })
         .transaction()
@@ -45,7 +68,7 @@ export const useGrantActions = (grant: GrantDetail) => {
   }
 
   const rejectGrant = async () => {
-    if (!program) return
+    if (!program || !publicKey) return
     try {
       const [proposalAccount] = findPDAProposal(
         grant.sender,
@@ -56,7 +79,7 @@ export const useGrantActions = (grant: GrantDetail) => {
         .rejectProposal()
         .accounts({
           proposal: proposalAccount,
-          recipient: grant.recipient,
+          recipient: publicKey,
           systemProgram: SystemProgram.programId,
         })
         .transaction()
@@ -160,16 +183,13 @@ export const useGrantActions = (grant: GrantDetail) => {
         .transaction()
       await sendTransaction(transaction, connection)
 
-      toast.success({
+      onSuccess({
         title: approve
           ? 'Prove of Payment approved successfully'
           : 'Prove of Payment rejected successfully',
       })
-      setTimeout(() => {
-        refreshGrant()
-      }, 2000)
     } catch (error: any) {
-      toast.error({
+      onError({
         title: approve
           ? 'Cannot approve Prove of Payment'
           : 'Cannot reject Prove of Payment',
