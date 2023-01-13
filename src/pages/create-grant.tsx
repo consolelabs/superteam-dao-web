@@ -31,6 +31,7 @@ export interface GrantData {
   grantAmount: GrantAmount
   approverWallet: string
   minter: Minter
+  transactionHash: string
 }
 
 const GrantPage = () => {
@@ -55,9 +56,10 @@ const GrantPage = () => {
       grantAmount: { amount: '', token: '' },
       approverWallet: '',
       minter: 'Applicant (You)',
+      transactionHash: '',
     },
   })
-  const { handleSubmit } = formInstance
+  const { handleSubmit, watch } = formInstance
 
   const getIdentifier = async (
     program: Program,
@@ -133,7 +135,7 @@ const GrantPage = () => {
           data.tags.join(','),
           new anchor.BN(grantAmount * 10 ** grantToken.decimals),
           data.minter === 'Applicant (You)',
-          null,
+          data.transactionHash || null,
         )
         .accounts({
           proposal: proposalAccount,
@@ -234,6 +236,15 @@ const GrantPage = () => {
                   className="text-gray-900"
                 />
               </div>
+              {watch('minter') === 'Approver' && (
+                <div className="col-span-6">
+                  <FormInput
+                    label="Proof of Payment"
+                    name="transactionHash"
+                    fullWidth
+                  />
+                </div>
+              )}
             </div>
             <div className="px-5 py-2 text-center">
               <Button
