@@ -31,7 +31,7 @@ export function getAppearanceButtonStyles({
     if (!disabled) {
       classNames.push('border-transparent text-white')
     } else if (disabled) {
-      classNames.push('bg-gray-100 text-gray-400')
+      classNames.push('opacity-50 border-transparent')
     }
 
     if (!active) {
