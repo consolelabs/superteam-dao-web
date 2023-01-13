@@ -1,4 +1,4 @@
-import { Button } from 'components/Button'
+import { CancelOrCloseGrantButton, MintPoWButton } from 'components/GrantButton'
 import { EnterPoPButton, ViewPoPButton } from 'components/PoPButton'
 import { Text } from 'components/Text'
 import {
@@ -7,7 +7,6 @@ import {
   popStatusMapping,
   POP_STATUS,
 } from 'constants/grant'
-import { useGrantActions } from 'hooks/useGrantActions'
 import { GrantDetail } from 'types/grant'
 
 interface SenderActionProps {
@@ -15,35 +14,17 @@ interface SenderActionProps {
 }
 
 export const SenderAction = ({ grant }: SenderActionProps) => {
-  const { cancelGrant, closeGrant } = useGrantActions(grant)
-
   switch (grantStatusMapping[grant.status]) {
     case GRANT_STATUS.PENDING: {
       return (
         <>
           <Text className="text-xs italic">Waiting for approval</Text>
-          <Button
-            appearance="link"
-            size="md"
-            className="text-purple-600"
-            onClick={cancelGrant}
-          >
-            Cancel
-          </Button>
+          <CancelOrCloseGrantButton type="cancel" grant={grant} />
         </>
       )
     }
     case GRANT_STATUS.REJECTED: {
-      return (
-        <Button
-          appearance="link"
-          size="md"
-          className="text-purple-600"
-          onClick={closeGrant}
-        >
-          Close
-        </Button>
-      )
+      return <CancelOrCloseGrantButton type="close" grant={grant} />
     }
     case GRANT_STATUS.APPROVED: {
       switch (grant.owner) {
@@ -57,11 +38,7 @@ export const SenderAction = ({ grant }: SenderActionProps) => {
           if (popStatusMapping[grant.popStatus] === POP_STATUS.PENDING) {
             return <ViewPoPButton grant={grant} />
           }
-          return (
-            <Button appearance="link" size="md" className="text-purple-600">
-              Mint PoW
-            </Button>
-          )
+          return <MintPoWButton grant={grant} />
         }
         case false: {
           if (!grant.transaction) {

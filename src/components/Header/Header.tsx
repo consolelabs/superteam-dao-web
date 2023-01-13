@@ -45,7 +45,7 @@ export const Header = () => {
           </span>
           <div className="flex items-center space-x-3">
             <Link href="/create-grant">
-              <Button appearance="border">Create new grant</Button>
+              <Button appearance="primary">Create new grant</Button>
             </Link>
             {connected ? (
               <Menu as="div" className="relative inline-block text-left z-100">
@@ -128,7 +128,7 @@ export const Header = () => {
                 </Transition>
               </Menu>
             ) : (
-              <Button appearance="primary" onClick={onOpenWalletModal}>
+              <Button appearance="border" onClick={onOpenWalletModal}>
                 Connect Wallet
               </Button>
             )}

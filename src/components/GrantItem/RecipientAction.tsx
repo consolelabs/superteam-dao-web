@@ -1,4 +1,8 @@
-import { Button } from 'components/Button'
+import {
+  ApproveAndRejectGrantButton,
+  CancelOrCloseGrantButton,
+  MintPoWButton,
+} from 'components/GrantButton'
 import { EnterPoPButton, ViewPoPButton } from 'components/PoPButton'
 import { Text } from 'components/Text'
 import {
@@ -7,7 +11,6 @@ import {
   popStatusMapping,
   POP_STATUS,
 } from 'constants/grant'
-import { useGrantActions } from 'hooks/useGrantActions'
 import { ProposalFields } from 'idl/accounts'
 
 interface RecipientActionProps {
@@ -15,43 +18,12 @@ interface RecipientActionProps {
 }
 
 export const RecipientAction = ({ grant }: RecipientActionProps) => {
-  const { approveGrant, rejectGrant, closeGrant } = useGrantActions(grant)
-
   switch (grantStatusMapping[grant.status]) {
     case GRANT_STATUS.PENDING: {
-      return (
-        <>
-          <Button
-            appearance="link"
-            size="md"
-            className="text-purple-600"
-            onClick={approveGrant}
-          >
-            Approve
-          </Button>
-          {' / '}
-          <Button
-            appearance="link"
-            size="md"
-            className="text-purple-600"
-            onClick={rejectGrant}
-          >
-            Reject
-          </Button>
-        </>
-      )
+      return <ApproveAndRejectGrantButton grant={grant} />
     }
     case GRANT_STATUS.REJECTED: {
-      return (
-        <Button
-          appearance="link"
-          size="md"
-          className="text-purple-600"
-          onClick={closeGrant}
-        >
-          Close
-        </Button>
-      )
+      return <CancelOrCloseGrantButton type="close" grant={grant} />
     }
     case GRANT_STATUS.APPROVED: {
       switch (grant.owner) {
@@ -79,11 +51,7 @@ export const RecipientAction = ({ grant }: RecipientActionProps) => {
           if (popStatusMapping[grant.popStatus] === POP_STATUS.PENDING) {
             return <ViewPoPButton grant={grant} />
           }
-          return (
-            <Button appearance="link" size="md" className="text-purple-600">
-              Mint PoW
-            </Button>
-          )
+          return <MintPoWButton grant={grant} />
         }
         default:
           return null

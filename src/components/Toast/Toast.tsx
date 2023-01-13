@@ -11,7 +11,7 @@ const DEFAULT_DURATION = 2000 // 2 seconds
  */
 const MILISECONDS_PER_CHARACTER = 50
 
-interface ToastProps {
+export interface ToastProps {
   className?: string
   onClose?: () => void
   status?: AlertProps['status']
@@ -50,7 +50,7 @@ export function toast(props: ToastProps) {
   hotToast(
     (t) => (
       <Alert
-        className="sm:w-screen sm:max-w-sm max-w-full"
+        className="max-w-full sm:w-screen sm:max-w-sm"
         onClose={() => {
           hotToast.dismiss(t.id)
           if (onClose) {

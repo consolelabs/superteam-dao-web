@@ -113,7 +113,7 @@ const HomePage = () => {
         </div>
       </aside>
       <div className="flex flex-col flex-grow px-4">
-        <div className="flex flex-col flex-wrap items-end mb-5 md:flex-row md:justify-between">
+        <div className="flex flex-col flex-wrap items-end mb-5 space-y-5 md:flex-row md:justify-between">
           <div className="flex">
             <Button
               appearance={filter === 'sender' ? 'primary' : 'border'}
