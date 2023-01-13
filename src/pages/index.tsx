@@ -40,49 +40,34 @@ const HomePage = () => {
   const [tags, setTags] = useState<string[]>([])
   const [approver, setApprover] = useState('')
 
-  const grantData = filterData(
+  const grants = filterData(
     filter === 'sender' ? proposalBySender : proposalByRecipient,
     { tags, approver },
+  )
+  const pendingGrants = grants.filter(
+    (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.PENDING,
+  )
+  const approvedGrants = grants.filter(
+    (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
+  )
+  const rejectedGrants = grants.filter(
+    (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.REJECTED,
   )
   const tabData = [
     {
       id: 'pending',
-      label: 'Pending',
-      content: (
-        <GrantList
-          filter={filter}
-          data={grantData.filter(
-            (grant) =>
-              grantStatusMapping[grant.status] === GRANT_STATUS.PENDING,
-          )}
-        />
-      ),
+      label: `Pending (${pendingGrants.length})`,
+      content: <GrantList filter={filter} data={pendingGrants} />,
     },
     {
       id: 'approved',
-      label: 'Approved',
-      content: (
-        <GrantList
-          filter={filter}
-          data={grantData.filter(
-            (grant) =>
-              grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
-          )}
-        />
-      ),
+      label: `Approved (${approvedGrants.length})`,
+      content: <GrantList filter={filter} data={approvedGrants} />,
     },
     {
       id: 'rejected',
-      label: 'Rejected',
-      content: (
-        <GrantList
-          filter={filter}
-          data={grantData.filter(
-            (grant) =>
-              grantStatusMapping[grant.status] === GRANT_STATUS.REJECTED,
-          )}
-        />
-      ),
+      label: `Rejected (${rejectedGrants.length})`,
+      content: <GrantList filter={filter} data={rejectedGrants} />,
     },
   ]
 
@@ -106,22 +91,22 @@ const HomePage = () => {
           </Text>
         )}
         <div className="mt-5">
-          <Text as="b" className="font-bold mb-3 block">
+          <Text as="b" className="block mb-3 font-bold">
             Your proof of works
           </Text>
-          <ul className="list-none flex space-x-3">
+          <ul className="flex space-x-3 list-none">
             <li>
               <img
                 src="https://cdn.galxe.com/galaxy/delysium/7930bb02-c86f-410d-95e9-a7aad36c46ce.png?optimizer=image&width=800&quality=100"
                 alt="Proof of work NFT"
-                className="w-12 h-12 object-cover border border-slate-100 rounded-full"
+                className="object-cover w-12 h-12 border rounded-full border-slate-100"
               />
             </li>
             <li>
               <img
                 src="https://cdn.galxe.com/galaxy/delysium/7930bb02-c86f-410d-95e9-a7aad36c46ce.png?optimizer=image&width=800&quality=100"
                 alt="Proof of work NFT"
-                className="w-12 h-12 object-cover border border-slate-100 rounded-full"
+                className="object-cover w-12 h-12 border rounded-full border-slate-100"
               />
             </li>
           </ul>
@@ -133,7 +118,7 @@ const HomePage = () => {
             <Button
               appearance={filter === 'sender' ? 'primary' : 'border'}
               disabled={filter === 'sender'}
-              className="mr-4 h-10"
+              className="h-10 mr-4"
               onClick={() => {
                 setActiveTab('pending')
                 setFilter('sender')

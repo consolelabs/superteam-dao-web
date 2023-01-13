@@ -51,7 +51,7 @@ export function getAppearanceButtonStyles({
   } else if (appearance === 'link') {
     if (!disabled) {
       classNames.push(
-        'text-slate-300 hover:text-purple-200 focus:ring-offset-0 focus:ring-0 rounded-sm',
+        'text-purple-600 hover:text-purple-200 focus:ring-offset-0 focus:ring-0 rounded-sm',
       )
       classNames.push(focusRing)
     } else {

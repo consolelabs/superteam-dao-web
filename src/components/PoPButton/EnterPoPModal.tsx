@@ -1,5 +1,3 @@
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { SystemProgram } from '@solana/web3.js'
 import BN from 'bn.js'
 import { Button } from 'components/Button'
 import { Input } from 'components/Input'
@@ -11,68 +9,40 @@ import {
   ModalTitle,
 } from 'components/Modal'
 import { Text } from 'components/Text'
-import { toast } from 'components/Toast'
-import { useGrant } from 'context/grant'
-import { useProgram } from 'context/program'
 import { useToken } from 'context/solana-token'
+import { useGrantActions } from 'hooks/useGrantActions'
 import { useState } from 'react'
 import { GrantDetail } from 'types/grant'
-import { findPDAProposal } from 'utils/contract/setup'
 import { formatWallet } from 'utils/formatWallet'
 
 interface Props extends ModalProps {
   grant: GrantDetail
 }
 
-export const PoPModal = (props: Props) => {
+export const EnterPoPModal = (props: Props) => {
   const { isOpen, onClose, grant } = props
   const { spl, amount } = grant
-  const { connection } = useConnection()
-  const { publicKey, sendTransaction } = useWallet()
-  const { program } = useProgram()
   const { tokens } = useToken()
-  const { refreshGrant } = useGrant()
   const [value, setValue] = useState('')
   const [loading, setLoading] = useState(false)
+  const { sendPoP } = useGrantActions(grant)
 
   const token = tokens[String(spl)] || {}
   const { decimals = 0, symbol } = token
   const tokenAmount = amount.div(new BN(1 * 10 ** decimals)).toNumber()
 
-  const senPoP = async () => {
-    if (!program || !publicKey) return
-    try {
-      setLoading(true)
-      const [proposalAccount] = findPDAProposal(
-        grant.sender,
-        grant.identifier,
-        program,
-      )
-      const transaction = await program.methods
-        .fillTransactionHash(value)
-        .accounts({
-          proposal: proposalAccount,
-          signer: publicKey,
-          systemProgram: SystemProgram.programId,
-        })
-        .transaction()
-      await sendTransaction(transaction, connection)
-
-      setTimeout(() => {
-        toast.success({
-          title: 'Sunmit Proof of payment successfully',
-        })
+  const handleClick = () => {
+    setLoading(true)
+    sendPoP(
+      value,
+      () => {
         setLoading(false)
         onClose()
-        refreshGrant()
-      }, 2000)
-    } catch (error: any) {
-      setLoading(false)
-      toast.error({
-        title: 'Cannot submit Proof of payment',
-        message: error?.message,
-      })
-    }
+      },
+      () => {
+        setLoading(false)
+      },
+    )
   }
 
   return (
@@ -111,7 +81,7 @@ export const PoPModal = (props: Props) => {
               appearance="primary"
               disabled={!value || loading}
               loading={loading}
-              onClick={senPoP}
+              onClick={handleClick}
             >
               Submit
             </Button>
