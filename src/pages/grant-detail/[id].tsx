@@ -115,6 +115,13 @@ const GrantPage = () => {
                   Mint Proof of Work
                 </Button>
               )}
+            <Button
+              appearance="border"
+              className="rounded-full"
+              onClick={onToggleModal}
+            >
+              Mint Proof of Work
+            </Button>
           </div>
         </div>
         <div className="flex items-center">
@@ -207,6 +214,7 @@ const GrantPage = () => {
         </div>
       </div>
       <MintProofOfWorkModal
+        grant={grant}
         isOpen={isOpenModal}
         onClose={onCloseProofOfWorkModal}
       />

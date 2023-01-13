@@ -76,7 +76,7 @@ const GrantProvider = ({ children }: WithChildren) => {
         )
       } catch (error: any) {
         toast.error({
-          title: 'Cannot fetch grant by recipient',
+          title: 'Mint Proof of Work has error',
           message: error?.message,
         })
       }
