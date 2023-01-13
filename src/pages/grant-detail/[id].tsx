@@ -23,6 +23,9 @@ import {
   POP_STATUS,
 } from 'constants/grant'
 import { useToken } from 'context/solana-token'
+import { SenderAction } from 'components/GrantItem/SenderAction'
+import { RecipientAction } from 'components/GrantItem/RecipientAction'
+import { GrantProvider } from 'context/grant'
 
 const GrantPage = () => {
   const {
@@ -96,14 +99,12 @@ const GrantPage = () => {
             {grant.title}
           </Text>
           <div className="ml-auto">
-            <span className="flex mb-3">
-              <Text as="span" className="mr-1 text-lg">
-                Status:
-              </Text>
-              <Text as="b" className="text-lg font-bold capitalize">
-                {grantStatusMapping[grant.status]}
-              </Text>
-            </span>
+            <Text className="mb-3 text-lg">Status:</Text>
+            {grant.owner ? (
+              <SenderAction grant={grant} />
+            ) : (
+              <RecipientAction grant={grant} />
+            )}
             {grant.owner &&
               grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED &&
               popStatusMapping[grant.popStatus] === POP_STATUS.CONFIRMED && (
@@ -115,13 +116,6 @@ const GrantPage = () => {
                   Mint Proof of Work
                 </Button>
               )}
-            <Button
-              appearance="border"
-              className="rounded-full"
-              onClick={onToggleModal}
-            >
-              Mint Proof of Work
-            </Button>
           </div>
         </div>
         <div className="flex items-center">
@@ -210,6 +204,19 @@ const GrantPage = () => {
                 </CopyElement>
               </div>
             </div>
+            {grant.transaction && (
+              <div className="w-1/2">
+                <Text className="text-lg">Proof on Payment:</Text>
+                <CopyElement
+                  value={grant.transaction}
+                  iconClass="w-5 h-5 text-purple-600 cursor-pointer stroke-2"
+                >
+                  <Text as="span" className="text-lg font-bold text-purple-600">
+                    {grant.transaction}
+                  </Text>
+                </CopyElement>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -222,4 +229,8 @@ const GrantPage = () => {
   )
 }
 
-export default GrantPage
+export default () => (
+  <GrantProvider>
+    <GrantPage />
+  </GrantProvider>
+)

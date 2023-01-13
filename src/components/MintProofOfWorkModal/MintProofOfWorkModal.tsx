@@ -201,11 +201,12 @@ const MintContent = ({
       )}
       <Button
         disabled={isConfirming}
+        loading={isConfirming}
         appearance="border"
         size="lg"
         onClick={handleMint}
       >
-        {isConfirming ? 'Confirming' : 'Confirm'}
+        Confirm
       </Button>
     </div>
   )

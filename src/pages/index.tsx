@@ -100,9 +100,11 @@ const HomePage = () => {
             />
           </span>
         </div>
-        <Text as="b" className="block mb-2 text-xl text-center">
-          {formatWallet(String(publicKey)) || 'Loading...'}
-        </Text>
+        {publicKey && (
+          <Text as="b" className="block mb-2 text-xl text-center">
+            {formatWallet(String(publicKey)) || 'Loading...'}
+          </Text>
+        )}
         <div className="mt-5">
           <Text as="b" className="font-bold mb-3 block">
             Your proof of works
@@ -126,12 +128,12 @@ const HomePage = () => {
         </div>
       </aside>
       <div className="flex flex-col flex-grow px-4">
-        <div className="flex flex-col flex-wrap items-center mb-5 space-y-3 md:flex-row md:justify-between">
-          <div>
+        <div className="flex flex-col flex-wrap items-end mb-5 md:flex-row md:justify-between">
+          <div className="flex">
             <Button
               appearance={filter === 'sender' ? 'primary' : 'border'}
-              size="lg"
-              className="mr-4"
+              disabled={filter === 'sender'}
+              className="mr-4 h-10"
               onClick={() => {
                 setActiveTab('pending')
                 setFilter('sender')
@@ -140,8 +142,9 @@ const HomePage = () => {
               Sent Grant
             </Button>
             <Button
+              className="h-10"
               appearance={filter === 'recipient' ? 'primary' : 'border'}
-              size="lg"
+              disabled={filter === 'recipient'}
               onClick={() => {
                 setActiveTab('pending')
                 setFilter('recipient')
