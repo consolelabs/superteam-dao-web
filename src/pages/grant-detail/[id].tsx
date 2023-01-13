@@ -129,12 +129,12 @@ const GrantPage = () => {
             Tags
           </Text>
           <ul className="flex flex-wrap mt-2">
-            {['gamefi', 'defi', 'nft'].map((tag) => (
+            {grant.tags.split(',').map((tag) => (
               <li
                 key={tag}
-                className="inline-flex px-3 py-1 mb-2 mr-3 overflow-hidden border rounded-md border-slate-300"
+                className="inline-flex px-3 py-1 mb-2 mr-3 overflow-hidden bg-purple-600 border border-purple-600 rounded-md bg-opacity-20"
               >
-                {tag}
+                {tag.trim()}
               </li>
             ))}
           </ul>
