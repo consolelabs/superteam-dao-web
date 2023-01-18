@@ -82,8 +82,9 @@ export const GrantForm = (props: Props) => {
         receiver,
         program,
       )
-      console.log({ proposalAccount })
-      if (proposalAccount) {
+      const proposal = await program.account.proposal.fetch(proposalAccount)
+      console.log({ proposal })
+      if (proposal) {
         throw Error('Grant is already created')
       }
 
@@ -211,6 +212,7 @@ export const GrantForm = (props: Props) => {
         isOpen={isOpenResultModal}
         onClose={onCloseResultModal}
         title={result.data ? 'Submitted successfully' : 'Something went wrong'}
+        message={result.error?.message}
       />
     </div>
   )

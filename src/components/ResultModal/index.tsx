@@ -10,16 +10,22 @@ import Link from 'next/link'
 
 interface Props extends ModalProps {
   title: string
+  message?: string
 }
 
 export const ResultModal = (props: Props) => {
-  const { isOpen, onClose, title } = props
+  const { isOpen, onClose, title, message } = props
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalContent size="max-w-sm" className="py-10 space-y-5 text-center">
         <ModalCloseButton />
         <Text className="text-xl text-black">{title}</Text>
+        {message && (
+          <Text className="text-sm text-black truncate whitespace-pre-wrap">
+            {message}
+          </Text>
+        )}
         <Link href="/">
           <Button>Back to Home</Button>
         </Link>
