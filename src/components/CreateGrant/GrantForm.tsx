@@ -18,6 +18,7 @@ import { BN } from 'bn.js'
 import { Label } from 'components/Label'
 import { Text } from 'components/Text'
 import { Address } from 'components/Address'
+import { Program } from '@project-serum/anchor'
 import { TransactionInfo } from './TransactionItem'
 
 export interface FormData {
@@ -33,16 +34,10 @@ interface Props {
 
 export const GrantForm = (props: Props) => {
   const { data } = props
-  const {
-    transactionId,
-    sourceOwner,
-    destinationOwner,
-    amount,
-    decimals,
-    tokenAddress,
-  } = data
+  const { transactionId, sourceOwner, destinationOwner, amount, tokenAddress } =
+    data
   const { program } = useProgram()
-  const { sendTransaction } = useWallet()
+  const { publicKey, sendTransaction } = useWallet()
   const { connection } = useConnection()
 
   const [selectedFile, setSelectedFile] = useState<File>()
@@ -63,8 +58,17 @@ export const GrantForm = (props: Props) => {
   })
   const { handleSubmit } = formInstance
 
+  const getProposal = async (program: Program, proposalAccount: PublicKey) => {
+    try {
+      const proposal = await program.account.proposal.fetch(proposalAccount)
+      return proposal
+    } catch (error) {
+      return null
+    }
+  }
+
   const onSubmit = async (data?: FormData) => {
-    if (!program || !data) return
+    if (!program || !publicKey || !data) return
 
     try {
       setSubmitting(true)
@@ -82,8 +86,7 @@ export const GrantForm = (props: Props) => {
         receiver,
         program,
       )
-      const proposal = await program.account.proposal.fetch(proposalAccount)
-      console.log({ proposal })
+      const proposal = await getProposal(program, proposalAccount)
       if (proposal) {
         throw Error('Grant is already created')
       }
@@ -100,11 +103,11 @@ export const GrantForm = (props: Props) => {
           data.subtitle,
           spl,
           data.tags.join(','),
-          new BN(amount * 10 ** decimals),
+          new BN(amount),
         )
         .accounts({
           proposal: proposalAccount,
-          payer: sender,
+          payer: publicKey,
           systemProgram: SystemProgram.programId,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         })
@@ -208,12 +211,18 @@ export const GrantForm = (props: Props) => {
           </div>
         </form>
       </FormProvider>
-      <ResultModal
-        isOpen={isOpenResultModal}
-        onClose={onCloseResultModal}
-        title={result.data ? 'Submitted successfully' : 'Something went wrong'}
-        message={result.error?.message}
-      />
+      {isOpenResultModal && (
+        <ResultModal
+          isOpen={isOpenResultModal}
+          onClose={onCloseResultModal}
+          result={result}
+          token={{
+            icon: data.icon,
+            decimals: data.decimals,
+            symbol: data.symbol,
+          }}
+        />
+      )}
     </div>
   )
 }

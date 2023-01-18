@@ -49,7 +49,7 @@ export const TransactionInput = ({ onCreate }: Props) => {
         <Input
           id="transaction-id-input"
           fullWidth
-          invalid={!!error && !isLoading}
+          invalid={!!error}
           onChange={(e) => {
             setTransactionId(e.target.value)
           }}
