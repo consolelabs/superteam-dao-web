@@ -76,7 +76,6 @@ export const GrantForm = (props: Props) => {
       const spl = new PublicKey(tokenAddress)
       const sender = new PublicKey(sourceOwner)
       const receiver = new PublicKey(destinationOwner)
-      const image = selectedFile ? (await uploadFile(selectedFile)) || '' : ''
 
       const [proposalAccount] = findPDAProposal(
         transactionId.substring(0, 32),
@@ -90,6 +89,8 @@ export const GrantForm = (props: Props) => {
       if (proposal) {
         throw Error('Grant is already created')
       }
+
+      const image = selectedFile ? (await uploadFile(selectedFile)) || '' : ''
 
       const createProposalTx = await program.methods
         .createProposal(
