@@ -3,32 +3,6 @@
   "name": "superteam_dao_contract",
   "instructions": [
     {
-      "name": "createIdentifier",
-      "accounts": [
-        {
-          "name": "identifier",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "sender",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "createProposal",
       "accounts": [
         {
@@ -37,12 +11,7 @@
           "isSigner": false
         },
         {
-          "name": "identifier",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "sender",
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },
@@ -59,7 +28,23 @@
       ],
       "args": [
         {
-          "name": "recipient",
+          "name": "firstTxn",
+          "type": "string"
+        },
+        {
+          "name": "secondTxn",
+          "type": "string"
+        },
+        {
+          "name": "thirdTxn",
+          "type": "string"
+        },
+        {
+          "name": "sender",
+          "type": "publicKey"
+        },
+        {
+          "name": "receiver",
           "type": "publicKey"
         },
         {
@@ -85,21 +70,11 @@
         {
           "name": "amount",
           "type": "u64"
-        },
-        {
-          "name": "isOwner",
-          "type": "bool"
-        },
-        {
-          "name": "transactionHash",
-          "type": {
-            "option": "string"
-          }
         }
       ]
     },
     {
-      "name": "cancelProposal",
+      "name": "senderApproveProposal",
       "accounts": [
         {
           "name": "proposal",
@@ -120,7 +95,7 @@
       "args": []
     },
     {
-      "name": "rejectProposal",
+      "name": "receiverApproveProposal",
       "accounts": [
         {
           "name": "proposal",
@@ -128,7 +103,7 @@
           "isSigner": false
         },
         {
-          "name": "recipient",
+          "name": "receiver",
           "isMut": true,
           "isSigner": true
         },
@@ -141,7 +116,7 @@
       "args": []
     },
     {
-      "name": "approveProposal",
+      "name": "senderRejectProposal",
       "accounts": [
         {
           "name": "proposal",
@@ -149,7 +124,7 @@
           "isSigner": false
         },
         {
-          "name": "recipient",
+          "name": "sender",
           "isMut": true,
           "isSigner": true
         },
@@ -157,9 +132,46 @@
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "receiverRejectProposal",
+      "accounts": [
+        {
+          "name": "proposal",
+          "isMut": true,
+          "isSigner": false
         },
         {
-          "name": "tokenProgram",
+          "name": "receiver",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "cancelProposal",
+      "accounts": [
+        {
+          "name": "proposal",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         }
@@ -175,7 +187,7 @@
           "isSigner": false
         },
         {
-          "name": "sender",
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },
@@ -186,102 +198,16 @@
         }
       ],
       "args": []
-    },
-    {
-      "name": "applicantConfirmProposal",
-      "accounts": [
-        {
-          "name": "proposal",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "applicant",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "applicantRejectProposal",
-      "accounts": [
-        {
-          "name": "proposal",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "applicant",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "fillTransactionHash",
-      "accounts": [
-        {
-          "name": "proposal",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "transactionHash",
-          "type": {
-            "option": "string"
-          }
-        }
-      ]
     }
   ],
   "accounts": [
-    {
-      "name": "Identifier",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "sender",
-            "type": "publicKey"
-          },
-          {
-            "name": "count",
-            "type": "u64"
-          }
-        ]
-      }
-    },
     {
       "name": "Proposal",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "recipient",
+            "name": "receiver",
             "type": "publicKey"
           },
           {
@@ -289,12 +215,20 @@
             "type": "publicKey"
           },
           {
-            "name": "status",
+            "name": "transaction",
+            "type": "string"
+          },
+          {
+            "name": "submitter",
+            "type": "publicKey"
+          },
+          {
+            "name": "receiverStatus",
             "type": "u8"
           },
           {
-            "name": "owner",
-            "type": "bool"
+            "name": "senderStatus",
+            "type": "u8"
           },
           {
             "name": "spl",
@@ -305,18 +239,8 @@
             "type": "u64"
           },
           {
-            "name": "popStatus",
-            "type": "u8"
-          },
-          {
             "name": "tags",
             "type": "string"
-          },
-          {
-            "name": "transaction",
-            "type": {
-              "option": "string"
-            }
           },
           {
             "name": "image",
@@ -329,10 +253,6 @@
           {
             "name": "subtitle",
             "type": "string"
-          },
-          {
-            "name": "identifier",
-            "type": "u64"
           }
         ]
       }
@@ -346,76 +266,46 @@
     },
     {
       "code": 6001,
-      "name": "RecipientInvalidStateAccount",
-      "msg": "Invalid recipient"
+      "name": "ReceiverInvalidStateAccount",
+      "msg": "Invalid receiver"
     },
     {
       "code": 6002,
-      "name": "NotEnoughLamport",
-      "msg": "Not enough lamport"
-    },
-    {
-      "code": 6003,
-      "name": "NotEnoughSplToken",
-      "msg": "Not enough spl token"
-    },
-    {
-      "code": 6004,
-      "name": "OwnerInvalidTokenAccount",
-      "msg": "Invalid owner associated token account"
-    },
-    {
-      "code": 6005,
-      "name": "StatusPendingInvalid",
-      "msg": "proposal is not pending"
-    },
-    {
-      "code": 6006,
-      "name": "OwnerInvalidAccount",
-      "msg": "Invalid owner account"
-    },
-    {
-      "code": 6007,
       "name": "InvalidAccount",
       "msg": "Account is invalid"
     },
     {
-      "code": 6008,
-      "name": "InvalidMintAccount",
-      "msg": "Mint Account is invalid"
-    },
-    {
-      "code": 6009,
+      "code": 6003,
       "name": "TagsTooLong",
       "msg": "The provided tags should be 256 characters long maximum."
     },
     {
-      "code": 6010,
+      "code": 6004,
       "name": "TitleTooLong",
       "msg": "The provided content should be 256 characters long maximum."
     },
     {
-      "code": 6011,
+      "code": 6005,
       "name": "SubtitleTooLong",
       "msg": "The provided subtitle should be 256 characters long maximum."
     },
     {
-      "code": 6012,
+      "code": 6006,
       "name": "ImageTooLong",
       "msg": "The provided image should be 256 characters long maximum."
     },
     {
-      "code": 6013,
+      "code": 6007,
       "name": "TransactionHashIsNotValid",
       "msg": "The transaction hash is needed"
     },
     {
-      "code": 6014,
+      "code": 6008,
       "name": "InvalidProposal",
       "msg": "Proposal is invalid"
     }
   ],
   "metadata": {
-    "address": "9J2QYZw4KgkL7W1uAf2awtqAc7roNWtcjVmAGs6GskRT"
+    "address": "Acky1tFTVd3RDJGYdHeV7rjjP4i8ziQ1NH2CR5Cg7KsU"
   }
 }

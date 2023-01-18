@@ -4,86 +4,81 @@ import * as borsh from '@project-serum/borsh' // eslint-disable-line @typescript
 import { PROGRAM_ID } from '../programId'
 
 export interface ProposalFields {
-  recipient: PublicKey
+  receiver: PublicKey
   sender: PublicKey
-  status: number
-  owner: boolean
+  transaction: string
+  submitter: PublicKey
+  receiverStatus: number
+  senderStatus: number
   spl: PublicKey
   amount: BN
-  popStatus: number
   tags: string
-  transaction: string | null
   image: string
   title: string
   subtitle: string
-  identifier: BN
 }
 
 export interface ProposalJSON {
-  recipient: string
+  receiver: string
   sender: string
-  status: number
-  owner: boolean
+  transaction: string
+  submitter: string
+  receiverStatus: number
+  senderStatus: number
   spl: string
   amount: string
-  popStatus: number
   tags: string
-  transaction: string | null
   image: string
   title: string
   subtitle: string
-  identifier: string
 }
 
 export class Proposal {
-  readonly recipient: PublicKey
+  readonly receiver: PublicKey
   readonly sender: PublicKey
-  readonly status: number
-  readonly owner: boolean
+  readonly transaction: string
+  readonly submitter: PublicKey
+  readonly receiverStatus: number
+  readonly senderStatus: number
   readonly spl: PublicKey
   readonly amount: BN
-  readonly popStatus: number
   readonly tags: string
-  readonly transaction: string | null
   readonly image: string
   readonly title: string
   readonly subtitle: string
-  readonly identifier: BN
 
   static readonly discriminator = Buffer.from([
     26, 94, 189, 187, 116, 136, 53, 33,
   ])
 
   static readonly layout = borsh.struct([
-    borsh.publicKey('recipient'),
+    borsh.publicKey('receiver'),
     borsh.publicKey('sender'),
-    borsh.u8('status'),
-    borsh.bool('owner'),
+    borsh.str('transaction'),
+    borsh.publicKey('submitter'),
+    borsh.u8('receiverStatus'),
+    borsh.u8('senderStatus'),
     borsh.publicKey('spl'),
     borsh.u64('amount'),
-    borsh.u8('popStatus'),
     borsh.str('tags'),
-    borsh.option(borsh.str(), 'transaction'),
     borsh.str('image'),
     borsh.str('title'),
     borsh.str('subtitle'),
-    borsh.u64('identifier'),
   ])
 
   constructor(fields: ProposalFields) {
-    this.recipient = fields.recipient
+    this.receiver = fields.receiver
     this.sender = fields.sender
-    this.status = fields.status
-    this.owner = fields.owner
+    this.transaction = fields.transaction
+    this.submitter = fields.submitter
+    this.receiverStatus = fields.receiverStatus
+    this.senderStatus = fields.senderStatus
     this.spl = fields.spl
     this.amount = fields.amount
-    this.popStatus = fields.popStatus
     this.tags = fields.tags
-    this.transaction = fields.transaction
     this.image = fields.image
     this.title = fields.title
     this.subtitle = fields.subtitle
-    this.identifier = fields.identifier
   }
 
   static async fetch(
@@ -128,55 +123,52 @@ export class Proposal {
     const dec = Proposal.layout.decode(data.slice(8))
 
     return new Proposal({
-      recipient: dec.recipient,
+      receiver: dec.receiver,
       sender: dec.sender,
-      status: dec.status,
-      owner: dec.owner,
+      transaction: dec.transaction,
+      submitter: dec.submitter,
+      receiverStatus: dec.receiverStatus,
+      senderStatus: dec.senderStatus,
       spl: dec.spl,
       amount: dec.amount,
-      popStatus: dec.popStatus,
       tags: dec.tags,
-      transaction: dec.transaction,
       image: dec.image,
       title: dec.title,
       subtitle: dec.subtitle,
-      identifier: dec.identifier,
     })
   }
 
   toJSON(): ProposalJSON {
     return {
-      recipient: this.recipient.toString(),
+      receiver: this.receiver.toString(),
       sender: this.sender.toString(),
-      status: this.status,
-      owner: this.owner,
+      transaction: this.transaction,
+      submitter: this.submitter.toString(),
+      receiverStatus: this.receiverStatus,
+      senderStatus: this.senderStatus,
       spl: this.spl.toString(),
       amount: this.amount.toString(),
-      popStatus: this.popStatus,
       tags: this.tags,
-      transaction: this.transaction,
       image: this.image,
       title: this.title,
       subtitle: this.subtitle,
-      identifier: this.identifier.toString(),
     }
   }
 
   static fromJSON(obj: ProposalJSON): Proposal {
     return new Proposal({
-      recipient: new PublicKey(obj.recipient),
+      receiver: new PublicKey(obj.receiver),
       sender: new PublicKey(obj.sender),
-      status: obj.status,
-      owner: obj.owner,
+      transaction: obj.transaction,
+      submitter: new PublicKey(obj.submitter),
+      receiverStatus: obj.receiverStatus,
+      senderStatus: obj.senderStatus,
       spl: new PublicKey(obj.spl),
       amount: new BN(obj.amount),
-      popStatus: obj.popStatus,
       tags: obj.tags,
-      transaction: obj.transaction,
       image: obj.image,
       title: obj.title,
       subtitle: obj.subtitle,
-      identifier: new BN(obj.identifier),
     })
   }
 }
