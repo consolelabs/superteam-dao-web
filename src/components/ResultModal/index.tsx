@@ -43,9 +43,15 @@ export const ResultModal = (props: Props) => {
             )}
             <div className="flex space-x-2">
               <Label>Transaction</Label>
-              <Text className="text-black truncate">
-                {result.data.transaction || '-'}
-              </Text>
+              {result.data.transaction ? (
+                <Address
+                  truncate={false}
+                  href={`https://solscan.io/tx/${result.data.transaction}`}
+                  value={result.data.transaction}
+                />
+              ) : (
+                '-'
+              )}
             </div>
             <div className="flex space-x-2">
               <Label>Title</Label>

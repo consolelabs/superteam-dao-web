@@ -137,7 +137,11 @@ export const GrantForm = (props: Props) => {
           <div className="grid grid-cols-6 gap-6 p-6">
             <div className="flex col-span-6 space-x-2 truncate">
               <Label>Transaction</Label>
-              <Text className="text-sm truncate">{transactionId}</Text>
+              <Address
+                truncate={false}
+                href={`https://solscan.io/tx/${transactionId}`}
+                value={transactionId}
+              />
             </div>
             <div className="flex col-span-6 space-x-2 truncate">
               <Text className="flex items-center space-x-1 w-44 min-w-max">
