@@ -1,19 +1,17 @@
 import { Program } from '@project-serum/anchor'
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { SystemProgram } from '@solana/web3.js'
+import { useWallet } from '@solana/wallet-adapter-react'
 import { toast, ToastProps } from 'components/Toast'
 import { useGrant } from 'context/grant'
 import { useProgram } from 'context/program'
 import { GrantDetail } from 'types/grant'
-import { findPDAProposal } from 'utils/contract/setup'
 
 const noop = () => {}
 
 export const useGrantActions = (grant: GrantDetail) => {
-  const { connection } = useConnection()
-  const { publicKey, sendTransaction } = useWallet()
+  const { publicKey } = useWallet()
   const { program } = useProgram()
   const { refreshGrant } = useGrant()
+  console.log({ grant })
 
   const onSuccess = (
     successCallback: () => void,
@@ -52,21 +50,21 @@ export const useGrantActions = (grant: GrantDetail) => {
       errorToastOptions,
     } = options || {}
     try {
-      const [proposalAccount] = findPDAProposal(
-        grant.sender,
-        grant.identifier,
-        program,
-      )
-      const transaction = await method()
-        .accounts({
-          proposal: proposalAccount,
-          sender: publicKey,
-          recipient: publicKey,
-          signer: publicKey,
-          systemProgram: SystemProgram.programId,
-        })
-        .transaction()
-      await sendTransaction(transaction, connection)
+      // const [proposalAccount] = findPDAProposal(
+      //   grant.sender,
+      //   grant.identifier,
+      //   program,
+      // )
+      // const transaction = await method()
+      //   .accounts({
+      //     proposal: proposalAccount,
+      //     sender: publicKey,
+      //     recipient: publicKey,
+      //     signer: publicKey,
+      //     systemProgram: SystemProgram.programId,
+      //   })
+      //   .transaction()
+      // await sendTransaction(transaction, connection)
 
       onSuccess(successCallback, successToastOptions)
     } catch (error: any) {

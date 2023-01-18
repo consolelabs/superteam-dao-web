@@ -55,7 +55,8 @@ const MintContent = ({
 
   // const solBalance = balances['sol'].toExact()
 
-  const applicantWallet = grant.owner ? grant.sender : grant.recipient
+  const applicantWallet = grant.sender
+  // const applicantWallet = grant.owner ? grant.sender : grant.recipient
 
   const handleMint = useCallback(async () => {
     try {
@@ -183,21 +184,21 @@ const MintContent = ({
 
   return (
     <div className="text-center">
-      <Text className="mb-3 text-white text-xl">
+      <Text className="mb-3 text-xl text-white">
         Mint the{' '}
         <Text as="b" className="font-bold text-purple-500">
           {grant.title}
         </Text>{' '}
         to a proof of work
       </Text>
-      <Text className="text-white text-lg mb-8">
+      <Text className="mb-8 text-lg text-white">
         Minting fee:{' '}
         <Text as="b" className="font-bold text-purple-500">
           1 SOL
         </Text>{' '}
       </Text>
       {balances['sol'].isZero() && (
-        <Text className="text-pink-500 mb-3">Your balance is not enough!</Text>
+        <Text className="mb-3 text-pink-500">Your balance is not enough!</Text>
       )}
       <Button
         disabled={isConfirming}
@@ -215,7 +216,7 @@ const MintContent = ({
 const SuccessContent = ({ onClose }: Props) => {
   return (
     <div className="text-center">
-      <Text className="mb-3 text-white text-xl">Proof of work</Text>
+      <Text className="mb-3 text-xl text-white">Proof of work</Text>
       <div className="text-center">
         <span className="w-[150px] h-[150px] inline-flex items-center justify-center mx-auto">
           <img
@@ -244,10 +245,10 @@ export const MintProofOfWorkModal = (props: Props) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalContent
         size="max-w-xl"
-        className="bg-transparent p-10 border-2 border-purple-600"
+        className="p-10 bg-transparent border-2 border-purple-600"
       >
         <ModalCloseButton />
-        <div className="text-3xl text-center mt-3 mb-5 font-bold text-white">
+        <div className="mt-3 mb-5 text-3xl font-bold text-center text-white">
           {mintSuccess ? 'Successfully Minted' : 'Confirm to mint'}
         </div>
         {mintSuccess ? (
