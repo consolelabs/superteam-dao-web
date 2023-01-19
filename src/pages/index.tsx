@@ -15,15 +15,15 @@ import { GrantList } from 'components/GrantList'
 const HomePage = () => {
   const { user } = useAuthContext()
   const { publicKey } = useWallet()
-  const { proposalBySender, proposalByRecipient } = useGrant()
+  const { proposalBySender, proposalByReceiver } = useGrant()
   const [activeTab, setActiveTab] = useState('pending')
-  const [filter, setFilter] = useState<'sender' | 'recipient'>('sender')
+  const [filter, setFilter] = useState<'sender' | 'receiver'>('sender')
   const [tags, setTags] = useState<string[]>([])
   const [approver, setApprover] = useState('')
 
-  console.log({ proposalBySender, proposalByRecipient })
+  console.log({ proposalBySender, proposalByReceiver })
 
-  const grants = filter === 'sender' ? proposalBySender : proposalByRecipient
+  const grants = filter === 'sender' ? proposalBySender : proposalByReceiver
   const pendingGrants = grants.filter(
     (grant) =>
       grantStatusMapping[
@@ -117,11 +117,11 @@ const HomePage = () => {
             </Button>
             <Button
               className="h-10"
-              appearance={filter === 'recipient' ? 'primary' : 'border'}
-              disabled={filter === 'recipient'}
+              appearance={filter === 'receiver' ? 'primary' : 'border'}
+              disabled={filter === 'receiver'}
               onClick={() => {
                 setActiveTab('pending')
-                setFilter('recipient')
+                setFilter('receiver')
               }}
             >
               Received Grant

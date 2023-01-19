@@ -8,7 +8,7 @@ import { useProgram } from './program'
 
 interface GrantValues {
   proposalBySender: GrantDetail[]
-  proposalByRecipient: GrantDetail[]
+  proposalByReceiver: GrantDetail[]
   refreshGrant: () => void
 }
 
@@ -23,7 +23,7 @@ const GrantProvider = ({ children }: WithChildren) => {
 
   const [refreshCount, setRefreshCount] = useState(0)
   const [proposalBySender, setProposalBySender] = useState<GrantDetail[]>([])
-  const [proposalByRecipient, setProposalByRecipient] = useState<GrantDetail[]>(
+  const [proposalByReceiver, setProposalByReceiver] = useState<GrantDetail[]>(
     [],
   )
 
@@ -57,9 +57,9 @@ const GrantProvider = ({ children }: WithChildren) => {
 
   useEffect(() => {
     if (!program || !publicKey) return
-    const fetchProposalByRecipient = async () => {
+    const fetchProposalByReceiver = async () => {
       try {
-        const proposalByRecipient = await program.account.proposal.all([
+        const proposalByReceiver = await program.account.proposal.all([
           {
             memcmp: {
               offset: 8,
@@ -67,8 +67,8 @@ const GrantProvider = ({ children }: WithChildren) => {
             },
           },
         ])
-        setProposalByRecipient(
-          proposalByRecipient.map((each) => ({
+        setProposalByReceiver(
+          proposalByReceiver.map((each) => ({
             ...each.account,
             account: each.publicKey,
           })) as any,
@@ -80,7 +80,7 @@ const GrantProvider = ({ children }: WithChildren) => {
         })
       }
     }
-    fetchProposalByRecipient()
+    fetchProposalByReceiver()
   }, [connection, program, publicKey, refreshCount])
 
   const refreshGrant = () => {
@@ -91,7 +91,7 @@ const GrantProvider = ({ children }: WithChildren) => {
     <Provider
       value={{
         proposalBySender,
-        proposalByRecipient,
+        proposalByReceiver,
         refreshGrant,
       }}
     >

@@ -1,17 +1,19 @@
 import { Program } from '@project-serum/anchor'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { SystemProgram } from '@solana/web3.js'
 import { toast, ToastProps } from 'components/Toast'
 import { useGrant } from 'context/grant'
 import { useProgram } from 'context/program'
 import { GrantDetail } from 'types/grant'
+import { findPDAProposal } from 'utils/contract/setup'
 
 const noop = () => {}
 
 export const useGrantActions = (grant: GrantDetail) => {
-  const { publicKey } = useWallet()
+  const { connection } = useConnection()
+  const { publicKey, sendTransaction } = useWallet()
   const { program } = useProgram()
   const { refreshGrant } = useGrant()
-  console.log({ grant })
 
   const onSuccess = (
     successCallback: () => void,
@@ -50,21 +52,24 @@ export const useGrantActions = (grant: GrantDetail) => {
       errorToastOptions,
     } = options || {}
     try {
-      // const [proposalAccount] = findPDAProposal(
-      //   grant.sender,
-      //   grant.identifier,
-      //   program,
-      // )
-      // const transaction = await method()
-      //   .accounts({
-      //     proposal: proposalAccount,
-      //     sender: publicKey,
-      //     recipient: publicKey,
-      //     signer: publicKey,
-      //     systemProgram: SystemProgram.programId,
-      //   })
-      //   .transaction()
-      // await sendTransaction(transaction, connection)
+      const [proposalAccount] = findPDAProposal(
+        grant.transaction.substring(0, 32),
+        grant.transaction.substring(32, 64),
+        grant.transaction.substring(64, 88),
+        grant.sender,
+        grant.receiver,
+        program,
+      )
+      const transaction = await method()
+        .accounts({
+          proposal: proposalAccount,
+          sender: publicKey,
+          receiver: publicKey,
+          payer: publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .transaction()
+      await sendTransaction(transaction, connection)
 
       onSuccess(successCallback, successToastOptions)
     } catch (error: any) {
@@ -78,26 +83,38 @@ export const useGrantActions = (grant: GrantDetail) => {
   }
 
   const approveGrant = (
+    type: 'sender' | 'receiver',
     successCallback: () => void = noop,
     errorCallback: () => void = noop,
   ) =>
-    handleGrant(program?.methods.approveProposal, {
-      successCallback,
-      errorCallback,
-      successToastOptions: { title: 'Grant approved successfully' },
-      errorToastOptions: { title: 'Cannot approve grant' },
-    })
+    handleGrant(
+      type === 'sender'
+        ? program?.methods.senderApproveProposal
+        : program?.methods.receiverApproveProposal,
+      {
+        successCallback,
+        errorCallback,
+        successToastOptions: { title: 'Grant approved successfully' },
+        errorToastOptions: { title: 'Cannot approve grant' },
+      },
+    )
 
   const rejectGrant = (
+    type: 'sender' | 'receiver',
     successCallback: () => void = noop,
     errorCallback: () => void = noop,
   ) =>
-    handleGrant(program?.methods.rejectProposal, {
-      successCallback,
-      errorCallback,
-      successToastOptions: { title: 'Grant rejected successfully' },
-      errorToastOptions: { title: 'Cannot reject grant' },
-    })
+    handleGrant(
+      type === 'sender'
+        ? program?.methods.senderRejectProposal
+        : program?.methods.receiverRejectProposal,
+      {
+        successCallback,
+        errorCallback,
+        successToastOptions: { title: 'Grant rejected successfully' },
+        errorToastOptions: { title: 'Cannot reject grant' },
+      },
+    )
 
   const cancelGrant = (
     successCallback: () => void = noop,
@@ -121,52 +138,10 @@ export const useGrantActions = (grant: GrantDetail) => {
       errorToastOptions: { title: 'Cannot close grant' },
     })
 
-  const approvePoP = (
-    successCallback: () => void = noop,
-    errorCallback: () => void = noop,
-  ) =>
-    handleGrant(program?.methods.applicantConfirmProposal, {
-      successCallback,
-      errorCallback,
-      successToastOptions: { title: 'Proof of Payment approved successfully' },
-      errorToastOptions: { title: 'Cannot approve Proof of Payment' },
-    })
-
-  const rejectPoP = (
-    successCallback: () => void = noop,
-    errorCallback: () => void = noop,
-  ) =>
-    handleGrant(program?.methods.applicantRejectProposal, {
-      successCallback,
-      errorCallback,
-      successToastOptions: { title: 'Proof of Payment rejected successfully' },
-      errorToastOptions: { title: 'Cannot reject Proof of Payment' },
-    })
-
-  const sendPoP = (
-    value: string,
-    successCallback: () => void = noop,
-    errorCallback: () => void = noop,
-  ) =>
-    handleGrant(
-      program ? () => program.methods.fillTransactionHash(value) : undefined,
-      {
-        successCallback,
-        errorCallback,
-        successToastOptions: {
-          title: 'Proof of Payment submitted successfully',
-        },
-        errorToastOptions: { title: 'Cannot submit Proof of Payment' },
-      },
-    )
-
   return {
     approveGrant,
     rejectGrant,
     cancelGrant,
     closeGrant,
-    approvePoP,
-    rejectPoP,
-    sendPoP,
   }
 }

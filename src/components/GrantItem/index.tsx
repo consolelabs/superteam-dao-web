@@ -11,7 +11,7 @@ import { ReceiverAction } from './ReceiverAction'
 
 export interface GrantItemProps {
   grant: GrantDetail
-  filter: 'sender' | 'recipient'
+  filter: 'sender' | 'receiver'
 }
 
 export function GrantItem({

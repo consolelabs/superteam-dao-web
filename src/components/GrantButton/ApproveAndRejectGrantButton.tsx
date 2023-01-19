@@ -5,19 +5,20 @@ import { GrantDetail } from 'types/grant'
 
 interface Props {
   grant: GrantDetail
+  type: 'sender' | 'receiver'
 }
 
-export const ApproveAndRejectGrantButton = ({ grant }: Props) => {
+export const ApproveAndRejectGrantButton = ({ grant, type }: Props) => {
   const { approveGrant, rejectGrant } = useGrantActions(grant)
   const [loadingText, setLoadingText] = useState('')
 
   const handleApprove = () => {
     setLoadingText('Approving...')
-    approveGrant(undefined, () => setLoadingText(''))
+    approveGrant(type, undefined, () => setLoadingText(''))
   }
   const handleReject = () => {
     setLoadingText('Rejecting...')
-    rejectGrant(undefined, () => setLoadingText(''))
+    rejectGrant(type, undefined, () => setLoadingText(''))
   }
 
   return loadingText ? (
