@@ -42,14 +42,14 @@ const isTransactionInfo = (
 export const TransactionItem = (props: Props) => {
   const { data, onCreate } = props
   const { program } = useProgram()
-  const [error, setError] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+  const [created, setCreated] = useState(false)
 
   const onClick = async (data: TransactionInfo) => {
     if (!program) return
     try {
       setLoading(true)
-      setError(null)
+      setCreated(false)
       const { transactionId } = data
       const sender = new PublicKey(data.sourceOwner)
       const receiver = new PublicKey(data.destinationOwner)
@@ -63,12 +63,12 @@ export const TransactionItem = (props: Props) => {
       )
       const proposal = await getProposal(program, proposalAccount)
       if (proposal) {
+        setCreated(true)
         throw Error('Grant is already created')
       }
       onCreate?.(data)
       setLoading(false)
     } catch (error: any) {
-      setError(error)
       setLoading(false)
       toast.error({
         title: 'Cannot create grant',
@@ -110,9 +110,9 @@ export const TransactionItem = (props: Props) => {
           size="sm"
           onClick={() => onClick(data)}
           loading={loading}
-          disabled={loading || !!error}
+          disabled={loading || created}
         >
-          Create grant
+          {created ? 'Created' : 'Create grant'}
         </Button>
       </div>
     </div>
