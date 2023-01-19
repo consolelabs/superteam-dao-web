@@ -1,11 +1,11 @@
 import React, { HTMLAttributes } from 'react'
 import cx from 'classnames'
-import { Text } from 'components/Text'
-import { formatWallet } from 'utils/formatWallet'
 import { useToken } from 'context/solana-token'
 import BN from 'bn.js'
 import { GrantDetail } from 'types/grant'
 import Link from 'next/link'
+import { Label } from 'components/Label'
+import { Address } from 'components/Address'
 import { SenderAction } from './SenderAction'
 import { ReceiverAction } from './ReceiverAction'
 
@@ -20,7 +20,17 @@ export function GrantItem({
   className,
   ...props
 }: GrantItemProps & HTMLAttributes<HTMLDivElement>) {
-  const { sender, receiver, spl, amount, tags, image, title, account } = grant
+  const {
+    sender,
+    receiver,
+    transaction,
+    spl,
+    amount,
+    tags,
+    image,
+    title,
+    account,
+  } = grant
   const { tokens } = useToken()
   const token = tokens[String(spl)] || {}
   const { decimals = 0, symbol } = token
@@ -29,7 +39,7 @@ export function GrantItem({
   return (
     <div
       className={cx(
-        'flex py-6 px-8 border-slate-600 border-2 rounded-xl items-center space-x-4',
+        'flex py-6 px-8 border-slate-600 border-2 rounded-lg items-center space-x-4',
         className,
       )}
       {...props}
@@ -37,7 +47,7 @@ export function GrantItem({
       <div className="flex items-center flex-1">
         <img
           src={image}
-          className="flex-none object-cover w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-full -indent-20"
+          className="flex-none object-cover w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-lg -indent-20"
           alt=""
         />
         <div>
@@ -48,20 +58,34 @@ export function GrantItem({
           >
             <a className="text-xl underline hover:text-purple-600">{title}</a>
           </Link>
-          <Text
-            truncate
-            className="text-slate-300 block max-w-[10rem] text-sm mt-2"
-          >
-            From {formatWallet(String(sender))}
-          </Text>
-          <Text truncate className="text-slate-300 block max-w-[10rem] text-sm">
-            To {formatWallet(String(receiver))}
-          </Text>
-          <ul className="flex flex-wrap mt-2">
+          <div className="flex items-center mt-2 space-x-2">
+            <Label className="min-w-max">Transaction ID</Label>
+            <Address
+              href={`https://solscan.io/tx/${transaction}`}
+              value={transaction}
+            />
+          </div>
+          <div className="flex flex-wrap">
+            <div className="flex items-center mr-2 space-x-2">
+              <Label className="min-w-max">From</Label>
+              <Address
+                href={`https://solscan.io/account/${String(sender)}`}
+                value={String(sender)}
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Label className="min-w-max">To</Label>
+              <Address
+                href={`https://solscan.io/account/${String(receiver)}`}
+                value={String(receiver)}
+              />
+            </div>
+          </div>
+          <ul className="flex flex-wrap mt-3">
             {tags.split(',').map((tag) => (
               <li
                 key={tag}
-                className="inline-flex px-3 py-1 mb-1 mr-1 overflow-hidden text-xs bg-purple-600 border border-purple-600 rounded-md bg-opacity-20"
+                className="inline-flex px-3 py-1 mb-1 mr-1 overflow-hidden text-xs bg-purple-600 border border-purple-600 rounded-lg bg-opacity-20"
               >
                 {tag}
               </li>

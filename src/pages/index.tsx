@@ -130,7 +130,7 @@ const HomePage = () => {
           <div className="flex mb-5">
             <Input
               type="search"
-              placeholder="Search approver address"
+              placeholder="Search address / title"
               className="w-[18rem] mr-4"
               value={approver}
               onChange={(e) => setApprover(e.target.value)}
