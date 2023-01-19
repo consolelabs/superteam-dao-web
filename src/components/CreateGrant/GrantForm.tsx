@@ -3,7 +3,7 @@ import { Button } from 'components/Button'
 import { FormInput } from 'components/FormInput'
 import { FormTextarea } from 'components/FormTextarea'
 import { FormProvider, useForm } from 'react-hook-form'
-import { findPDAProposal } from 'utils/contract/setup'
+import { findPDAProposal, getProposal } from 'utils/contract/setup'
 import * as anchor from '@project-serum/anchor'
 import { PublicKey, SystemProgram } from '@solana/web3.js'
 import { useProgram } from 'context/program'
@@ -18,7 +18,6 @@ import { BN } from 'bn.js'
 import { Label } from 'components/Label'
 import { Text } from 'components/Text'
 import { Address } from 'components/Address'
-import { Program } from '@project-serum/anchor'
 import { TransactionInfo } from './TransactionItem'
 
 export interface FormData {
@@ -30,10 +29,11 @@ export interface FormData {
 
 interface Props {
   data: TransactionInfo
+  onBack: () => void
 }
 
 export const GrantForm = (props: Props) => {
-  const { data } = props
+  const { data, onBack } = props
   const { transactionId, sourceOwner, destinationOwner, amount, tokenAddress } =
     data
   const { program } = useProgram()
@@ -57,15 +57,6 @@ export const GrantForm = (props: Props) => {
     },
   })
   const { handleSubmit } = formInstance
-
-  const getProposal = async (program: Program, proposalAccount: PublicKey) => {
-    try {
-      const proposal = await program.account.proposal.fetch(proposalAccount)
-      return proposal
-    } catch (error) {
-      return null
-    }
-  }
 
   const onSubmit = async (data?: FormData) => {
     if (!program || !publicKey || !data) return
@@ -204,7 +195,15 @@ export const GrantForm = (props: Props) => {
               />
             </div>
           </div>
-          <div className="px-5 py-2 text-center">
+          <div className="px-5 py-2 space-x-2 text-center">
+            <Button
+              appearance="secondary"
+              type="button"
+              disabled={submitting}
+              onClick={onBack}
+            >
+              Back
+            </Button>
             <Button
               appearance="primary"
               type="submit"

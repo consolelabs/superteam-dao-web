@@ -1,7 +1,12 @@
+import { PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
 import { Address } from 'components/Address'
 import { Button } from 'components/Button'
 import { Text } from 'components/Text'
+import { toast } from 'components/Toast'
+import { useProgram } from 'context/program'
+import { useState } from 'react'
+import { findPDAProposal, getProposal } from 'utils/contract/setup'
 
 export interface TransactionInfo {
   transactionId: string
@@ -36,6 +41,41 @@ const isTransactionInfo = (
 
 export const TransactionItem = (props: Props) => {
   const { data, onCreate } = props
+  const { program } = useProgram()
+  const [error, setError] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+
+  const onClick = async (data: TransactionInfo) => {
+    if (!program) return
+    try {
+      setLoading(true)
+      setError(null)
+      const { transactionId } = data
+      const sender = new PublicKey(data.sourceOwner)
+      const receiver = new PublicKey(data.destinationOwner)
+      const [proposalAccount] = findPDAProposal(
+        transactionId.substring(0, 32),
+        transactionId.substring(32, 64),
+        transactionId.substring(64, 88),
+        sender,
+        receiver,
+        program,
+      )
+      const proposal = await getProposal(program, proposalAccount)
+      if (proposal) {
+        throw Error('Grant is already created')
+      }
+      onCreate?.(data)
+      setLoading(false)
+    } catch (error: any) {
+      setError(error)
+      setLoading(false)
+      toast.error({
+        title: 'Cannot create grant',
+        message: error.message,
+      })
+    }
+  }
 
   if (!isTransactionInfo(data)) return null
 
@@ -65,7 +105,13 @@ export const TransactionItem = (props: Props) => {
         <Text>{data.symbol}</Text>
       </div>
       <div>
-        <Button appearance="border" size="sm" onClick={() => onCreate?.(data)}>
+        <Button
+          appearance="border"
+          size="sm"
+          onClick={() => onClick(data)}
+          loading={loading}
+          disabled={loading || !!error}
+        >
           Create grant
         </Button>
       </div>

@@ -29,3 +29,15 @@ export function findPDAProposal(
     program.programId,
   )
 }
+
+export const getProposal = async (
+  program: Program,
+  proposalAccount: PublicKey,
+) => {
+  try {
+    const proposal = await program.account.proposal.fetch(proposalAccount)
+    return proposal
+  } catch (error) {
+    return null
+  }
+}

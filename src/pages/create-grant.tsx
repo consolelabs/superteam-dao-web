@@ -12,7 +12,7 @@ const GrantPage = () => {
   return (
     <Layout>
       {data ? (
-        <GrantForm data={data} />
+        <GrantForm data={data} onBack={() => setData(undefined)} />
       ) : (
         <TransactionInput onCreate={setData} />
       )}
