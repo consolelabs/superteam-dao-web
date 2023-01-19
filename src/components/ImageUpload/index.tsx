@@ -50,7 +50,7 @@ export const ImageUpload = (props: ImageUploadProps) => {
           <img
             src={preview}
             alt=""
-            className="object-cover w-full h-full border-2 border-purple-600 rounded-full cursor-pointer hover:ring-purple-500 hover:border-purple-500 hover:ring-1"
+            className="object-cover w-full h-full border-2 border-purple-600 rounded-lg cursor-pointer hover:ring-purple-500 hover:border-purple-500 hover:ring-1"
           />
         ) : (
           <div className="flex items-center justify-center h-full text-purple-600 border-2 border-purple-600 rounded-lg cursor-pointer hover:ring-purple-500 hover:border-purple-500 hover:ring-1">

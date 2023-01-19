@@ -4,70 +4,73 @@ import { Text } from 'components/Text'
 import { useAuthContext } from 'context/auth'
 import { Button } from 'components/Button'
 import { Tabs } from 'components/Tabs'
-import { GrantList } from 'components/GrantList'
 import { Input } from 'components/Input'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { CustomListbox } from 'components/Listbox'
 import { formatWallet } from 'utils/formatWallet'
-import { GrantProvider, useGrant } from 'context/grant'
-import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
-import { GrantDetail } from 'types/grant'
+import { GrantProvider } from 'context/grant'
 
-const filterData = (
-  data: GrantDetail[],
-  filters: { tags: string[]; approver: string },
-) => {
-  const { tags, approver } = filters
-  return data
-    .filter((each) =>
-      !tags.length
-        ? true
-        : tags.every((tag) => each.tags.split(',').includes(tag)),
-    )
-    .filter((each) =>
-      !approver
-        ? true
-        : String(each.owner ? each.recipient : each.sender) === approver,
-    )
-}
+// const filterData = (
+//   data: GrantDetail[],
+//   filters: { tags: string[]; approver: string },
+// ) => {
+//   const { tags, approver } = filters
+//   return data
+//     .filter((each) =>
+//       !tags.length
+//         ? true
+//         : tags.every((tag) => each.tags.split(',').includes(tag)),
+//     )
+//     .filter((each) =>
+//       !approver
+//         ? true
+//         : String(each.owner ? each.recipient : each.sender) === approver,
+//     )
+// }
 
 const HomePage = () => {
   const { user } = useAuthContext()
   const { publicKey } = useWallet()
-  const { proposalBySender, proposalByRecipient } = useGrant()
+  // const { proposalBySender, proposalByRecipient } = useGrant()
   const [activeTab, setActiveTab] = useState('pending')
   const [filter, setFilter] = useState<'sender' | 'recipient'>('sender')
   const [tags, setTags] = useState<string[]>([])
   const [approver, setApprover] = useState('')
 
-  const grants = filterData(
-    filter === 'sender' ? proposalBySender : proposalByRecipient,
-    { tags, approver },
-  )
-  const pendingGrants = grants.filter(
-    (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.PENDING,
-  )
-  const approvedGrants = grants.filter(
-    (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
-  )
-  const rejectedGrants = grants.filter(
-    (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.REJECTED,
-  )
+  // const grants = filterData(
+  //   filter === 'sender' ? proposalBySender : proposalByRecipient,
+  //   { tags, approver },
+  // )
+  // const pendingGrants = grants.filter(
+  //   (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.PENDING,
+  // )
+  // const approvedGrants = grants.filter(
+  //   (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
+  // )
+  // const rejectedGrants = grants.filter(
+  //   (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.REJECTED,
+  // )
   const tabData = [
     {
       id: 'pending',
-      label: `Pending (${pendingGrants.length})`,
-      content: <GrantList filter={filter} data={pendingGrants} />,
+      label: `Pending`,
+      content: <div />,
+      // label: `Pending (${pendingGrants.length})`,
+      // content: <GrantList filter={filter} data={pendingGrants} />,
     },
     {
       id: 'approved',
-      label: `Approved (${approvedGrants.length})`,
-      content: <GrantList filter={filter} data={approvedGrants} />,
+      label: `Approved`,
+      content: <div />,
+      // label: `Approved (${approvedGrants.length})`,
+      // content: <GrantList filter={filter} data={approvedGrants} />,
     },
     {
       id: 'rejected',
-      label: `Rejected (${rejectedGrants.length})`,
-      content: <GrantList filter={filter} data={rejectedGrants} />,
+      label: `Rejected`,
+      content: <div />,
+      // label: `Rejected (${rejectedGrants.length})`,
+      // content: <GrantList filter={filter} data={rejectedGrants} />,
     },
   ]
 

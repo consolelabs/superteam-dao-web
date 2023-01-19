@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js'
-import { Program, BN } from '@project-serum/anchor'
+import { Program } from '@project-serum/anchor'
 import { identifierSeed, proposalSeed } from 'constants/contract'
 
 export function findPDAIdentifier(owner: PublicKey, program: Program) {
@@ -10,17 +10,34 @@ export function findPDAIdentifier(owner: PublicKey, program: Program) {
 }
 
 export function findPDAProposal(
-  owner: PublicKey,
-  identifierCount: BN,
+  firstTransaction: string,
+  secondTransaction: string,
+  thirdTransaction: string,
+  sender: PublicKey,
+  receiver: PublicKey,
   program: Program,
 ) {
   return PublicKey.findProgramAddressSync(
     [
-      Buffer.from('v1'),
       Buffer.from(proposalSeed),
-      owner.toBuffer(),
-      identifierCount.toArrayLike(Buffer, 'le', 8),
+      Buffer.from(firstTransaction),
+      Buffer.from(secondTransaction),
+      Buffer.from(thirdTransaction),
+      sender.toBuffer(),
+      receiver.toBuffer(),
     ],
     program.programId,
   )
+}
+
+export const getProposal = async (
+  program: Program,
+  proposalAccount: PublicKey,
+) => {
+  try {
+    const proposal = await program.account.proposal.fetch(proposalAccount)
+    return proposal
+  } catch (error) {
+    return null
+  }
 }

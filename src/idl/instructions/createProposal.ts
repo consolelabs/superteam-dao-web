@@ -4,35 +4,38 @@ import * as borsh from '@project-serum/borsh' // eslint-disable-line @typescript
 import { PROGRAM_ID } from '../programId'
 
 export interface CreateProposalArgs {
-  recipient: PublicKey
+  firstTxn: string
+  secondTxn: string
+  thirdTxn: string
+  sender: PublicKey
+  receiver: PublicKey
   image: string
   title: string
   subtitle: string
   spl: PublicKey
   tags: string
   amount: BN
-  isOwner: boolean
-  transactionHash: string | null
 }
 
 export interface CreateProposalAccounts {
   proposal: PublicKey
-  identifier: PublicKey
-  sender: PublicKey
+  payer: PublicKey
   systemProgram: PublicKey
   rent: PublicKey
 }
 
 export const layout = borsh.struct([
-  borsh.publicKey('recipient'),
+  borsh.str('firstTxn'),
+  borsh.str('secondTxn'),
+  borsh.str('thirdTxn'),
+  borsh.publicKey('sender'),
+  borsh.publicKey('receiver'),
   borsh.str('image'),
   borsh.str('title'),
   borsh.str('subtitle'),
   borsh.publicKey('spl'),
   borsh.str('tags'),
   borsh.u64('amount'),
-  borsh.bool('isOwner'),
-  borsh.option(borsh.str(), 'transactionHash'),
 ])
 
 export function createProposal(
@@ -41,8 +44,7 @@ export function createProposal(
 ) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.proposal, isSigner: false, isWritable: true },
-    { pubkey: accounts.identifier, isSigner: false, isWritable: true },
-    { pubkey: accounts.sender, isSigner: true, isWritable: true },
+    { pubkey: accounts.payer, isSigner: true, isWritable: true },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.rent, isSigner: false, isWritable: false },
   ]
@@ -50,15 +52,17 @@ export function createProposal(
   const buffer = Buffer.alloc(1000)
   const len = layout.encode(
     {
-      recipient: args.recipient,
+      firstTxn: args.firstTxn,
+      secondTxn: args.secondTxn,
+      thirdTxn: args.thirdTxn,
+      sender: args.sender,
+      receiver: args.receiver,
       image: args.image,
       title: args.title,
       subtitle: args.subtitle,
       spl: args.spl,
       tags: args.tags,
       amount: args.amount,
-      isOwner: args.isOwner,
-      transactionHash: args.transactionHash,
     },
     buffer,
   )

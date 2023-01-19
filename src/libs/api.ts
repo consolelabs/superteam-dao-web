@@ -22,6 +22,12 @@ class Client {
       headers: this.headers,
     })
   }
+
+  getTransaction(id: string) {
+    return fetcher(`https://public-api.solscan.io/transaction/${id}`, {
+      headers: this.headers,
+    })
+  }
 }
 
 const client = new Client()

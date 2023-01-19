@@ -1,3 +1,4 @@
+import { toast } from 'components/Toast'
 import Moralis from 'moralis'
 
 const convertBase64 = (file: File) => {
@@ -34,6 +35,9 @@ export const uploadFile = async (file: File) => {
 
     return paths[0]?.path
   } catch (error: any) {
-    return undefined
+    toast.warning({
+      title: 'Cannot upload image',
+      message: error.message,
+    })
   }
 }
