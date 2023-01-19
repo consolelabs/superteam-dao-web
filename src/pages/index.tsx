@@ -8,69 +8,55 @@ import { Input } from 'components/Input'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { CustomListbox } from 'components/Listbox'
 import { formatWallet } from 'utils/formatWallet'
-import { GrantProvider } from 'context/grant'
-
-// const filterData = (
-//   data: GrantDetail[],
-//   filters: { tags: string[]; approver: string },
-// ) => {
-//   const { tags, approver } = filters
-//   return data
-//     .filter((each) =>
-//       !tags.length
-//         ? true
-//         : tags.every((tag) => each.tags.split(',').includes(tag)),
-//     )
-//     .filter((each) =>
-//       !approver
-//         ? true
-//         : String(each.owner ? each.recipient : each.sender) === approver,
-//     )
-// }
+import { GrantProvider, useGrant } from 'context/grant'
+import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
+import { GrantList } from 'components/GrantList'
 
 const HomePage = () => {
   const { user } = useAuthContext()
   const { publicKey } = useWallet()
-  // const { proposalBySender, proposalByRecipient } = useGrant()
+  const { proposalBySender, proposalByRecipient } = useGrant()
   const [activeTab, setActiveTab] = useState('pending')
   const [filter, setFilter] = useState<'sender' | 'recipient'>('sender')
   const [tags, setTags] = useState<string[]>([])
   const [approver, setApprover] = useState('')
 
-  // const grants = filterData(
-  //   filter === 'sender' ? proposalBySender : proposalByRecipient,
-  //   { tags, approver },
-  // )
-  // const pendingGrants = grants.filter(
-  //   (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.PENDING,
-  // )
-  // const approvedGrants = grants.filter(
-  //   (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.APPROVED,
-  // )
-  // const rejectedGrants = grants.filter(
-  //   (grant) => grantStatusMapping[grant.status] === GRANT_STATUS.REJECTED,
-  // )
+  console.log({ proposalBySender, proposalByRecipient })
+
+  const grants = filter === 'sender' ? proposalBySender : proposalByRecipient
+  const pendingGrants = grants.filter(
+    (grant) =>
+      grantStatusMapping[
+        filter === 'sender' ? grant.senderStatus : grant.receiverStatus
+      ] === GRANT_STATUS.PENDING,
+  )
+  const approvedGrants = grants.filter(
+    (grant) =>
+      grantStatusMapping[
+        filter === 'sender' ? grant.senderStatus : grant.receiverStatus
+      ] === GRANT_STATUS.APPROVED,
+  )
+  const rejectedGrants = grants.filter(
+    (grant) =>
+      grantStatusMapping[
+        filter === 'sender' ? grant.senderStatus : grant.receiverStatus
+      ] === GRANT_STATUS.REJECTED,
+  )
   const tabData = [
     {
       id: 'pending',
-      label: `Pending`,
-      content: <div />,
-      // label: `Pending (${pendingGrants.length})`,
-      // content: <GrantList filter={filter} data={pendingGrants} />,
+      label: `Pending (${pendingGrants.length})`,
+      content: <GrantList filter={filter} data={pendingGrants} />,
     },
     {
       id: 'approved',
-      label: `Approved`,
-      content: <div />,
-      // label: `Approved (${approvedGrants.length})`,
-      // content: <GrantList filter={filter} data={approvedGrants} />,
+      label: `Approved (${approvedGrants.length})`,
+      content: <GrantList filter={filter} data={approvedGrants} />,
     },
     {
       id: 'rejected',
-      label: `Rejected`,
-      content: <div />,
-      // label: `Rejected (${rejectedGrants.length})`,
-      // content: <GrantList filter={filter} data={rejectedGrants} />,
+      label: `Rejected (${rejectedGrants.length})`,
+      content: <GrantList filter={filter} data={rejectedGrants} />,
     },
   ]
 
@@ -116,8 +102,8 @@ const HomePage = () => {
         </div>
       </aside>
       <div className="flex flex-col flex-grow px-4">
-        <div className="flex flex-col flex-wrap items-end mb-5 space-y-5 md:flex-row md:justify-between">
-          <div className="flex">
+        <div className="flex flex-col flex-wrap items-center md:flex-row md:justify-between">
+          <div className="flex mb-5 mr-4">
             <Button
               appearance={filter === 'sender' ? 'primary' : 'border'}
               disabled={filter === 'sender'}
@@ -141,7 +127,7 @@ const HomePage = () => {
               Received Grant
             </Button>
           </div>
-          <div className="flex">
+          <div className="flex mb-5">
             <Input
               type="search"
               placeholder="Search approver address"
