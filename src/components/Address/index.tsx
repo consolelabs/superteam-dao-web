@@ -9,9 +9,15 @@ interface Props {
   value: string
   href?: string
   truncate?: boolean
+  copy?: boolean
 }
 
-export const Address = ({ value, href, truncate = true }: Props) => {
+export const Address = ({
+  value,
+  href,
+  truncate = true,
+  copy = true,
+}: Props) => {
   const { onCopy, hasCopied } = useClipboard(value)
   const displayValue = truncate ? formatWallet(value) : value
 
@@ -26,16 +32,18 @@ export const Address = ({ value, href, truncate = true }: Props) => {
       ) : (
         <Text className="truncate">{displayValue}</Text>
       )}
-      <div>
-        {hasCopied ? (
-          <IconCheck className="w-4 h-4 text-purple-600 cursor-pointer stroke-2" />
-        ) : (
-          <IconCopy
-            className="w-4 h-4 text-purple-600 cursor-pointer stroke-2"
-            onClick={onCopy}
-          />
-        )}
-      </div>
+      {copy && (
+        <div>
+          {hasCopied ? (
+            <IconCheck className="w-4 h-4 text-purple-600 cursor-pointer stroke-2" />
+          ) : (
+            <IconCopy
+              className="w-4 h-4 text-purple-600 cursor-pointer stroke-2"
+              onClick={onCopy}
+            />
+          )}
+        </div>
+      )}
     </div>
   )
 }

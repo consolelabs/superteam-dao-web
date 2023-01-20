@@ -2,11 +2,13 @@ import { PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
 import { Address } from 'components/Address'
 import { Button } from 'components/Button'
+import { Label } from 'components/Label'
 import { Text } from 'components/Text'
 import { toast } from 'components/Toast'
 import { useProgram } from 'context/program'
 import { useState } from 'react'
 import { findPDAProposal, getProposal } from 'utils/contract/setup'
+import { formatAmount } from 'utils/formatNumber'
 
 export interface TransactionInfo {
   transactionId: string
@@ -80,31 +82,40 @@ export const TransactionItem = (props: Props) => {
   if (!isTransactionInfo(data)) return null
 
   return (
-    <div className="flex items-center text-sm">
-      <Text className="flex items-center space-x-1 w-44 min-w-max">
-        <strong>Sender</strong>
-        <Address
-          href={`https://solscan.io/account/${data.sourceOwner}`}
-          value={data.sourceOwner}
-        />
-      </Text>
-      <Text className="flex items-center w-56 space-x-1 min-w-max">
-        <strong>To Receiver</strong>
-        <Address
-          href={`https://solscan.io/account/${data.destinationOwner}`}
-          value={data.destinationOwner}
-        />
-      </Text>
-      <div className="flex items-center space-x-1 w-36">
-        <img src={data.icon} alt="" className="w-5 h-5" />
-        <Text as="strong">
-          {Intl.NumberFormat().format(
-            new BN(data.amount).div(new BN(10 ** data.decimals)).toNumber(),
-          )}
-        </Text>
-        <Text>{data.symbol}</Text>
-      </div>
-      <div>
+    <tr className="text-sm">
+      <td>
+        <div className="flex items-center pr-10 space-x-1">
+          <Label>Sender</Label>
+          <Address
+            href={`https://solscan.io/account/${data.sourceOwner}`}
+            value={data.sourceOwner}
+          />
+        </div>
+      </td>
+      <td>
+        <div className="flex items-center pr-10 space-x-1">
+          <Label>To Receiver</Label>
+          <Address
+            href={`https://solscan.io/account/${data.destinationOwner}`}
+            value={data.destinationOwner}
+          />
+        </div>
+      </td>
+      <td>
+        <div className="flex items-center pr-10 space-x-1">
+          <img src={data.icon} alt="" className="w-5 h-5" />
+          <Text as="strong">
+            {formatAmount(new BN(data.amount).toNumber() / 10 ** data.decimals)}
+          </Text>
+          <Address
+            truncate={false}
+            copy={false}
+            href={`https://solscan.io/token/${data.tokenAddress}`}
+            value={data.symbol}
+          />
+        </div>
+      </td>
+      <td className="py-0.5">
         <Button
           appearance="border"
           size="sm"
@@ -114,7 +125,7 @@ export const TransactionItem = (props: Props) => {
         >
           {created ? 'Created' : 'Create grant'}
         </Button>
-      </div>
-    </div>
+      </td>
+    </tr>
   )
 }

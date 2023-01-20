@@ -31,13 +31,13 @@ export const SenderAction = ({ grant }: Props) => {
         case GRANT_STATUS.REJECTED: {
           return (
             <>
-              <Text className="text-xs italic">Receicer rejected</Text>
+              <Text className="text-xs italic">Receiver rejected</Text>
               <CancelOrCloseGrantButton grant={grant} type="cancel" />
             </>
           )
         }
         case GRANT_STATUS.APPROVED: {
-          return <Text className="text-xs italic">Receicer approved</Text>
+          return <Text className="text-xs italic">Receiver approved</Text>
         }
         default:
           return null

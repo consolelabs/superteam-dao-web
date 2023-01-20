@@ -21,8 +21,6 @@ const HomePage = () => {
   const [tags, setTags] = useState<string[]>([])
   const [approver, setApprover] = useState('')
 
-  console.log({ proposalBySender, proposalByReceiver })
-
   const grants = filter === 'sender' ? proposalBySender : proposalByReceiver
   const pendingGrants = grants.filter(
     (grant) =>

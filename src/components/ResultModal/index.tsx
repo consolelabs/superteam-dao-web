@@ -10,6 +10,7 @@ import {
 } from 'components/Modal'
 import { Text } from 'components/Text'
 import Link from 'next/link'
+import { formatAmount } from 'utils/formatNumber'
 
 interface Props extends ModalProps {
   result: { data?: any; error?: any }
@@ -17,6 +18,7 @@ interface Props extends ModalProps {
     icon: string
     decimals: number
     symbol: string
+    tokenAddress: string
   }
 }
 
@@ -97,13 +99,17 @@ export const ResultModal = (props: Props) => {
               <Label>Amount</Label>
               <img src={token.icon} alt="" className="w-5 h-5" />
               <Text as="strong" className="text-black">
-                {Intl.NumberFormat().format(
-                  new BN(result.data.amount || 0)
-                    .div(new BN(10 ** token.decimals))
-                    .toNumber(),
+                {formatAmount(
+                  new BN(result.data.amount || 0).toNumber() /
+                    10 ** token.decimals,
                 )}
               </Text>
-              <Text className="text-black">{token.symbol}</Text>
+              <Address
+                truncate={false}
+                copy={false}
+                href={`https://solscan.io/token/${token.tokenAddress}`}
+                value={token.symbol}
+              />
             </div>
           </div>
         ) : (

@@ -37,13 +37,20 @@ export const TransactionInput = ({ onCreate }: Props) => {
     getTransaction()
   }, [debounceId])
 
-  //   const transactionData =
-  //     !isLoading &&
-  //     !error &&
-  //     data?.unknownTransfers?.flatMap((each: any) => each.event)
-  const transactionData = data?.innerInstructions
-    ?.flatMap((each: any) => each.parsedInstructions)
-    ?.map((each: any) => each.extra)
+  const transactionData = data?.parsedInstruction
+    ?.flatMap((parsedInstruction: any, index: number) => {
+      const innerInstructions = data?.innerInstructions?.find(
+        (innerInstruction: any) => innerInstruction.index === index,
+      )
+      return (
+        innerInstructions
+          ? innerInstructions.parsedInstructions
+          : [parsedInstruction]
+      )?.filter((instruction: any) =>
+        instruction?.type?.includes('spl-transfer'),
+      )
+    })
+    .map((instruction: any) => instruction.extra)
 
   return (
     <div className="flex flex-col items-center w-full p-6 text-sm">
@@ -54,7 +61,6 @@ export const TransactionInput = ({ onCreate }: Props) => {
           <Input
             id="transaction-id-input"
             fullWidth
-            // invalid={!!error}
             placeholder="Enter Transaction ID"
             onChange={(e) => {
               setTransactionId(e.target.value)
@@ -78,18 +84,24 @@ export const TransactionInput = ({ onCreate }: Props) => {
         (transactionData?.length ? (
           <div className="w-full mt-6 space-y-2">
             <Label>Transaction Detail</Label>
-            {transactionData?.map((data: any, index: number) => (
-              <TransactionItem
-                key={index}
-                data={{ ...data, transactionId }}
-                onCreate={onCreate}
-              />
-            ))}
+            <table>
+              <tbody>
+                {transactionData?.map((data: any, index: number) => (
+                  <TransactionItem
+                    key={index}
+                    data={{ ...data, transactionId }}
+                    onCreate={onCreate}
+                  />
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : (
           <div className="w-full mt-6">
             <Text>
-              {!data ? 'No transaction found' : 'No transfer instruction found'}
+              {!data
+                ? 'No transactions found'
+                : 'No transfer instructions found'}
             </Text>
           </div>
         ))}

@@ -18,6 +18,7 @@ import { BN } from 'bn.js'
 import { Label } from 'components/Label'
 import { Text } from 'components/Text'
 import { Address } from 'components/Address'
+import { formatAmount } from 'utils/formatNumber'
 import { TransactionInfo } from './TransactionItem'
 
 export interface FormData {
@@ -124,7 +125,7 @@ export const GrantForm = (props: Props) => {
     <div className="flex flex-col items-center w-full p-6">
       <ImageUpload {...{ selectedFile, setSelectedFile }} />
       <FormProvider {...formInstance}>
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full text-sm">
           <div className="grid grid-cols-6 gap-6 p-6">
             <div className="flex col-span-6 space-x-2 truncate">
               <Label>Transaction</Label>
@@ -134,31 +135,34 @@ export const GrantForm = (props: Props) => {
                 value={transactionId}
               />
             </div>
-            <div className="flex col-span-6 space-x-2 truncate">
-              <Text className="flex items-center space-x-1 w-44 min-w-max">
+            <div className="flex flex-wrap col-span-6">
+              <div className="flex items-center mr-10 space-x-1">
                 <Label>Sender</Label>
                 <Address
                   href={`https://solscan.io/account/${data.sourceOwner}`}
                   value={data.sourceOwner}
                 />
-              </Text>
-              <Text className="flex items-center w-56 space-x-1 min-w-max">
+              </div>
+              <div className="flex items-center mr-10 space-x-1">
                 <Label>To Receiver</Label>
                 <Address
                   href={`https://solscan.io/account/${data.destinationOwner}`}
                   value={data.destinationOwner}
                 />
-              </Text>
-              <div className="flex items-center space-x-1 w-36">
+              </div>
+              <div className="flex items-center space-x-1">
                 <img src={data.icon} alt="" className="w-5 h-5" />
                 <Text as="strong">
-                  {Intl.NumberFormat().format(
-                    new BN(data.amount)
-                      .div(new BN(10 ** data.decimals))
-                      .toNumber(),
+                  {formatAmount(
+                    new BN(data.amount).toNumber() / 10 ** data.decimals,
                   )}
                 </Text>
-                <Text>{data.symbol}</Text>
+                <Address
+                  truncate={false}
+                  copy={false}
+                  href={`https://solscan.io/token/${data.tokenAddress}`}
+                  value={data.symbol}
+                />
               </div>
             </div>
             <div className="col-span-3">
@@ -224,6 +228,7 @@ export const GrantForm = (props: Props) => {
             icon: data.icon,
             decimals: data.decimals,
             symbol: data.symbol,
+            tokenAddress: data.tokenAddress,
           }}
         />
       )}

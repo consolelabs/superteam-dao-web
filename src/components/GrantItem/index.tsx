@@ -1,11 +1,11 @@
 import React, { HTMLAttributes } from 'react'
 import cx from 'classnames'
 import { useToken } from 'context/solana-token'
-import BN from 'bn.js'
 import { GrantDetail } from 'types/grant'
 import Link from 'next/link'
 import { Label } from 'components/Label'
 import { Address } from 'components/Address'
+import { formatAmount } from 'utils/formatNumber'
 import { SenderAction } from './SenderAction'
 import { ReceiverAction } from './ReceiverAction'
 
@@ -34,7 +34,7 @@ export function GrantItem({
   const { tokens } = useToken()
   const token = tokens[String(spl)] || {}
   const { decimals = 0, symbol } = token
-  const tokenAmount = amount.div(new BN(1 * 10 ** decimals)).toNumber()
+  const tokenAmount = amount.toNumber() / 10 ** decimals
 
   return (
     <div
@@ -94,7 +94,7 @@ export function GrantItem({
         </div>
       </div>
       <div className="w-1/6 font-semibold text-left">
-        {Intl.NumberFormat().format(tokenAmount)} {symbol}
+        {formatAmount(tokenAmount)} {symbol}
       </div>
       <div className="w-1/6 text-end">
         {filter === 'sender' ? (
