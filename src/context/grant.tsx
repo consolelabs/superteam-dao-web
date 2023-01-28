@@ -7,8 +7,9 @@ import { GrantDetail } from 'types/grant'
 import { useProgram } from './program'
 
 interface GrantValues {
-  proposalBySender: GrantDetail[]
-  proposalByReceiver: GrantDetail[]
+  sentGrant: GrantDetail[]
+  receivedGrant: GrantDetail[]
+  submittedGrant: GrantDetail[]
   refreshGrant: () => void
 }
 
@@ -22,10 +23,9 @@ const GrantProvider = ({ children }: WithChildren) => {
   const { program } = useProgram()
 
   const [refreshCount, setRefreshCount] = useState(0)
-  const [proposalBySender, setProposalBySender] = useState<GrantDetail[]>([])
-  const [proposalByReceiver, setProposalByReceiver] = useState<GrantDetail[]>(
-    [],
-  )
+  const [sentGrant, setSentGrant] = useState<GrantDetail[]>([])
+  const [receivedGrant, setReceivedGrant] = useState<GrantDetail[]>([])
+  const [submittedGrant, setSubmittedGrant] = useState<GrantDetail[]>([])
 
   useEffect(() => {
     if (!program || !publicKey) return
@@ -39,7 +39,7 @@ const GrantProvider = ({ children }: WithChildren) => {
             },
           },
         ])
-        setProposalBySender(
+        setSentGrant(
           proposalBySender.map((each) => ({
             ...each.account,
             account: each.publicKey,
@@ -47,7 +47,7 @@ const GrantProvider = ({ children }: WithChildren) => {
         )
       } catch (error: any) {
         toast.error({
-          title: 'Cannot fetch grant by sender',
+          title: 'Cannot fetch sent grant',
           message: error?.message,
         })
       }
@@ -67,7 +67,7 @@ const GrantProvider = ({ children }: WithChildren) => {
             },
           },
         ])
-        setProposalByReceiver(
+        setReceivedGrant(
           proposalByReceiver.map((each) => ({
             ...each.account,
             account: each.publicKey,
@@ -75,7 +75,35 @@ const GrantProvider = ({ children }: WithChildren) => {
         )
       } catch (error: any) {
         toast.error({
-          title: 'Mint Proof of Work has error',
+          title: 'Cannot fetch received grant',
+          message: error?.message,
+        })
+      }
+    }
+    fetchProposalByReceiver()
+  }, [connection, program, publicKey, refreshCount])
+
+  useEffect(() => {
+    if (!program || !publicKey) return
+    const fetchProposalByReceiver = async () => {
+      try {
+        const proposalBySubmitter = await program.account.proposal.all([
+          {
+            memcmp: {
+              offset: 164,
+              bytes: publicKey.toBase58(),
+            },
+          },
+        ])
+        setSubmittedGrant(
+          proposalBySubmitter.map((each) => ({
+            ...each.account,
+            account: each.publicKey,
+          })) as any,
+        )
+      } catch (error: any) {
+        toast.error({
+          title: 'Cannot fetch submitted grant',
           message: error?.message,
         })
       }
@@ -90,8 +118,9 @@ const GrantProvider = ({ children }: WithChildren) => {
   return (
     <Provider
       value={{
-        proposalBySender,
-        proposalByReceiver,
+        sentGrant,
+        receivedGrant,
+        submittedGrant,
         refreshGrant,
       }}
     >

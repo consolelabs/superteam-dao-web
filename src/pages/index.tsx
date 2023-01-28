@@ -15,29 +15,35 @@ import { GrantList } from 'components/GrantList'
 const HomePage = () => {
   const { user } = useAuthContext()
   const { publicKey } = useWallet()
-  const { proposalBySender, proposalByReceiver } = useGrant()
+  const { sentGrant, receivedGrant, submittedGrant } = useGrant()
   const [activeTab, setActiveTab] = useState('pending')
-  const [filter, setFilter] = useState<'sender' | 'receiver'>('sender')
+  const [filter, setFilter] = useState<'sent' | 'received' | 'submitted'>(
+    'submitted',
+  )
   const [tags, setTags] = useState<string[]>([])
   const [approver, setApprover] = useState('')
 
-  const grants = filter === 'sender' ? proposalBySender : proposalByReceiver
+  const grants = {
+    sent: sentGrant,
+    received: receivedGrant,
+    submitted: submittedGrant,
+  }[filter]
   const pendingGrants = grants.filter(
     (grant) =>
       grantStatusMapping[
-        filter === 'sender' ? grant.senderStatus : grant.receiverStatus
+        filter === 'sent' ? grant.senderStatus : grant.receiverStatus
       ] === GRANT_STATUS.PENDING,
   )
   const approvedGrants = grants.filter(
     (grant) =>
       grantStatusMapping[
-        filter === 'sender' ? grant.senderStatus : grant.receiverStatus
+        filter === 'sent' ? grant.senderStatus : grant.receiverStatus
       ] === GRANT_STATUS.APPROVED,
   )
   const rejectedGrants = grants.filter(
     (grant) =>
       grantStatusMapping[
-        filter === 'sender' ? grant.senderStatus : grant.receiverStatus
+        filter === 'sent' ? grant.senderStatus : grant.receiverStatus
       ] === GRANT_STATUS.REJECTED,
   )
   const tabData = [
@@ -102,28 +108,35 @@ const HomePage = () => {
       <div className="flex flex-col flex-grow px-4">
         <div className="flex flex-col flex-wrap items-center md:flex-row md:justify-between">
           <div className="flex mb-5 mr-4">
-            <Button
-              appearance={filter === 'sender' ? 'primary' : 'border'}
-              disabled={filter === 'sender'}
-              className="h-10 mr-4"
-              onClick={() => {
-                setActiveTab('pending')
-                setFilter('sender')
-              }}
-            >
-              Sent Grant
-            </Button>
-            <Button
-              className="h-10"
-              appearance={filter === 'receiver' ? 'primary' : 'border'}
-              disabled={filter === 'receiver'}
-              onClick={() => {
-                setActiveTab('pending')
-                setFilter('receiver')
-              }}
-            >
-              Received Grant
-            </Button>
+            {Array.from<{
+              key: 'sent' | 'received' | 'submitted'
+              label: string
+            }>([
+              {
+                key: 'submitted',
+                label: 'Submitted Grant',
+              },
+              {
+                key: 'sent',
+                label: 'Sent Grant',
+              },
+              {
+                key: 'received',
+                label: 'Received Grant',
+              },
+            ]).map(({ key, label }) => (
+              <Button
+                key={key}
+                appearance={filter === key ? 'primary' : 'border'}
+                className="h-10 mr-4"
+                onClick={() => {
+                  setActiveTab('pending')
+                  setFilter(key)
+                }}
+              >
+                {label}
+              </Button>
+            ))}
           </div>
           <div className="flex mb-5">
             <Input
@@ -149,7 +162,15 @@ const HomePage = () => {
           </div>
         </div>
         <div className="flex-grow px-12 py-8 border-2 border-purple-600 rounded-lg">
-          <Tabs activeTab={activeTab} onChange={setActiveTab} data={tabData} />
+          {filter === 'submitted' ? (
+            <GrantList filter={filter} data={grants} />
+          ) : (
+            <Tabs
+              activeTab={activeTab}
+              onChange={setActiveTab}
+              data={tabData}
+            />
+          )}
         </div>
       </div>
     </Layout>

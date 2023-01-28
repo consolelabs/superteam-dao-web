@@ -58,7 +58,7 @@ export function Tabs({ data, activeTab, onChange }: TabsProps) {
           style={{ left: tabUnderlineLeft, width: tabUnderlineWidth }}
         />
       </div>
-      <div className="mt-8">{data[activeTabIndex].content}</div>
+      <div className="mt-8">{data[activeTabIndex]?.content}</div>
     </div>
   )
 }

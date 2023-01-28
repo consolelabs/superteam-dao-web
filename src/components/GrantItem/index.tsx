@@ -8,10 +8,11 @@ import { Address } from 'components/Address'
 import { formatAmount } from 'utils/formatNumber'
 import { SenderAction } from './SenderAction'
 import { ReceiverAction } from './ReceiverAction'
+import { SubmitterAction } from './SubmitterAction'
 
 export interface GrantItemProps {
   grant: GrantDetail
-  filter: 'sender' | 'receiver'
+  filter: 'sent' | 'received' | 'submitted'
 }
 
 export function GrantItem({
@@ -97,11 +98,13 @@ export function GrantItem({
         {formatAmount(tokenAmount)} {symbol}
       </div>
       <div className="w-1/6 text-end">
-        {filter === 'sender' ? (
-          <SenderAction grant={grant} />
-        ) : (
-          <ReceiverAction grant={grant} />
-        )}
+        {
+          {
+            sent: <SenderAction grant={grant} />,
+            received: <ReceiverAction grant={grant} />,
+            submitted: <SubmitterAction grant={grant} />,
+          }[filter]
+        }
       </div>
     </div>
   )

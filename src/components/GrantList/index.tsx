@@ -3,7 +3,7 @@ import { GrantDetail } from 'types/grant'
 
 export interface GrantListProps {
   data: GrantDetail[]
-  filter: 'sender' | 'receiver'
+  filter: 'sent' | 'received' | 'submitted'
 }
 
 export function GrantList(props: GrantListProps) {
