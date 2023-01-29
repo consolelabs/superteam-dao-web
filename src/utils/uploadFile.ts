@@ -1,7 +1,7 @@
 import { toast } from 'components/Toast'
 import Moralis from 'moralis'
 
-const convertBase64 = (file: File) => {
+export const convertBase64 = (file: File) => {
   return new Promise<string | ArrayBuffer | null>((resolve, reject) => {
     const fileReader = new FileReader()
     fileReader.readAsDataURL(file)
@@ -37,6 +37,27 @@ export const uploadFile = async (file: File) => {
   } catch (error: any) {
     toast.warning({
       title: 'Cannot upload image',
+      message: error.message,
+    })
+  }
+}
+
+export const uploadContent = async (name: string, content: string) => {
+  try {
+    const abi = [
+      {
+        path: name,
+        content,
+      },
+    ]
+
+    const response = await Moralis.EvmApi.ipfs.uploadFolder({ abi })
+    const paths = await response.toJSON()
+
+    return paths[0]?.path
+  } catch (error: any) {
+    toast.warning({
+      title: 'Cannot upload file',
       message: error.message,
     })
   }
