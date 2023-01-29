@@ -9,42 +9,31 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { CustomListbox } from 'components/Listbox'
 import { formatWallet } from 'utils/formatWallet'
 import { GrantProvider, useGrant } from 'context/grant'
-import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
+import { GRANT_STATUS } from 'constants/grant'
 import { GrantList } from 'components/GrantList'
+import { getGrantStatus } from 'utils/grant'
 
 const HomePage = () => {
   const { user } = useAuthContext()
   const { publicKey } = useWallet()
   const { sentGrant, receivedGrant, submittedGrant } = useGrant()
   const [activeTab, setActiveTab] = useState('pending')
-  const [filter, setFilter] = useState<'sent' | 'received' | 'submitted'>(
-    'submitted',
-  )
+  const [filter, setFilter] = useState<'submitted' | 'other'>('submitted')
   const [tags, setTags] = useState<string[]>([])
   const [approver, setApprover] = useState('')
 
   const grants = {
-    sent: sentGrant,
-    received: receivedGrant,
     submitted: submittedGrant,
+    other: [...sentGrant, ...receivedGrant],
   }[filter]
   const pendingGrants = grants.filter(
-    (grant) =>
-      grantStatusMapping[
-        filter === 'sent' ? grant.senderStatus : grant.receiverStatus
-      ] === GRANT_STATUS.PENDING,
+    (grant) => getGrantStatus(grant) === GRANT_STATUS.PENDING,
   )
   const approvedGrants = grants.filter(
-    (grant) =>
-      grantStatusMapping[
-        filter === 'sent' ? grant.senderStatus : grant.receiverStatus
-      ] === GRANT_STATUS.APPROVED,
+    (grant) => getGrantStatus(grant) === GRANT_STATUS.APPROVED,
   )
   const rejectedGrants = grants.filter(
-    (grant) =>
-      grantStatusMapping[
-        filter === 'sent' ? grant.senderStatus : grant.receiverStatus
-      ] === GRANT_STATUS.REJECTED,
+    (grant) => getGrantStatus(grant) === GRANT_STATUS.REJECTED,
   )
   const tabData = [
     {
@@ -108,35 +97,26 @@ const HomePage = () => {
       <div className="flex flex-col flex-grow px-4">
         <div className="flex flex-col flex-wrap items-center md:flex-row md:justify-between">
           <div className="flex mb-5 mr-4">
-            {Array.from<{
-              key: 'sent' | 'received' | 'submitted'
-              label: string
-            }>([
-              {
-                key: 'submitted',
-                label: 'Submitted Grant',
-              },
-              {
-                key: 'sent',
-                label: 'Sent Grant',
-              },
-              {
-                key: 'received',
-                label: 'Received Grant',
-              },
-            ]).map(({ key, label }) => (
-              <Button
-                key={key}
-                appearance={filter === key ? 'primary' : 'border'}
-                className="h-10 mr-4"
-                onClick={() => {
-                  setActiveTab('pending')
-                  setFilter(key)
-                }}
-              >
-                {label}
-              </Button>
-            ))}
+            <Button
+              appearance={filter === 'submitted' ? 'primary' : 'border'}
+              className="h-10 mr-4"
+              onClick={() => {
+                setActiveTab('pending')
+                setFilter('submitted')
+              }}
+            >
+              Submitted Grant
+            </Button>
+            <Button
+              appearance={filter === 'other' ? 'primary' : 'border'}
+              className="h-10 mr-4"
+              onClick={() => {
+                setActiveTab('pending')
+                setFilter('other')
+              }}
+            >
+              Received Grant
+            </Button>
           </div>
           <div className="flex mb-5">
             <Input
@@ -162,15 +142,7 @@ const HomePage = () => {
           </div>
         </div>
         <div className="flex-grow px-12 py-8 border-2 border-purple-600 rounded-lg">
-          {filter === 'submitted' ? (
-            <GrantList filter={filter} data={grants} />
-          ) : (
-            <Tabs
-              activeTab={activeTab}
-              onChange={setActiveTab}
-              data={tabData}
-            />
-          )}
+          <Tabs activeTab={activeTab} onChange={setActiveTab} data={tabData} />
         </div>
       </div>
     </Layout>
