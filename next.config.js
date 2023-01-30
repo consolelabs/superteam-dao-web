@@ -13,4 +13,15 @@ module.exports = withBundleAnalyzer({
     BASE_URL: process.env.BASE_URL,
     MORALIS_API_KEY: process.env.MORALIS_API_KEY,
   },
+  images: {
+    domains: ['ipfs.moralis.io'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ipfs.moralis.io',
+        port: '',
+        pathname: '**',
+      },
+    ],
+  },
 })

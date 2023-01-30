@@ -1,4 +1,4 @@
-import React, { HTMLAttributes } from 'react'
+import React, { HTMLAttributes, useState } from 'react'
 import cx from 'classnames'
 import { useToken } from 'context/solana-token'
 import { GrantDetail } from 'types/grant'
@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { Label } from 'components/Label'
 import { Address } from 'components/Address'
 import { formatAmount } from 'utils/formatNumber'
+import Image from 'next/image'
+import { Transition } from '@headlessui/react'
 import { SenderAction } from './SenderAction'
 import { ReceiverAction } from './ReceiverAction'
 import { SubmitterAction } from './SubmitterAction'
@@ -33,6 +35,9 @@ export function GrantItem({
     account,
   } = grant
   const { tokens } = useToken()
+  const [isViewerOpen, setIsViewerOpen] = useState(false)
+  const [size, setSize] = useState({ width: 400, height: 400 })
+
   const token = tokens[String(spl)] || {}
   const { decimals = 0, symbol } = token
   const tokenAmount = amount.toNumber() / 10 ** decimals
@@ -46,11 +51,50 @@ export function GrantItem({
       {...props}
     >
       <div className="flex items-center flex-1">
-        <img
-          src={image}
-          className="flex-none object-cover w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-lg -indent-20"
-          alt=""
-        />
+        <div className="flex-none w-20 h-20 mr-8 overflow-hidden border-2 border-purple-600 rounded-lg">
+          <Image
+            src={image}
+            width={80}
+            height={80}
+            objectFit="cover"
+            alt=""
+            onClick={() => setIsViewerOpen(true)}
+          />
+        </div>
+        <Transition show={isViewerOpen}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center w-full h-full">
+            <div
+              className="absolute inset-0 w-full h-full bg-black bg-opacity-70"
+              onClick={() => setIsViewerOpen(false)}
+              onKeyDown={() => {}}
+              role="presentation"
+            />
+            <Transition.Child
+              enter="transition duration-300"
+              enterFrom="opacity-0 scale-0"
+              enterTo="opacity-100 scale-100"
+              leave="transition duration-150"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+              className="relative block"
+            >
+              <Image
+                src={image}
+                alt=""
+                objectFit="contain"
+                width={size.width}
+                height={size.height}
+                onLoad={() => {
+                  if (window) {
+                    const size =
+                      Math.min(window.innerWidth, window.innerHeight) * 0.8
+                    setSize({ width: size, height: size })
+                  }
+                }}
+              />
+            </Transition.Child>
+          </div>
+        </Transition>
         <div>
           <Link
             href={`/grant-detail/${String(account)}`}

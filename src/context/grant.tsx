@@ -157,6 +157,15 @@ const GrantProvider = ({ children }: WithChildren) => {
     findAllNfts()
   }, [connection, publicKey])
 
+  useEffect(() => {
+    if (!publicKey) {
+      setSentGrant([])
+      setReceivedGrant([])
+      setSubmittedGrant([])
+      setNfts([])
+    }
+  }, [publicKey])
+
   return (
     <Provider
       value={{
