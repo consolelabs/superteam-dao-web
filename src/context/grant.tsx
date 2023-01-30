@@ -85,12 +85,12 @@ const GrantProvider = ({ children }: WithChildren) => {
 
   useEffect(() => {
     if (!program || !publicKey) return
-    const fetchProposalByReceiver = async () => {
+    const fetchProposalBySubmitter = async () => {
       try {
         const proposalBySubmitter = await program.account.proposal.all([
           {
             memcmp: {
-              offset: 164,
+              offset: 72,
               bytes: publicKey.toBase58(),
             },
           },
@@ -108,7 +108,7 @@ const GrantProvider = ({ children }: WithChildren) => {
         })
       }
     }
-    fetchProposalByReceiver()
+    fetchProposalBySubmitter()
   }, [connection, program, publicKey, refreshCount])
 
   const refreshGrant = () => {

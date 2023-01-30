@@ -221,10 +221,6 @@
             "type": "publicKey"
           },
           {
-            "name": "transaction",
-            "type": "string"
-          },
-          {
             "name": "submitter",
             "type": "publicKey"
           },
@@ -243,6 +239,10 @@
           {
             "name": "amount",
             "type": "u64"
+          },
+          {
+            "name": "transaction",
+            "type": "string"
           },
           {
             "name": "tags",
@@ -312,6 +312,6 @@
     }
   ],
   "metadata": {
-    "address": "Acky1tFTVd3RDJGYdHeV7rjjP4i8ziQ1NH2CR5Cg7KsU"
+    "address": "7cir3NiJkRvAHY5DFtnBWWDWXUMPjnJcVgwiQ9YBUS5o"
   }
 }

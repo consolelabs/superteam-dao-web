@@ -6,12 +6,12 @@ import { PROGRAM_ID } from '../programId'
 export interface ProposalFields {
   receiver: PublicKey
   sender: PublicKey
-  transaction: string
   submitter: PublicKey
   receiverStatus: number
   senderStatus: number
   spl: PublicKey
   amount: BN
+  transaction: string
   tags: string
   image: string
   title: string
@@ -21,12 +21,12 @@ export interface ProposalFields {
 export interface ProposalJSON {
   receiver: string
   sender: string
-  transaction: string
   submitter: string
   receiverStatus: number
   senderStatus: number
   spl: string
   amount: string
+  transaction: string
   tags: string
   image: string
   title: string
@@ -36,12 +36,12 @@ export interface ProposalJSON {
 export class Proposal {
   readonly receiver: PublicKey
   readonly sender: PublicKey
-  readonly transaction: string
   readonly submitter: PublicKey
   readonly receiverStatus: number
   readonly senderStatus: number
   readonly spl: PublicKey
   readonly amount: BN
+  readonly transaction: string
   readonly tags: string
   readonly image: string
   readonly title: string
@@ -54,12 +54,12 @@ export class Proposal {
   static readonly layout = borsh.struct([
     borsh.publicKey('receiver'),
     borsh.publicKey('sender'),
-    borsh.str('transaction'),
     borsh.publicKey('submitter'),
     borsh.u8('receiverStatus'),
     borsh.u8('senderStatus'),
     borsh.publicKey('spl'),
     borsh.u64('amount'),
+    borsh.str('transaction'),
     borsh.str('tags'),
     borsh.str('image'),
     borsh.str('title'),
@@ -69,12 +69,12 @@ export class Proposal {
   constructor(fields: ProposalFields) {
     this.receiver = fields.receiver
     this.sender = fields.sender
-    this.transaction = fields.transaction
     this.submitter = fields.submitter
     this.receiverStatus = fields.receiverStatus
     this.senderStatus = fields.senderStatus
     this.spl = fields.spl
     this.amount = fields.amount
+    this.transaction = fields.transaction
     this.tags = fields.tags
     this.image = fields.image
     this.title = fields.title
@@ -125,12 +125,12 @@ export class Proposal {
     return new Proposal({
       receiver: dec.receiver,
       sender: dec.sender,
-      transaction: dec.transaction,
       submitter: dec.submitter,
       receiverStatus: dec.receiverStatus,
       senderStatus: dec.senderStatus,
       spl: dec.spl,
       amount: dec.amount,
+      transaction: dec.transaction,
       tags: dec.tags,
       image: dec.image,
       title: dec.title,
@@ -142,12 +142,12 @@ export class Proposal {
     return {
       receiver: this.receiver.toString(),
       sender: this.sender.toString(),
-      transaction: this.transaction,
       submitter: this.submitter.toString(),
       receiverStatus: this.receiverStatus,
       senderStatus: this.senderStatus,
       spl: this.spl.toString(),
       amount: this.amount.toString(),
+      transaction: this.transaction,
       tags: this.tags,
       image: this.image,
       title: this.title,
@@ -159,12 +159,12 @@ export class Proposal {
     return new Proposal({
       receiver: new PublicKey(obj.receiver),
       sender: new PublicKey(obj.sender),
-      transaction: obj.transaction,
       submitter: new PublicKey(obj.submitter),
       receiverStatus: obj.receiverStatus,
       senderStatus: obj.senderStatus,
       spl: new PublicKey(obj.spl),
       amount: new BN(obj.amount),
+      transaction: obj.transaction,
       tags: obj.tags,
       image: obj.image,
       title: obj.title,
