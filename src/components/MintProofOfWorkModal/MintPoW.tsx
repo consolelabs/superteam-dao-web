@@ -46,6 +46,13 @@ export const MintPoW = ({ grant, onSuccess }: Props) => {
     image:
       grant.image ||
       'https://arweave.net/wGChHSDTXTP9oAtTaYh9s8j1MRE0IPmYtH5greqWwZ4',
+    account: String(grant.account),
+    attributes: [
+      {
+        trait_type: 'Tags',
+        value: grant.tags,
+      },
+    ],
   }
 
   const mintPoW = async () => {
@@ -99,7 +106,7 @@ export const MintPoW = ({ grant, onSuccess }: Props) => {
             createMetadataAccountArgsV2: {
               data: {
                 name: grant.title,
-                symbol: 'FSMB',
+                symbol: grant.title,
                 uri,
                 sellerFeeBasisPoints: 100,
                 creators: [

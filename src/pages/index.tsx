@@ -16,7 +16,7 @@ import { getGrantStatus } from 'utils/grant'
 const HomePage = () => {
   const { user } = useAuthContext()
   const { publicKey } = useWallet()
-  const { sentGrant, receivedGrant, submittedGrant } = useGrant()
+  const { sentGrant, receivedGrant, submittedGrant, nfts } = useGrant()
   const [activeTab, setActiveTab] = useState('pending')
   const [filter, setFilter] = useState<'submitted' | 'other'>('submitted')
   const [tags, setTags] = useState<string[]>([])
@@ -77,20 +77,15 @@ const HomePage = () => {
             Your proof of works
           </Text>
           <ul className="flex space-x-3 list-none">
-            <li>
-              <img
-                src="https://cdn.galxe.com/galaxy/delysium/7930bb02-c86f-410d-95e9-a7aad36c46ce.png?optimizer=image&width=800&quality=100"
-                alt="Proof of work NFT"
-                className="object-cover w-12 h-12 border rounded-full border-slate-100"
-              />
-            </li>
-            <li>
-              <img
-                src="https://cdn.galxe.com/galaxy/delysium/7930bb02-c86f-410d-95e9-a7aad36c46ce.png?optimizer=image&width=800&quality=100"
-                alt="Proof of work NFT"
-                className="object-cover w-12 h-12 border rounded-full border-slate-100"
-              />
-            </li>
+            {nfts.map((each) => (
+              <li key={String(each.nft.address)}>
+                <img
+                  src={each.uriData?.image}
+                  alt="Proof of work NFT"
+                  className="object-cover w-12 h-12 border rounded-lg border-slate-100"
+                />
+              </li>
+            ))}
           </ul>
         </div>
       </aside>

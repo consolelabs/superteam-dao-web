@@ -4,12 +4,28 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'components/Toast'
 import { GrantDetail } from 'types/grant'
+import { Metadata, Metaplex } from '@metaplex-foundation/js'
+import fetcher from 'libs/fetcher'
 import { useProgram } from './program'
+
+interface UriData {
+  name?: string
+  description?: string
+  image?: string
+  account?: string
+}
+
+export interface NftData {
+  nft: Metadata
+  uriData?: UriData
+}
 
 interface GrantValues {
   sentGrant: GrantDetail[]
   receivedGrant: GrantDetail[]
   submittedGrant: GrantDetail[]
+  nfts: NftData[]
+  nftLoading: boolean
   refreshGrant: () => void
 }
 
@@ -26,6 +42,8 @@ const GrantProvider = ({ children }: WithChildren) => {
   const [sentGrant, setSentGrant] = useState<GrantDetail[]>([])
   const [receivedGrant, setReceivedGrant] = useState<GrantDetail[]>([])
   const [submittedGrant, setSubmittedGrant] = useState<GrantDetail[]>([])
+  const [nfts, setNfts] = useState<NftData[]>([])
+  const [nftLoading, setNftLoading] = useState(false)
 
   useEffect(() => {
     if (!program || !publicKey) return
@@ -115,12 +133,39 @@ const GrantProvider = ({ children }: WithChildren) => {
     setRefreshCount((count) => count + 1)
   }
 
+  useEffect(() => {
+    if (!publicKey) return
+    const findAllNfts = async () => {
+      try {
+        setNftLoading(true)
+        const metaplex = new Metaplex(connection)
+        const nfts = await metaplex.nfts().findAllByOwner({ owner: publicKey })
+        const data = await Promise.allSettled(
+          nfts.map((each) => fetcher<UriData>(each.uri)),
+        )
+        const result: NftData[] = data.flatMap((each, index) =>
+          each.status === 'fulfilled' && each.value.account
+            ? [{ nft: nfts[index] as Metadata, uriData: each.value }]
+            : [],
+        )
+        setNfts(result)
+        setNftLoading(false)
+      } catch (error) {
+        setNfts([])
+        setNftLoading(false)
+      }
+    }
+    findAllNfts()
+  }, [connection, publicKey])
+
   return (
     <Provider
       value={{
         sentGrant,
         receivedGrant,
         submittedGrant,
+        nfts,
+        nftLoading,
         refreshGrant,
       }}
     >
