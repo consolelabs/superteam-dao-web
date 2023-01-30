@@ -192,7 +192,7 @@ export const GrantForm = (props: Props) => {
             <div className="col-span-6">
               <FormTextarea
                 label="Description"
-                name="description"
+                name="subtitle"
                 fullWidth
                 rows={3}
                 maxLength={6400}

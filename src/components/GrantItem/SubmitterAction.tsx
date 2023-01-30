@@ -18,5 +18,11 @@ export const SubmitterAction = ({ grant }: Props) => {
   ) {
     return <CancelOrCloseGrantButton grant={grant} type="cancel" />
   }
+  if (
+    grantStatusMapping[grant.senderStatus] === GRANT_STATUS.REJECTED ||
+    grantStatusMapping[grant.receiverStatus] === GRANT_STATUS.REJECTED
+  ) {
+    return <CancelOrCloseGrantButton grant={grant} type="close" />
+  }
   return <Text className="text-xs italic">{capitalizeFirstLetter(status)}</Text>
 }
