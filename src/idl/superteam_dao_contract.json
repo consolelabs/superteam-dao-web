@@ -187,6 +187,12 @@
           "isSigner": false
         },
         {
+          "name": "submitter",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["CHECK"]
+        },
+        {
           "name": "payer",
           "isMut": true,
           "isSigner": true

@@ -4,6 +4,7 @@ import { IconSpinner } from 'components/icons/components/IconSpinner'
 import { Input } from 'components/Input'
 import { Label } from 'components/Label'
 import { Text } from 'components/Text'
+import { QuantumSOLVersionSOL } from 'constants/solana'
 import { client } from 'libs/api'
 import { useEffect, useState } from 'react'
 import { TransactionInfo, TransactionItem } from './TransactionItem'
@@ -37,20 +38,35 @@ export const TransactionInput = ({ onCreate }: Props) => {
     getTransaction()
   }, [debounceId])
 
-  const transactionData = data?.parsedInstruction
-    ?.flatMap((parsedInstruction: any, index: number) => {
-      const innerInstructions = data?.innerInstructions?.find(
-        (innerInstruction: any) => innerInstruction.index === index,
+  const transactionData: Array<Omit<TransactionInfo, 'transactionId'>> =
+    data?.parsedInstruction
+      ?.flatMap((parsedInstruction: any, index: number) => {
+        const innerInstructions = data?.innerInstructions?.find(
+          (innerInstruction: any) => innerInstruction.index === index,
+        )
+        return (
+          innerInstructions
+            ? innerInstructions.parsedInstructions
+            : [parsedInstruction]
+        )?.filter(
+          (instruction: any) =>
+            instruction?.type?.includes('spl-transfer') ||
+            instruction?.type?.includes('sol-transfer'),
+        )
+      })
+      .map((instruction: any) =>
+        instruction?.type?.includes('sol-transfer')
+          ? {
+              sourceOwner: instruction?.params?.source,
+              destinationOwner: instruction?.params?.destination,
+              amount: instruction?.params?.amount,
+              icon: QuantumSOLVersionSOL.icon,
+              decimals: QuantumSOLVersionSOL.decimals,
+              symbol: QuantumSOLVersionSOL.symbol,
+              tokenAddress: String(QuantumSOLVersionSOL.mint),
+            }
+          : instruction.extra,
       )
-      return (
-        innerInstructions
-          ? innerInstructions.parsedInstructions
-          : [parsedInstruction]
-      )?.filter((instruction: any) =>
-        instruction?.type?.includes('spl-transfer'),
-      )
-    })
-    .map((instruction: any) => instruction.extra)
 
   return (
     <div className="flex flex-col items-center w-full p-6 text-sm">
@@ -86,7 +102,7 @@ export const TransactionInput = ({ onCreate }: Props) => {
             <Label>Transaction Detail</Label>
             <table>
               <tbody>
-                {transactionData?.map((data: any, index: number) => (
+                {transactionData?.map((data, index) => (
                   <TransactionItem
                     key={index}
                     data={{ ...data, transactionId }}
