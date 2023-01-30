@@ -195,7 +195,7 @@ export const GrantForm = (props: Props) => {
                 name="subtitle"
                 fullWidth
                 rows={3}
-                maxLength={6400}
+                maxLength={256}
               />
             </div>
           </div>
