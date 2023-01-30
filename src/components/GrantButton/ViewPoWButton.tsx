@@ -1,13 +1,13 @@
 import { useDisclosure } from '@dwarvesf/react-hooks'
 import { Button } from 'components/Button'
-import { MintProofOfWorkModal } from 'components/MintProofOfWorkModal'
+import { ViewProofOfWorkModal } from 'components/MintProofOfWorkModal'
 import { GrantDetail } from 'types/grant'
 
 interface Props {
   grant: GrantDetail
 }
 
-export const MintPoWButton = ({ grant }: Props) => {
+export const ViewPoWButton = ({ grant }: Props) => {
   const {
     isOpen: isOpenProofOfWorkModal,
     onOpen: onOpenProofOfWorkModal,
@@ -22,9 +22,9 @@ export const MintPoWButton = ({ grant }: Props) => {
         className="text-purple-600"
         onClick={onOpenProofOfWorkModal}
       >
-        Mint PoW
+        View PoW
       </Button>
-      <MintProofOfWorkModal
+      <ViewProofOfWorkModal
         grant={grant}
         isOpen={isOpenProofOfWorkModal}
         onClose={onCloseProofOfWorkModal}

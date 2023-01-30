@@ -12,7 +12,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { Keypair, SystemProgram, Transaction } from '@solana/web3.js'
+import { Keypair, PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { Button } from 'components/Button'
 import { Text } from 'components/Text'
 import { toast } from 'components/Toast'
@@ -23,6 +23,7 @@ import {
   FreezeNft,
   getMasterEditionPDA,
   getMetadataPDA,
+  UpdateNft,
 } from 'utils/contract/freeze_nft'
 import { uploadContent } from 'utils/uploadFile'
 
@@ -36,7 +37,7 @@ export const MintPoW = ({ grant, onSuccess }: Props) => {
     'init' | 'uploading' | 'minting' | 'error'
   >('init')
   const { publicKey, sendTransaction } = useWallet()
-  const { nftProgram } = useProgram()
+  const { program, nftProgram } = useProgram()
   const { connection } = useConnection()
 
   const loading = status === 'uploading' || status === 'minting'
@@ -46,7 +47,6 @@ export const MintPoW = ({ grant, onSuccess }: Props) => {
     image:
       grant.image ||
       'https://arweave.net/wGChHSDTXTP9oAtTaYh9s8j1MRE0IPmYtH5greqWwZ4',
-    account: String(grant.account),
     attributes: [
       {
         trait_type: 'Tags',
@@ -56,7 +56,7 @@ export const MintPoW = ({ grant, onSuccess }: Props) => {
   }
 
   const mintPoW = async () => {
-    if (!publicKey || !nftProgram) return
+    if (!publicKey || !nftProgram || !program || !grant.account) return
     try {
       setStatus('uploading')
       const uri = await uploadContent(
@@ -71,7 +71,17 @@ export const MintPoW = ({ grant, onSuccess }: Props) => {
       const ata = await getAssociatedTokenAddress(mint.publicKey, publicKey)
       const tokenMetadataPubkey = getMetadataPDA(mint.publicKey)
       const masterEditionPubkey = getMasterEditionPDA(mint.publicKey)
-      const freezeNft = await FreezeNft(publicKey, mint.publicKey, nftProgram)
+      const freezeNft = await FreezeNft({
+        payer: publicKey,
+        nft_mint: mint.publicKey,
+        program: nftProgram,
+      })
+      const updateNft = await UpdateNft({
+        nft_mint: mint.publicKey,
+        proposal: new PublicKey(grant.account),
+        receiver: publicKey,
+        program,
+      })
       const tx = new Transaction()
       tx.add(
         SystemProgram.createAccount({
@@ -139,6 +149,7 @@ export const MintPoW = ({ grant, onSuccess }: Props) => {
           },
         ),
         freezeNft,
+        updateNft,
       )
       await sendTransaction(tx, connection, {
         signers: [mint],

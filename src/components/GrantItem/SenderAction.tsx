@@ -1,6 +1,8 @@
+import { PublicKey } from '@solana/web3.js'
 import {
   ApproveAndRejectGrantButton,
   CancelOrCloseGrantButton,
+  ViewPoWButton,
 } from 'components/GrantButton'
 import { Text } from 'components/Text'
 import { grantStatusMapping, GRANT_STATUS } from 'constants/grant'
@@ -12,12 +14,18 @@ interface Props {
 }
 
 export const SenderAction = ({ grant }: Props) => {
+  const isMinted = String(grant.nft) !== String(PublicKey.default)
+
   switch (getGrantStatus(grant)) {
     case GRANT_STATUS.REJECTED: {
       return <CancelOrCloseGrantButton grant={grant} type="close" />
     }
     case GRANT_STATUS.APPROVED: {
-      return <Text className="text-xs italic">Approved</Text>
+      return isMinted ? (
+        <ViewPoWButton grant={grant} />
+      ) : (
+        <Text className="text-xs italic">Waiting for PoW</Text>
+      )
     }
     case GRANT_STATUS.PENDING: {
       if (grantStatusMapping[grant.senderStatus] === GRANT_STATUS.PENDING) {

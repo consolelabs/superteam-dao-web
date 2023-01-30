@@ -4,21 +4,17 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'components/Toast'
 import { GrantDetail } from 'types/grant'
-import { Metadata, Metaplex } from '@metaplex-foundation/js'
-import fetcher from 'libs/fetcher'
+import {
+  Metadata,
+  Metaplex,
+  Nft,
+  NftWithToken,
+  Sft,
+  SftWithToken,
+} from '@metaplex-foundation/js'
 import { useProgram } from './program'
 
-interface UriData {
-  name?: string
-  description?: string
-  image?: string
-  account?: string
-}
-
-export interface NftData {
-  nft: Metadata
-  uriData?: UriData
-}
+export type NftData = Sft | SftWithToken | Nft | NftWithToken
 
 interface GrantValues {
   sentGrant: GrantDetail[]
@@ -139,16 +135,19 @@ const GrantProvider = ({ children }: WithChildren) => {
       try {
         setNftLoading(true)
         const metaplex = new Metaplex(connection)
-        const nfts = await metaplex.nfts().findAllByOwner({ owner: publicKey })
-        const data = await Promise.allSettled(
-          nfts.map((each) => fetcher<UriData>(each.uri)),
+        const rawNfts = await metaplex
+          .nfts()
+          .findAllByOwner({ owner: publicKey })
+        const nfts = await Promise.allSettled(
+          rawNfts.map((each) =>
+            metaplex.nfts().load({ metadata: each as Metadata }),
+          ),
         )
-        const result: NftData[] = data.flatMap((each, index) =>
-          each.status === 'fulfilled' && each.value.account
-            ? [{ nft: nfts[index] as Metadata, uriData: each.value }]
-            : [],
+        setNfts(
+          nfts.flatMap((each) =>
+            each.status === 'fulfilled' ? [each.value] : [],
+          ),
         )
-        setNfts(result)
         setNftLoading(false)
       } catch (error) {
         setNfts([])
@@ -164,7 +163,11 @@ const GrantProvider = ({ children }: WithChildren) => {
         sentGrant,
         receivedGrant,
         submittedGrant,
-        nfts,
+        nfts: nfts.filter((each) =>
+          receivedGrant.some(
+            (grant) => String(grant.nft) === String(each.address),
+          ),
+        ),
         nftLoading,
         refreshGrant,
       }}

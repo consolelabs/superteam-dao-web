@@ -12,6 +12,7 @@ import { GrantProvider, useGrant } from 'context/grant'
 import { GRANT_STATUS } from 'constants/grant'
 import { GrantList } from 'components/GrantList'
 import { getGrantStatus } from 'utils/grant'
+import Link from 'next/link'
 
 const HomePage = () => {
   const { user } = useAuthContext()
@@ -78,12 +79,20 @@ const HomePage = () => {
           </Text>
           <ul className="flex space-x-3 list-none">
             {nfts.map((each) => (
-              <li key={String(each.nft.address)}>
-                <img
-                  src={each.uriData?.image}
-                  alt="Proof of work NFT"
-                  className="object-cover w-12 h-12 border rounded-lg border-slate-100"
-                />
+              <li key={String(each.address)}>
+                <Link
+                  href={`https://solscan.io/token/${String(
+                    each.address,
+                  )}?cluster=devnet`}
+                >
+                  <a target="_blank">
+                    <img
+                      src={each.json?.image}
+                      alt="Proof of work NFT"
+                      className="object-cover w-12 h-12 border rounded-lg border-slate-100"
+                    />
+                  </a>
+                </Link>
               </li>
             ))}
           </ul>

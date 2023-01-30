@@ -15,11 +15,15 @@ export const findAuthorityAddress = (payer: PublicKey, nft_mint: PublicKey) => {
   return address
 }
 
-export const FreezeNft = async (
-  payer: PublicKey,
-  nft_mint: PublicKey,
-  program: Program,
-) => {
+export const FreezeNft = async ({
+  payer,
+  nft_mint,
+  program,
+}: {
+  payer: PublicKey
+  nft_mint: PublicKey
+  program: Program
+}) => {
   const authority = findAuthorityAddress(payer, nft_mint)
   const nftMetadata = getMetadataPDA(nft_mint)
   const edition = getMasterEditionPDA(nft_mint)
@@ -36,6 +40,29 @@ export const FreezeNft = async (
       edition,
       metadataProgram: PROGRAM_ID,
       tokenProgram: TOKEN_PROGRAM_ID,
+      systemProgram: SystemProgram.programId,
+    })
+    .transaction()
+
+  return transaction
+}
+
+export const UpdateNft = async ({
+  nft_mint,
+  proposal,
+  receiver,
+  program,
+}: {
+  nft_mint: PublicKey
+  proposal: PublicKey
+  receiver: PublicKey
+  program: Program
+}) => {
+  const transaction = await program.methods
+    .updateNft(nft_mint)
+    .accounts({
+      proposal,
+      receiver,
       systemProgram: SystemProgram.programId,
     })
     .transaction()
