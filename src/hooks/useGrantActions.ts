@@ -66,7 +66,7 @@ export const useGrantActions = (grant: GrantDetail) => {
           sender: publicKey,
           receiver: publicKey,
           payer: publicKey,
-          submitter: publicKey,
+          submitter: grant.submitter,
           systemProgram: SystemProgram.programId,
         })
         .transaction()
