@@ -9,6 +9,7 @@ import { SolanaWalletProvider } from 'context/solana-wallet'
 import { SolanaTokenProvider } from 'context/solana-token'
 import { ProgramProvider } from 'context/program'
 import Moralis from 'moralis'
+import { GrantProvider } from 'context/grant'
 
 const { MORALIS_API_KEY } = process.env
 
@@ -49,8 +50,10 @@ class MyApp extends App {
           <SolanaWalletProvider>
             <SolanaTokenProvider>
               <ProgramProvider>
-                <NProgressHandler />
-                <Component {...pageProps} />
+                <GrantProvider>
+                  <NProgressHandler />
+                  <Component {...pageProps} />
+                </GrantProvider>
               </ProgramProvider>
             </SolanaTokenProvider>
           </SolanaWalletProvider>

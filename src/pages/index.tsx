@@ -8,7 +8,7 @@ import { Input } from 'components/Input'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { CustomListbox } from 'components/Listbox'
 import { formatWallet } from 'utils/formatWallet'
-import { GrantProvider, useGrant } from 'context/grant'
+import { useGrant } from 'context/grant'
 import { GRANT_STATUS } from 'constants/grant'
 import { GrantList } from 'components/GrantList'
 import { getGrantStatus } from 'utils/grant'
@@ -175,8 +175,4 @@ const HomePage = () => {
   )
 }
 
-export default () => (
-  <GrantProvider>
-    <HomePage />
-  </GrantProvider>
-)
+export default HomePage

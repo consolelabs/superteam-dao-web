@@ -58,7 +58,8 @@ export function GrantItem({
             height={80}
             objectFit="cover"
             alt=""
-            onClick={() => setIsViewerOpen(true)}
+            onClick={() => setIsViewerOpen(!!image)}
+            className={image ? 'cursor-pointer' : undefined}
           />
         </div>
         <Transition show={isViewerOpen}>
@@ -96,11 +97,7 @@ export function GrantItem({
           </div>
         </Transition>
         <div>
-          <Link
-            href={`/grant-detail/${String(account)}`}
-            passHref
-            legacyBehavior
-          >
+          <Link href={`/grant/${String(account)}`} passHref legacyBehavior>
             <a className="text-xl underline hover:text-purple-600">{title}</a>
           </Link>
           <div className="flex items-center mt-2 space-x-2">
