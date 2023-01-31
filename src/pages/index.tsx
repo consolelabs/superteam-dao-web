@@ -13,6 +13,27 @@ import { GRANT_STATUS } from 'constants/grant'
 import { GrantList } from 'components/GrantList'
 import { getGrantStatus } from 'utils/grant'
 import Link from 'next/link'
+import { GrantDetail } from 'types/grant'
+
+const filterGrants = (
+  grants: GrantDetail[],
+  filter?: { query?: string; tags?: string[] },
+) => {
+  const query = filter?.query?.toLowerCase()
+  const tags = filter?.tags
+
+  return grants
+    .filter((each) =>
+      query
+        ? each.title.toLowerCase().includes(query) ||
+          String(each.sender).toLowerCase() === query ||
+          String(each.receiver).toLowerCase() === query
+        : true,
+    )
+    .filter((each) =>
+      tags ? tags.every((tag) => each.tags.split(',').includes(tag)) : true,
+    )
+}
 
 const HomePage = () => {
   const { user } = useAuthContext()
@@ -21,19 +42,20 @@ const HomePage = () => {
   const [activeTab, setActiveTab] = useState('pending')
   const [filter, setFilter] = useState<'submitted' | 'other'>('submitted')
   const [tags, setTags] = useState<string[]>([])
-  const [approver, setApprover] = useState('')
+  const [query, setQuery] = useState('')
 
   const grants = {
     submitted: submittedGrant,
     other: [...sentGrant, ...receivedGrant],
   }[filter]
-  const pendingGrants = grants.filter(
+  const filteredGrants = filterGrants(grants, { query, tags })
+  const pendingGrants = filteredGrants.filter(
     (grant) => getGrantStatus(grant) === GRANT_STATUS.PENDING,
   )
-  const approvedGrants = grants.filter(
+  const approvedGrants = filteredGrants.filter(
     (grant) => getGrantStatus(grant) === GRANT_STATUS.APPROVED,
   )
-  const rejectedGrants = grants.filter(
+  const rejectedGrants = filteredGrants.filter(
     (grant) => getGrantStatus(grant) === GRANT_STATUS.REJECTED,
   )
   const tabData = [
@@ -127,8 +149,8 @@ const HomePage = () => {
               type="search"
               placeholder="Search address / title"
               className="w-[18rem] mr-4"
-              value={approver}
-              onChange={(e) => setApprover(e.target.value)}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
             />
             <CustomListbox
               value={tags}

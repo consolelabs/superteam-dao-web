@@ -16,6 +16,7 @@ import { Keypair, PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { Button } from 'components/Button'
 import { Text } from 'components/Text'
 import { toast } from 'components/Toast'
+import { useGrant } from 'context/grant'
 import { useProgram } from 'context/program'
 import { useState } from 'react'
 import { GrantDetail } from 'types/grant'
@@ -39,6 +40,7 @@ export const MintPoW = ({ grant, onSuccess }: Props) => {
   const { publicKey, sendTransaction } = useWallet()
   const { program, nftProgram } = useProgram()
   const { connection } = useConnection()
+  const { refreshGrant } = useGrant()
 
   const loading = status === 'uploading' || status === 'minting'
   const json = {
@@ -155,6 +157,9 @@ export const MintPoW = ({ grant, onSuccess }: Props) => {
         signers: [mint],
       })
       onSuccess()
+      setTimeout(() => {
+        refreshGrant()
+      }, 2000)
     } catch (error: any) {
       setStatus('error')
       toast.error({
