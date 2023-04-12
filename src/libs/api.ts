@@ -3,8 +3,8 @@ import { User } from 'types/schema'
 import { RaydiumTokenListJsonInfo } from 'types/solana'
 import fetcher from './fetcher'
 
-// eslint-disable-next-line prefer-destructuring
-const BASE_URL = process.env.BASE_URL
+const BASE_URL = process.env.BASE_URL as string
+const SOL_SCAN_TOKEN = process.env.SOL_SCAN_TOKEN as string
 
 class Client {
   headers: HeadersInit = {
@@ -25,7 +25,10 @@ class Client {
 
   getTransaction(id: string) {
     return fetcher(`https://public-api.solscan.io/transaction/${id}`, {
-      headers: this.headers,
+      headers: {
+        ...this.headers,
+        token: SOL_SCAN_TOKEN,
+      },
     })
   }
 }

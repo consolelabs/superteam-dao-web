@@ -12,6 +12,7 @@ module.exports = withBundleAnalyzer({
   env: {
     BASE_URL: process.env.BASE_URL,
     MORALIS_API_KEY: process.env.MORALIS_API_KEY,
+    SOL_SCAN_TOKEN: process.env.SOL_SCAN_TOKEN,
   },
   images: {
     domains: ['ipfs.moralis.io'],
